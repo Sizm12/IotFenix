@@ -1,164 +1,335 @@
-<script setup lang="ts">
-import { ref, onMounted } from "vue";
-import HeaderDashboard from "../components/HeaderDashboard.vue"
-const value = ref(70);
-
-onMounted(() => {
-    chartData.value = setChartData();
-    chartOptions.value = setChartOptions();
-});
-
-const chartData = ref();
-const chartOptions = ref();
-
-const setChartData = () => {
-    const documentStyle = getComputedStyle(document.documentElement);
-
-    return {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [
-            {
-                label: 'First Dataset',
-                data: [65, 59, 80, 81, 56, 55, 40],
-                fill: false,
-                tension: 0.4,
-                borderColor: documentStyle.getPropertyValue('--blue-500')
-            },
-            {
-                label: 'Second Dataset',
-                data: [28, 48, 40, 19, 86, 27, 90],
-                fill: false,
-                borderDash: [5, 5],
-                tension: 0.4,
-                borderColor: documentStyle.getPropertyValue('--teal-500')
-            },
-            {
-                label: 'Third Dataset',
-                data: [12, 51, 62, 33, 21, 62, 45],
-                fill: true,
-                borderColor: documentStyle.getPropertyValue('--orange-500'),
-                tension: 0.4,
-                backgroundColor: 'rgba(255,167,38,0.2)'
-            }
-        ]
-    };
-};
-const setChartOptions = () => {
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue('--text-color');
-    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
-
-    return {
-        maintainAspectRatio: false,
-        aspectRatio: 0.6,
-        plugins: {
-            legend: {
-                labels: {
-                    color: textColor
-                }
-            }
-        },
-        scales: {
-            x: {
-                ticks: {
-                    color: textColorSecondary
-                },
-                grid: {
-                    color: surfaceBorder
-                }
-            },
-            y: {
-                ticks: {
-                    color: textColorSecondary
-                },
-                grid: {
-                    color: surfaceBorder
-                }
-            }
-        }
-    };
-}
-</script>
-
 <template>
-    <HeaderDashboard></HeaderDashboard>
-    
-    <h3>Dashboard</h3>
-
-    <div class="flex">
-        <cCard>
-            <template #title>Bateria</template>
-            <template #content>
-                <cKnob class="ind1" valueColor="#8c3df9"  v-model="value" readonly :strokeWidth="8" valueTemplate="{value}%" />
-            </template>
-        </cCard>
-
-        <cCard>
-            <template #title>Alterndor</template>
-            <template #content>
-                <cKnob v-model="value" valueColor="#F2b53C" :strokeWidth="8" readonly valueTemplate="{value}%" />
-            </template>
-        </cCard>
-        <cCard>
-            <template #title>Temperatura</template>
-            <template #content>
-                <cKnob v-model="value" valueColor="#3c79f2" :strokeWidth="8" readonly valueTemplate="{value}%" />
-            </template>
-        </cCard>
-
-        <cCard>
-            <template #title>Card</template>
-            <template #content>
-                <cProgressBar :value="50"></cProgressBar>
-                <br>
-                <cProgressBar :value="70"></cProgressBar>
-                <br>
-                <cProgressBar :value="30"></cProgressBar>
-                <br>
-            </template>
-        </cCard>
-
+    <div class="menu-wrapper">
+    <div class="sidebar-header">
+      <div class="sideBar" :class="{ showMenu: isMenuVisible, widthChange: isWidthChanged }">
+        <div> <h2>FENIX</h2></div>
+        <ul>
+          <li :class="{ selected: selectedItem === 'Home' }" @click="selectItem('Home')">
+            <i class="pi pi-home"></i><label>Dashboard</label>
+          </li>
+        </ul>
+        <span class="cross-icon" @click="closeMenu"><i class="fas fa-times"></i></span>
+      </div>
+      <div class="backdrop" v-if="isMenuVisible" @click="closeMenu"></div>
+      <div class="content">
+        <header>
+          <div class="menu-button" id="desktop" @click="toggleMenuWidth">
+            <li class="pi pi-bars" style=" font-size: 2rem;"></li>
+          </div>
+          <div class="menu-button" id="mobile" @click="openMenu">
+            <li class="pi pi-bars" style=" font-size: 2rem;"></li>
+          </div>
+          <h1>{{ title }}</h1> <img :src="profileImageUrl" />
+        </header>
+        <div class="content-data">
+           <ContendView></ContendView>
+        
+        
+        </div>
+      </div>
     </div>
-
-    <div class="flex">
-
-    </div>
-    <div class="flex">
-        <cCard>
-            <template #title>Kpi</template>
-            <template #content>
-                <cChart type="line" :data="chartData" :options="chartOptions" class="h-30rem" />
-            </template>
-        </cCard>
-        <cCard>
-            <template #title>Kpi</template>
-            <template #content>
-                <cChart type="bar" :data="chartData" :options="chartOptions" />
-            </template>
-        </cCard>
-        <cCard>
-            <template #title>Kpi</template>
-            <template #content>
-                <cChart type="line" :data="chartData" :options="chartOptions" class="h-30rem" />
-            </template>
-        </cCard>
-    </div>
+  </div>
 </template>
 
-<style scoped>
-.flex {
-    display: flex;
-    width: 100%;
-    gap: 10px;
-    padding: 15px;
+<script  lang="ts">
+import { defineComponent } from 'vue';
+import ContendView from "./../components/ContendView.vue"
 
-    @media screen and (max-width: 767px) {
-        flex-direction: column;
+interface Data {
+  isMenuVisible: boolean;
+  isWidthChanged: boolean;
+  selectedItem: string;
+  imageUrl: string;
+  profileImageUrl: string;
+  title: string;
+}
+
+export default defineComponent({
+
+    components: {
+    ContendView
+  },
+  data(): Data {
+    return {
+      isMenuVisible: false,
+      isWidthChanged: false,
+      selectedItem: 'Home',
+      imageUrl: 'https://drive.google.com/thumbnail?id=1aWmbSZADIAOqZZ-TZ6IxTcCO72rDiUn1',
+      profileImageUrl: 'https://img.freepik.com/free-vector/illustration-businessman_53876-5856.jpg?size=626&ext=jpg&ga=GA1.1.632798143.1705622400&semt=ais',
+      title: 'Company'
+    };
+  },
+  methods: {
+    openMenu() {
+      this.isMenuVisible = true;
+    },
+    closeMenu() {
+      this.isMenuVisible = false;
+      this.isWidthChanged = false;
+    },
+    toggleMenuWidth() {
+      this.isWidthChanged = !this.isWidthChanged;
+    },
+    selectItem(item: string) {
+      this.selectedItem = item;
+      this.isMenuVisible = false;
+    }
+  },
+
+});
+
+</script>    
+
+
+<style scoped>
+/*
+nav {
+    width: 100%;
+    height:60px;
+    background: #1f2937;
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+    padding: 0 1rem;
+}
+
+span{
+    display:flex;
+    gap: 1rem;
+}*/
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.sideBar {
+    position: relative;
+    z-index: 20;
+    height: 100vh;
+    width: 25%;
+    color: white;
+    background-color: #001629;
+    transition: 0.3s ease-in-out;
+}
+
+.sideBar.widthChange {
+    width: 10%;
+    text-align: center;
+}
+
+.sideBar img {
+    position: absolute;
+    height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.sideBar div {
+    position: relative;
+    height: 10vh;
+    background-color: #001629;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+
+.sideBar li {
+    padding: 20px 20px 20px 10px;
+    transition: 0.3s ease-in-out;
+}
+li label.hideMenuList {
+    display: none;
+}
+
+.sideBar li i {
+    margin-right: 8px;
+}
+
+.sideBar li:hover {
+    background-color: #0092ff;
+}
+
+.selected {
+    background-color: #0092ff;
+}
+
+.sideBar span {
+    position: absolute;
+    color: #ffffff;
+    top: 20px;
+    right: 20px;
+}
+
+.sideBar .cross-icon {
+    display: none;
+    color: #001629;
+}
+
+.sidebar-header {
+    display: flex;
+}
+
+.content {
+    width: 100%;
+    height: 100vh;
+}
+
+header {
+    background-color: #001629;
+    height: 10%;
+    padding: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#mobile {
+    display: none;
+}
+
+.menu-button {
+    position: relative;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+}
+
+.menu-button div:nth-child(1) {
+    position: absolute;
+    height: 4px;
+    border-radius: 20px;
+    background-color: #c7c7c7;
+    width: 100%;
+}
+
+.menu-button div:nth-child(2) {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 4px;
+    border-radius: 20px;
+    background-color: #c7c7c7;
+    width: 80%;
+}
+
+.menu-button div:nth-child(3) {
+    position: absolute;
+    height: 4px;
+    border-radius: 20px;
+    bottom: 0;
+    background-color: #c7c7c7;
+    width: 100%;
+}
+
+header img {
+    height: 40px;
+    border-radius: 100%;
+}
+
+header h1 {
+    color: #0092ff;
+}
+
+.content-data {
+    
+    margin: 2%;
+    padding: 20px;
+    height: 84%;
+    overflow-y: auto;
+}
+
+.sideBar.showMenu {
+    left: 0;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: #ccc;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #0092ff;
+}
+
+@media(max-width:1200px) {
+    .sideBar {
+        width: 30%;
     }
 }
 
-.p-card {
-    width: 100%;
+@media(max-width:900px) {
+    #desktop {
+        display: none;
+    }
+
+    #mobile {
+        display: block;
+    }
+
+    .sideBar {
+        position: absolute;
+        width: 30%;
+        top: 0;
+        left: -100%;
+    }
+
+    .sideBar .cross-icon {
+        display: block;
+    }
+
+    .backdrop {
+        position: absolute;
+        background-color: rgba(0, 0, 0, 0.4);
+        top: 0;
+        left: -100%;
+        height: 100vh;
+        width: 100%;
+    }
+
+    .backdrop.showBackdrop {
+        left: 0;
+    }
+}
+
+@media(max-width:700px) {
+    .sideBar {
+        width: 40%;
+    }
+}
+
+@media(max-width:400px) {
+    .sideBar {
+        width: 60%;
+    }
+
+    header h1 {
+        font-size: 20px;
+    }
+
+    #mobile {
+        height: 25px;
+    }
+}
+
+@media(max-width:320px) {
+    .sideBar {
+        width: 80%;
+    }
 }
 </style>
