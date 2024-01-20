@@ -2,10 +2,16 @@
     <div class="menu-wrapper">
     <div class="sidebar-header">
       <div class="sideBar" :class="{ showMenu: isMenuVisible, widthChange: isWidthChanged }">
-        <div> <h2>FENIX</h2></div>
+        <div> <h2></h2></div>
         <ul>
           <li :class="{ selected: selectedItem === 'Home' }" @click="selectItem('Home')">
-            <i class="pi pi-home"></i><label>Dashboard</label>
+            <i class="pi pi-home" style="color: #34d399;"></i><label>Dashboard</label>
+          </li>
+          <li @click="selectItem('Home')">
+            <i class="pi pi-car" style="color: #34d399;"></i><label>Mis vehiculos</label>
+          </li>
+          <li  @click="selectItem('Home')">
+            <i class="pi pi-map" style="color: #34d399;"></i><label>Rutas</label>
           </li>
         </ul>
         <span class="cross-icon" @click="closeMenu"><i class="fas fa-times"></i></span>
@@ -23,8 +29,6 @@
         </header>
         <div class="content-data">
            <ContendView></ContendView>
-        
-        
         </div>
       </div>
     </div>
@@ -56,7 +60,7 @@ export default defineComponent({
       selectedItem: 'Home',
       imageUrl: 'https://drive.google.com/thumbnail?id=1aWmbSZADIAOqZZ-TZ6IxTcCO72rDiUn1',
       profileImageUrl: 'https://img.freepik.com/free-vector/illustration-businessman_53876-5856.jpg?size=626&ext=jpg&ga=GA1.1.632798143.1705622400&semt=ais',
-      title: 'Company'
+      title: 'FENIX'
     };
   },
   methods: {
@@ -118,7 +122,7 @@ body {
     height: 100vh;
     width: 25%;
     color: white;
-    background-color: #001629;
+    background-color: #232A3A;
     transition: 0.3s ease-in-out;
 }
 
@@ -138,7 +142,7 @@ body {
 .sideBar div {
     position: relative;
     height: 10vh;
-    background-color: #001629;
+    background-color: #232A3A;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -158,11 +162,11 @@ li label.hideMenuList {
 }
 
 .sideBar li:hover {
-    background-color: #0092ff;
+    background-color:#34d399;
 }
 
 .selected {
-    background-color: #0092ff;
+    background-color: #1f2937;
 }
 
 .sideBar span {
@@ -187,7 +191,7 @@ li label.hideMenuList {
 }
 
 header {
-    background-color: #001629;
+    background-color: #232A3A;
     height: 10%;
     padding: 10px;
     width: 100%;
@@ -239,9 +243,6 @@ header img {
     border-radius: 100%;
 }
 
-header h1 {
-    color: #0092ff;
-}
 
 .content-data {
     
@@ -260,11 +261,11 @@ header h1 {
 }
 
 ::-webkit-scrollbar-track {
-    background: #ccc;
+    background: #1c2230;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #0092ff;
+    background: #232A3A;
 }
 
 @media(max-width:1200px) {

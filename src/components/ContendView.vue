@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 
+import CharBars from "@/components/CharBars.vue";
 const value = ref(70);
 
 onMounted(() => {
@@ -134,6 +135,7 @@ const setChartOptions = () => {
         <cCard>
             <template #title>Kpi</template>
             <template #content>
+                <CharBars></CharBars>
             </template>
         </cCard>
         <cCard>

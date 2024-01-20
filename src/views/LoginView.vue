@@ -12,20 +12,22 @@ const value = ref(null);
             <template #content>
                 <span class="p-float-label">
                     <InputText id="username" v-model="value" />
-                    <label for="username">Username</label>
+                    <label for="username">Nombre de usuario</label>
                 </span>
                 <br>
                 <br>
                 <span class="p-float-label">
                     <cPassword v-model="value" :feedback="false" inputId="password" toggleMask />
-                    <label for="password">Password</label>
+                    <label for="password">Contraseña</label>
                 </span>
                 <br>
                 <div class="text">
-                    <p>Olvido su contrseña?</p>
+                    Olvido su contrseña?
                 </div>
                 <br>
-                <CustomButton label="Submit" />
+                <CustomButton label="Iniciar" />
+                <cDivider align="center" type="solid" ><b>O tambien</b></cDivider>
+                <CustomButton text label="Registrarme" />
             </template>
         </cCard>
     </div>
