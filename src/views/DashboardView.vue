@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { ref, Ref } from 'vue';
+import { ref } from 'vue';
+import type { Ref } from 'vue';
 import FooterView from '@/components/FooterView.vue';
 
 interface Data {
-  isMenuVisible: Ref<boolean>;
-  isWidthChanged: Ref<boolean>;
-  selectedItem: string;
-  imageUrl: string;
-  profileImageUrl: string;
-  title: string;
+    isMenuVisible: Ref<boolean>;
+    isWidthChanged: Ref<boolean>;
+    selectedItem: string;
+    logoUrl: string;
+    profileImageUrl: string;
+    title: string;
 }
 
 
@@ -16,74 +17,79 @@ const isMenuVisible = ref(false);
 const isWidthChanged = ref(false);
 const selectedItem = ref('Home');
 const profileImageUrl = 'https://img.freepik.com/free-vector/illustration-businessman_53876-5856.jpg?size=626&ext=jpg&ga=GA1.1.632798143.1705622400&semt=ais';
+const logoUrl = 'https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=322,fit=crop,q=95/YZ978xNPGMsMRZ5P/white-isotipo-dOq7DM3R33CNkjBx.png'
 const title = 'FENIX';
 
 
 const openMenu = () => {
-  isMenuVisible.value = true;
+    isMenuVisible.value = true;
 };
 
 const closeMenu = () => {
-  isMenuVisible.value = false;
-  isWidthChanged.value = false;
+    isMenuVisible.value = false;
+    isWidthChanged.value = false;
 };
 
 const toggleMenuWidth = () => {
-  isWidthChanged.value = !isWidthChanged.value;
+    isWidthChanged.value = !isWidthChanged.value;
 };
 
 const selectItem = (item: string) => {
-  selectedItem.value = item;
-  isMenuVisible.value = false;
+    selectedItem.value = item;
+    isMenuVisible.value = false;
 };
 </script>
 
 <template>
-  <div class="menu-wrapper">
-    <div class="sidebar-header">
-      <div class="sideBar" :class="{ showMenu: isMenuVisible, widthChange: isWidthChanged }">
-        <div>
-          <h2></h2>
+    <div class="menu-wrapper">
+        <div class="sidebar-header">
+            <div class="sideBar" :class="{ showMenu: isMenuVisible, widthChange: isWidthChanged }">
+                <div>
+                    <img :src="logoUrl">
+                    <button class="close-button-mobile" v-if="isMenuVisible" @click="closeMenu">
+                        <FA icon="xmark" style="font-size: 2rem;"/>
+                    </button>
+                </div>
+                <ul>
+                    <RouterLink to="/Dashboard/General">
+                        <li routerLinkActive="router-link-active" :class="{ selected: selectedItem === 'Home' }"
+                            @click="selectItem('Home')">
+                            <i class="pi pi-home" style="color: #34d399;"></i><label>Dashboard</label>
+                        </li>
+                    </RouterLink>
+                    <RouterLink to="/Dashboard/Vehiculos">
+                        <li @click="selectItem('Vehiculos')">
+                            <i class="pi pi-car" style="color: #34d399;"></i><label>Mis vehiculos</label>
+                        </li>
+                    </RouterLink>
+                    <li @click="selectItem('Rutas')">
+                        <i class="pi pi-map" style="color: #34d399;"></i><label>Rutas</label>
+                    </li>
+                </ul>
+                <span class="cross-icon" @click="closeMenu"><i class="fas fa-times"></i></span>
+            </div>
+            <div class="backdrop" v-if="isMenuVisible" @click="closeMenu"></div>
+            <div class="content">
+                <header>
+                    <div class="menu-button" id="desktop" @click="toggleMenuWidth">
+                        <li class="pi pi-bars" style="font-size: 2rem;"></li>
+                    </div>
+                    <div class="menu-button" id="mobile" @click="openMenu">
+                        <li class="pi pi-bars" style="font-size: 2rem;"></li>
+                    </div>
+                    
+                    <h1>{{ title }}</h1> <img :src="profileImageUrl" />
+                </header>
+                <div class="content-data">
+                    <RouterView></RouterView>
+                    <FooterView></FooterView>
+                </div>
+            </div>
         </div>
-        <ul>
-          <RouterLink to="/Dashboard/General">
-            <li routerLinkActive="router-link-active" :class="{ selected: selectedItem === 'Home' }" @click="selectItem('Home')">
-              <i class="pi pi-home" style="color: #34d399;"></i><label>Dashboard</label>
-            </li>
-          </RouterLink>
-          <RouterLink to="/Dashboard/Vehiculos">
-            <li @click="selectItem('Vehiculos')">
-              <i class="pi pi-car" style="color: #34d399;"></i><label>Mis vehiculos</label>
-            </li>
-          </RouterLink>
-          <li @click="selectItem('Rutas')">
-            <i class="pi pi-map" style="color: #34d399;"></i><label>Rutas</label>
-          </li>
-        </ul>
-        <span class="cross-icon" @click="closeMenu"><i class="fas fa-times"></i></span>
-      </div>
-      <div class="backdrop" v-if="isMenuVisible" @click="closeMenu"></div>
-      <div class="content">
-        <header>
-          <div class="menu-button" id="desktop" @click="toggleMenuWidth">
-            <li class="pi pi-bars" style="font-size: 2rem;"></li>
-          </div>
-          <div class="menu-button" id="mobile" @click="openMenu">
-            <li class="pi pi-bars" style="font-size: 2rem;"></li>
-          </div>
-          <h1>{{ title }}</h1> <img :src="profileImageUrl" />
-        </header>
-        <div class="content-data">
-          <RouterView></RouterView>
-          <FooterView></FooterView>
-        </div>
-      </div>
     </div>
-  </div>
 </template>
 
 <style scoped>
-
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 
 * {
@@ -138,6 +144,16 @@ body {
 
 li label.hideMenuList {
     display: none;
+}
+
+li {
+    color: white;
+    text-decoration: none;
+    list-style: none;
+}
+
+label {
+    text-decoration: none;
 }
 
 .sideBar li i {
@@ -229,15 +245,27 @@ header img {
 
 .content-data {
 
-    margin: 2%;
-    padding: 20px;
-    height: 84%;
+    padding: 0px 10px;
+    height: 86%;
     overflow-y: auto;
 }
 
 .sideBar.showMenu {
     left: 0;
 }
+
+.close-button-mobile {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #ffffff;
+    cursor: pointer;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
 
 ::-webkit-scrollbar {
     width: 5px;
@@ -251,6 +279,11 @@ header img {
     background: #232A3A;
 }
 
+RouterLink {
+    color: #ffffff;
+    text-decoration: none;
+}
+
 @media(max-width:1200px) {
     .sideBar {
         width: 30%;
@@ -260,6 +293,10 @@ header img {
 @media(max-width:900px) {
     #desktop {
         display: none;
+    }
+
+    .close-button-mobile {
+        display: block;
     }
 
     #mobile {
@@ -315,4 +352,5 @@ header img {
     .sideBar {
         width: 80%;
     }
-}</style>
+}
+</style>
