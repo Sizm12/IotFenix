@@ -6,7 +6,11 @@ import { routes } from './routes';
 import 'primevue/resources/themes/lara-dark-green/theme.css';
 import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { library } from '@fortawesome/fontawesome-svg-core';
 
+//icons
+import { fas } from '@fortawesome/free-solid-svg-icons';
 import Checkbox from 'primevue/checkbox';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -25,8 +29,11 @@ const router = createRouter({
   routes
 });
 
+
 app.use(router);
 app.use(PrimeVue);
+
+library.add(fas);
 
 app.component('Check-Box', Checkbox);
 app.component('CustomButton', Button);
@@ -37,4 +44,5 @@ app.component('cPassword', Password);
 app.component('cChart', Chart);
 app.component('cKnob', Knob);
 app.component('cProgressBar', ProgressBar);
+app.component('FA', FontAwesomeIcon);
 app.mount('#app');

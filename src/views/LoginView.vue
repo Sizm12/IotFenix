@@ -41,7 +41,7 @@ const value = ref(null);
     width: 100%;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 100dvh;
 }
 
 .p-button {

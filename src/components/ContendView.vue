@@ -123,9 +123,6 @@ const setChartOptions = () => {
     </div>
 
     <div class="flex">
-
-    </div>
-    <div class="flex">
         <cCard>
             <template #title>Kpi</template>
             <template #content>

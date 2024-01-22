@@ -1,16 +1,62 @@
+<script setup lang="ts">
+import { ref, Ref } from 'vue';
+import FooterView from '@/components/FooterView.vue';
+
+interface Data {
+  isMenuVisible: Ref<boolean>;
+  isWidthChanged: Ref<boolean>;
+  selectedItem: string;
+  imageUrl: string;
+  profileImageUrl: string;
+  title: string;
+}
+
+
+const isMenuVisible = ref(false);
+const isWidthChanged = ref(false);
+const selectedItem = ref('Home');
+const profileImageUrl = 'https://img.freepik.com/free-vector/illustration-businessman_53876-5856.jpg?size=626&ext=jpg&ga=GA1.1.632798143.1705622400&semt=ais';
+const title = 'FENIX';
+
+
+const openMenu = () => {
+  isMenuVisible.value = true;
+};
+
+const closeMenu = () => {
+  isMenuVisible.value = false;
+  isWidthChanged.value = false;
+};
+
+const toggleMenuWidth = () => {
+  isWidthChanged.value = !isWidthChanged.value;
+};
+
+const selectItem = (item: string) => {
+  selectedItem.value = item;
+  isMenuVisible.value = false;
+};
+</script>
+
 <template>
-    <div class="menu-wrapper">
+  <div class="menu-wrapper">
     <div class="sidebar-header">
       <div class="sideBar" :class="{ showMenu: isMenuVisible, widthChange: isWidthChanged }">
-        <div> <h2></h2></div>
+        <div>
+          <h2></h2>
+        </div>
         <ul>
-          <li :class="{ selected: selectedItem === 'Home' }" @click="selectItem('Home')">
-            <i class="pi pi-home" style="color: #34d399;"></i><label>Dashboard</label>
-          </li>
-          <li @click="selectItem('Home')">
-            <i class="pi pi-car" style="color: #34d399;"></i><label>Mis vehiculos</label>
-          </li>
-          <li  @click="selectItem('Home')">
+          <RouterLink to="/Dashboard/General">
+            <li routerLinkActive="router-link-active" :class="{ selected: selectedItem === 'Home' }" @click="selectItem('Home')">
+              <i class="pi pi-home" style="color: #34d399;"></i><label>Dashboard</label>
+            </li>
+          </RouterLink>
+          <RouterLink to="/Dashboard/Vehiculos">
+            <li @click="selectItem('Vehiculos')">
+              <i class="pi pi-car" style="color: #34d399;"></i><label>Mis vehiculos</label>
+            </li>
+          </RouterLink>
+          <li @click="selectItem('Rutas')">
             <i class="pi pi-map" style="color: #34d399;"></i><label>Rutas</label>
           </li>
         </ul>
@@ -20,87 +66,23 @@
       <div class="content">
         <header>
           <div class="menu-button" id="desktop" @click="toggleMenuWidth">
-            <li class="pi pi-bars" style=" font-size: 2rem;"></li>
+            <li class="pi pi-bars" style="font-size: 2rem;"></li>
           </div>
           <div class="menu-button" id="mobile" @click="openMenu">
-            <li class="pi pi-bars" style=" font-size: 2rem;"></li>
+            <li class="pi pi-bars" style="font-size: 2rem;"></li>
           </div>
           <h1>{{ title }}</h1> <img :src="profileImageUrl" />
         </header>
         <div class="content-data">
-           <ContendView></ContendView>
+          <RouterView></RouterView>
+          <FooterView></FooterView>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script  lang="ts">
-import { defineComponent } from 'vue';
-import ContendView from "./../components/ContendView.vue"
-
-interface Data {
-  isMenuVisible: boolean;
-  isWidthChanged: boolean;
-  selectedItem: string;
-  imageUrl: string;
-  profileImageUrl: string;
-  title: string;
-}
-
-export default defineComponent({
-
-    components: {
-    ContendView
-  },
-  data(): Data {
-    return {
-      isMenuVisible: false,
-      isWidthChanged: false,
-      selectedItem: 'Home',
-      imageUrl: 'https://drive.google.com/thumbnail?id=1aWmbSZADIAOqZZ-TZ6IxTcCO72rDiUn1',
-      profileImageUrl: 'https://img.freepik.com/free-vector/illustration-businessman_53876-5856.jpg?size=626&ext=jpg&ga=GA1.1.632798143.1705622400&semt=ais',
-      title: 'FENIX'
-    };
-  },
-  methods: {
-    openMenu() {
-      this.isMenuVisible = true;
-    },
-    closeMenu() {
-      this.isMenuVisible = false;
-      this.isWidthChanged = false;
-    },
-    toggleMenuWidth() {
-      this.isWidthChanged = !this.isWidthChanged;
-    },
-    selectItem(item: string) {
-      this.selectedItem = item;
-      this.isMenuVisible = false;
-    }
-  },
-
-});
-
-</script>    
-
-
 <style scoped>
-/*
-nav {
-    width: 100%;
-    height:60px;
-    background: #1f2937;
-    display:flex;
-    justify-content: space-between;
-    align-items:center;
-    padding: 0 1rem;
-}
-
-span{
-    display:flex;
-    gap: 1rem;
-}*/
 
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
 
@@ -120,7 +102,7 @@ body {
     position: relative;
     z-index: 20;
     height: 100vh;
-    width: 25%;
+    width: 20%;
     color: white;
     background-color: #232A3A;
     transition: 0.3s ease-in-out;
@@ -143,9 +125,9 @@ body {
     position: relative;
     height: 10vh;
     background-color: #232A3A;
-    display:flex;
-    justify-content:center;
-    align-items:center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 
@@ -153,6 +135,7 @@ body {
     padding: 20px 20px 20px 10px;
     transition: 0.3s ease-in-out;
 }
+
 li label.hideMenuList {
     display: none;
 }
@@ -162,7 +145,7 @@ li label.hideMenuList {
 }
 
 .sideBar li:hover {
-    background-color:#34d399;
+    background-color: #34d399;
 }
 
 .selected {
@@ -245,7 +228,7 @@ header img {
 
 
 .content-data {
-    
+
     margin: 2%;
     padding: 20px;
     height: 84%;
@@ -332,5 +315,4 @@ header img {
     .sideBar {
         width: 80%;
     }
-}
-</style>
+}</style>
