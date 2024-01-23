@@ -62,9 +62,12 @@ const selectItem = (item: string) => {
                             <i class="pi pi-car" style="color: #34d399;"></i><label>Mis vehiculos</label>
                         </li>
                     </RouterLink>
-                    <li @click="selectItem('Rutas')">
-                        <i class="pi pi-map" style="color: #34d399;"></i><label>Rutas</label>
+                    <RouterLink to="/Dashboard/Seguimiento">
+                        <li @click="selectItem('Rutas')">
+                        <i class="pi pi-map" style="color: #34d399;"></i><label>Seguimiento</label>
                     </li>
+                    </RouterLink>
+                    
                 </ul>
                 <span class="cross-icon" @click="closeMenu"><i class="fas fa-times"></i></span>
             </div>

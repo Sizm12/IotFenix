@@ -11,6 +11,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 
 //icons
 import { fas } from '@fortawesome/free-solid-svg-icons';
+
 import Checkbox from 'primevue/checkbox';
 import Button from 'primevue/button';
 import Card from 'primevue/card';
@@ -20,6 +21,7 @@ import Password from 'primevue/password';
 import Chart from 'primevue/chart';
 import Knob from 'primevue/knob';
 import ProgressBar from 'primevue/progressbar';
+import Dropdown from 'primevue/dropdown';
 
 
 const app = createApp(App);
@@ -45,4 +47,5 @@ app.component('cChart', Chart);
 app.component('cKnob', Knob);
 app.component('cProgressBar', ProgressBar);
 app.component('FA', FontAwesomeIcon);
+app.component('DropDown', Dropdown)
 app.mount('#app');
