@@ -25,9 +25,7 @@ const value = ref(null);
                     Olvido su contrseña?
                 </div>
                 <br>
-                <CustomButton label="Iniciar" />
-                <cDivider align="center" type="solid" ><b>O tambien</b></cDivider>
-                <CustomButton text label="Registrarme" />
+                <CustomButton label="Iniciar" routerLink='/Dashboard/General' routerLinkActive="router-link-active"  />
             </template>
         </cCard>
     </div>
