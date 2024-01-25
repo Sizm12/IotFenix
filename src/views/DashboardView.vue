@@ -59,12 +59,22 @@ const selectItem = (item: string) => {
                     </RouterLink>
                     <RouterLink to="/Dashboard/Vehiculos">
                         <li @click="selectItem('Vehiculos')">
-                            <i class="pi pi-car" style="color: #34d399;"></i><label>Mis vehiculos</label>
+                            <i class="pi pi-car" style="color: #34d399;"></i><label>Unidades</label>
                         </li>
                     </RouterLink>
                     <RouterLink to="/Dashboard/Seguimiento">
                         <li @click="selectItem('Rutas')">
                         <i class="pi pi-map" style="color: #34d399;"></i><label>Seguimiento</label>
+                    </li>
+                    </RouterLink>
+                    <RouterLink to="/Dashboard/Seguimiento">
+                        <li @click="selectItem('Rutas')">
+                        <i class="pi pi-map" style="color: #34d399;"></i><label>Conductores</label>
+                    </li>
+                    </RouterLink>
+                    <RouterLink to="/Dashboard/Seguimiento">
+                        <li @click="selectItem('Rutas')">
+                        <i class="pi pi-map" style="color: #34d399;"></i><label>tareas</label>
                     </li>
                     </RouterLink>
                     

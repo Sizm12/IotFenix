@@ -22,6 +22,11 @@ import Chart from 'primevue/chart';
 import Knob from 'primevue/knob';
 import ProgressBar from 'primevue/progressbar';
 import Dropdown from 'primevue/dropdown';
+import TabView from 'primevue/tabview';
+import TabPanel from 'primevue/tabpanel';
+import Dialog from 'primevue/dialog';
+import CascadeSelect from 'primevue/cascadeselect';
+import SelectButton from 'primevue/selectbutton';
 
 
 const app = createApp(App);
@@ -47,5 +52,10 @@ app.component('cChart', Chart);
 app.component('cKnob', Knob);
 app.component('cProgressBar', ProgressBar);
 app.component('FA', FontAwesomeIcon);
-app.component('DropDown', Dropdown)
+app.component('DropDown', Dropdown);
+app.component('TabView', TabView);
+app.component('TabPanel', TabPanel);
+app.component('DialogVue',Dialog);
+app.component('CascadeSelect',CascadeSelect);
+app.component('SelectedButtom', SelectButton)
 app.mount('#app');
