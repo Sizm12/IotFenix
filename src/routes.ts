@@ -2,6 +2,7 @@ import ContendViewVue from './components/ContendView.vue'
 import LoginViewVue from '../src/views/LoginView.vue'
 import MisvehiculosViewVue from './views/MisvehiculosView.vue'
 import RutasViewVue from './views/RutasView.vue'
+import TableroViewVue from './views/TableroView.vue'
 
 export const routes = [
     {
@@ -23,6 +24,10 @@ export const routes = [
             {
                 path: 'Seguimiento',
                 component: RutasViewVue
+            },
+            {
+                path: 'Tablero',
+                component: TableroViewVue
             }
         
         ]

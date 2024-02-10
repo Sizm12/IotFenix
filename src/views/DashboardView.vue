@@ -1,17 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import type { Ref } from 'vue';
 import FooterView from '@/components/FooterView.vue';
-
-interface Data {
-    isMenuVisible: Ref<boolean>;
-    isWidthChanged: Ref<boolean>;
-    selectedItem: string;
-    logoUrl: string;
-    profileImageUrl: string;
-    title: string;
-}
-
 
 const isMenuVisible = ref(false);
 const isWidthChanged = ref(false);
@@ -77,7 +66,11 @@ const selectItem = (item: string) => {
                         <i class="pi pi-map" style="color: #34d399;"></i><label>tareas</label>
                     </li>
                     </RouterLink>
-                    
+                    <RouterLink to="/Dashboard/Tablero">
+                        <li @click="selectItem('Tablero')">
+                        <i class="pi pi-map" style="color: #34d399;"></i><label>Tablero</label>
+                    </li>
+                    </RouterLink>
                 </ul>
                 <span class="cross-icon" @click="closeMenu"><i class="fas fa-times"></i></span>
             </div>
