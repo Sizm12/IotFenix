@@ -96,7 +96,7 @@ const setChartOptions = () => {
         </cCard>
 
         <cCard>
-            <template #title>Alterndor</template>
+            <template #title>Alternador</template>
             <template #content>
                 <cKnob v-model="value" valueColor="#F2b53C" :strokeWidth="8" readonly valueTemplate="{value}%" />
             </template>
@@ -109,7 +109,7 @@ const setChartOptions = () => {
         </cCard>
 
         <cCard>
-            <template #title>Card</template>
+            <template #title>Niveles de Aceite</template>
             <template #content>
                 <cProgressBar  style="height: 20px;" :value="50"></cProgressBar>
                 <br>
@@ -124,13 +124,13 @@ const setChartOptions = () => {
 
     <div class="flex">
         <cCard>
-            <template #title>Kpi</template>
+            <template #title>Kilometraje</template>
             <template #content>
                 <cChart type="line" :data="chartData" :options="chartOptions" class="h-30rem" />
             </template>
         </cCard>
         <cCard>
-            <template #title>Kpi</template>
+            <template #title>Notificaciones</template>
             <template #content>
                 <CharBars></CharBars>
             </template>

@@ -1,5 +1,5 @@
 <script setup lang="ts" >
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const value = ref(null);
 
@@ -8,7 +8,7 @@ const value = ref(null);
     <div class="cont1">
         <cCard>
             <template #title> Inicia sesión <cDivider></cDivider> </template>
-            
+
             <template #content>
                 <span class="p-float-label">
                     <InputText id="username" v-model="value" />
@@ -26,16 +26,14 @@ const value = ref(null);
                 </div>
                 <br>
                 <CustomButton label="Iniciar" />
-                <cDivider align="center" type="solid" ><b>O tambien</b></cDivider>
+                <cDivider align="center" type="solid"><b>O tambien</b></cDivider>
                 <CustomButton text label="Registrarme" />
             </template>
         </cCard>
     </div>
 </template>
 
-
 <style scoped>
-
 .cont1 {
     display: flex;
     width: 100%;
@@ -49,11 +47,11 @@ const value = ref(null);
 }
 
 .p-inputtext {
-   width: 100%
+    width: 100%
 }
 
 .text {
-    width:100%;
+    width: 100%;
     display: flex;
     justify-content: flex-end;
     color: #34d399
