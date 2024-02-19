@@ -12,6 +12,71 @@ onMounted(() => {
 const chartData = ref();
 const chartOptions = ref();
 
+const getState = (state) => {
+    switch (state.state) {
+        case 'Activo':
+            return 'success';
+        case 'Inactivo':
+            return 'danger';
+        default:
+            return 'success';
+    }
+}
+
+const conductores = [
+    {
+        id: 1,
+        name: 'Rafael Alcantara',
+        vehiculo: 'Vehiculo 1',
+        state: 'Activo',
+    },
+    {
+        id: 2,
+        name: 'Miguel Zuñiga',
+        vehiculo: 'Vehiculo 2',
+        state: 'Inactivo',
+    },
+    {
+        id: 3,
+        name: 'Jose Cardenas',
+        vehiculo: 'Vehiculo 3',
+        state: 'Activo',
+    },
+]
+
+const vehicles = [
+    {
+        id: 1,
+        title: 'Vehiculo 1',
+        identification: '123456',
+        device: 'Demo3',
+        icon: 'car',
+        iconColor: '#34d399',
+        state: 'Activo'
+
+    },
+
+    {
+        id: 2,
+        title: 'Vehiculo 2',
+        identification: '123456',
+        device: 'Demo1',
+        icon: 'truck',
+        iconColor: '#34d399',
+        state: 'Inactivo'
+    },
+    {
+        id: 3,
+        title: 'Vehiculo 3',
+        identification: '123456',
+        device: 'Demo2',
+        icon: 'bus',
+        iconColor: '#34d399',
+        state: 'Activo'
+    },
+
+];
+
 const setChartData = () => {
     const documentStyle = getComputedStyle(document.documentElement);
 
@@ -83,62 +148,71 @@ const setChartOptions = () => {
 </script>
 
 <template>
-
     <h2>Dashboard</h2>
     <cDivider></cDivider>
     <div class="flex">
         <cCard>
-            <template #title>Bateria</template>
+            <template #title>Conductores</template>
             <template #content>
-                <cKnob class="ind1" valueColor="#8c3df9" v-model="value" readonly :strokeWidth="8"
-                    valueTemplate="{value}%" />
+                <div class="c-card">
+                    <cKnob v-model="value" valueColor="#F2b53C" :strokeWidth="8" readonly valueTemplate="2" />
+                    Conductores en Activo
+                </div>
             </template>
         </cCard>
 
         <cCard>
-            <template #title>Alternador</template>
+            <template #title>Vehiculos Activos</template>
             <template #content>
-                <cKnob v-model="value" valueColor="#F2b53C" :strokeWidth="8" readonly valueTemplate="{value}%" />
+                <cKnob v-model="value" valueColor="#F2b53C" :strokeWidth="8" readonly valueTemplate="2" />
+                Vehiculos en Activo
             </template>
         </cCard>
         <cCard>
-            <template #title>Temperatura</template>
+            <template #title>Vehiculos Inactivos</template>
             <template #content>
-                <cKnob v-model="value" valueColor="#3c79f2" :strokeWidth="8" readonly valueTemplate="{value}%" />
-            </template>
-        </cCard>
-
-        <cCard>
-            <template #title>Niveles de Aceite</template>
-            <template #content>
-                <cProgressBar  style="height: 20px;" :value="50"></cProgressBar>
-                <br>
-                <cProgressBar style="height: 20px; " :value="70"></cProgressBar>
-                <br>
-                <cProgressBar style="height: 20px; " :value="30"></cProgressBar>
-                <br>
-                <cDivider></cDivider>
+                <cKnob v-model="value" valueColor="#F2b53C" :strokeWidth="8" readonly valueTemplate="33%" />
+                Vehiculos Inactivos
             </template>
         </cCard>
     </div>
 
+    <div class="flex" style="height: 100%; width: 100%;">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15615.355143606817!2d-86.15500415156954!3d11.91630540837058!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f740459e2eeaf4b%3A0xcfba68d80c1c3d4a!2sMasatepe!5e0!3m2!1ses!2sni!4v1706207853372!5m2!1ses!2sni" width="100%" height="100%" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+
     <div class="flex">
         <cCard>
-            <template #title>Kilometraje</template>
+            <template #title>Conductores</template>
             <template #content>
-                <cChart type="line" :data="chartData" :options="chartOptions" class="h-30rem" />
+                <DataTable :value="conductores" tableStyle="min-width: 50rem">
+                    <cColumn field="id" header="No. de Registro"></cColumn>
+                    <cColumn field="name" header="Nombre Conductor"></cColumn>
+                    <cColumn field="vehiculo" header="Vehiculo Asignado"></cColumn>
+                    <cColumn header="Estado">
+                        <template #body="slotProps">
+                            <cTag :value="slotProps.data.state" :severity="getState(slotProps.data)"></cTag>
+                        </template>
+                    </cColumn>
+                </DataTable>
             </template>
         </cCard>
+    </div>
+    <div class="flex">
         <cCard>
-            <template #title>Notificaciones</template>
+            <template #title>Vehiculos</template>
             <template #content>
-                <CharBars></CharBars>
-            </template>
-        </cCard>
-        <cCard>
-            <template #title>Kpi</template>
-            <template #content>
-                <cChart type="line" :data="chartData" :options="chartOptions" class="h-30rem" />
+                <DataTable :value="vehicles" tableStyle="min-width: 50rem">
+                    <cColumn field="id" header="No. de Registro"></cColumn>
+                    <cColumn field="title" header="Nombre Vehiculo"></cColumn>
+                    <cColumn field="identification" header="Identificación"></cColumn>
+                    <cColumn field="device" header="Dispositivo Asociado"></cColumn>
+                    <cColumn header="Estado">
+                        <template #body="slotProps">
+                            <cTag :value="slotProps.data.state" :severity="getState(slotProps.data)"></cTag>
+                        </template>
+                    </cColumn>
+                </DataTable>
             </template>
         </cCard>
     </div>
@@ -157,11 +231,11 @@ const setChartOptions = () => {
 }
 
 .p-card {
-    padding:10px;
+    padding: 10px;
     width: 100%;
 }
 
-h2{
+h2 {
     margin: 15px;
 }
 </style>

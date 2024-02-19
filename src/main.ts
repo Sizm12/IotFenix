@@ -27,6 +27,9 @@ import TabPanel from 'primevue/tabpanel';
 import Dialog from 'primevue/dialog';
 import CascadeSelect from 'primevue/cascadeselect';
 import SelectButton from 'primevue/selectbutton';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Tag from 'primevue/tag';
 
 
 const app = createApp(App);
@@ -58,4 +61,7 @@ app.component('TabPanel', TabPanel);
 app.component('DialogVue',Dialog);
 app.component('CascadeSelect',CascadeSelect);
 app.component('SelectedButtom', SelectButton)
+app.component('DataTable', DataTable);
+app.component('cColumn', Column);
+app.component('cTag', Tag);
 app.mount('#app');

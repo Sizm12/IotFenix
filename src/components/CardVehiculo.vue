@@ -15,30 +15,46 @@
             <CustomButton icon="pi pi-map" text label="Ver en mapa"></CustomButton>
         </template>
     </cCard>
-
-    <div>
-        <div>
-            <div class="card" v-if="datosTarjeta">
-                <div v-for="item in datosTarjeta" :key="item.id">
-                    <h2>Id Dispositivo: {{ item.id }}</h2>
-                    <h2>Nombre Dispositivo: {{ item.name }}</h2>
-                    <h2>Mensaje: {{ item.messages_ttl }}</h2>
-                    <h2>Tipo Dispositivo: {{ item.device_type_id }}</h2>
-                </div>
-            </div>
-            <div v-else>
-                Cargando datos...
-            </div>
-        </div>
-    </div>
 </template>
 
 <script setup lang="ts">
 import { toRefs, onMounted, ref } from 'vue';
+import { httpService} from '@/services/https.services';
 
-import axios from 'axios';
+interface ResultItem {
+  id: number;
+  messages_ttl: number;
+  device_type_id: number;
+  protocol_id: number;
+  name: string;
+  telemetry : []
+}
 
-const token = 'i9OjixYozzHImqyv7CkOH5mgijWXfjjngYuojjAHG5fSmDbj3kWyd6Fmfp7jwhuD';
+
+
+const datosTarjeta = ref<ResultItem[]>([]);
+
+/*onMounted( async () => {
+    try {
+        datosTarjeta.value = await httpService.get('devices/all')
+        console.log(datosTarjeta);
+        
+    } catch (error) {
+        console.error('Error fetching users:', error);
+    }
+}) */
+
+onMounted(async () => {
+    try {
+        datosTarjeta.value = await httpService.get('/devices/5432377', {'fields': 'name,protocol_id,protocol_name,telemetry'})
+        console.log(datosTarjeta);
+        
+    } catch (error) {
+        console.error('Error recuperando valores: ', error)
+    }
+})
+
+/* const token = 'i9OjixYozzHImqyv7CkOH5mgijWXfjjngYuojjAHG5fSmDbj3kWyd6Fmfp7jwhuD';
 const url = 'https://flespi.io/gw/devices/all';
 
 const config = {
@@ -65,7 +81,7 @@ onMounted(async () => {
     } catch (error) {
         console.error('Error al obtener datos:', error);
     }
-})
+}) */
 
 
 const props = defineProps(['vehicle']);
