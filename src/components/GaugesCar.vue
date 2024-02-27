@@ -226,19 +226,14 @@
             </div>
         </div>
     </div>
-
-    <button @click="nuevaRpm(790)">Rotar circulo</button>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, defineProps } from 'vue';
 
+const props = defineProps(['rpm']);
 
-const rpmValue = ref(2314);
-
-const nuevaRpm = (rpm : number) =>  {
-  rpmValue.value = rpm;
-}
+const rpmValue = ref(props.rpm);
 
 const className = computed(() => {
     return 'gauge';
@@ -253,16 +248,18 @@ const dynamicStyles = computed(() => {
 });
 
 const rotationAngle = computed(() => {
-  return `rotate(calc(var(--start-angle) + (${rpmValue.value} / 1000 * var(--digits-angle))))`;
+  if (rpmValue.value === 0) {
+    return '';
+  } else {
+    return `rotate(calc(var(--start-angle) + (${rpmValue.value} / 1000 * var(--digits-angle))))`;
+  }
 });
-
 
 const handStyles = computed(() => {
-  return {
-    transform: rotationAngle.value,
-  };
+    return {
+        transform: rotationAngle.value,
+    };
 });
-
 </script>
 
 <style scoped>
