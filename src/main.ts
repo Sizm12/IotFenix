@@ -8,7 +8,6 @@ import 'primevue/resources/primevue.min.css';
 import 'primeicons/primeicons.css'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
-
 //icons
 import { fas } from '@fortawesome/free-solid-svg-icons';
 
@@ -30,7 +29,7 @@ import SelectButton from 'primevue/selectbutton';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Tag from 'primevue/tag';
-
+import Tooltip from 'primevue/tooltip';
 
 const app = createApp(App);
 
@@ -39,7 +38,7 @@ const router = createRouter({
   routes
 });
 
-
+app.directive('tooltip', Tooltip);
 app.use(router);
 app.use(PrimeVue);
 

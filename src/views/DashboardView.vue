@@ -58,17 +58,17 @@ const selectItem = (item: string) => {
                     </RouterLink>
                     <RouterLink to="/Dashboard/Seguimiento">
                         <li @click="selectItem('Rutas')">
-                        <i class="pi pi-map" style="color: #34d399;"></i><label>Conductores</label>
+                            <FA icon="id-card" color="#34d399" /><label>Conductores</label>
                     </li>
                     </RouterLink>
                     <RouterLink to="/Dashboard/Seguimiento">
                         <li @click="selectItem('Rutas')">
-                        <i class="pi pi-map" style="color: #34d399;"></i><label>tareas</label>
+                            <FA icon="location-dot" color="#34d399" /><label>tareas</label>
                     </li>
                     </RouterLink>
                     <RouterLink to="/Dashboard/Tablero">
                         <li @click="selectItem('Tablero')">
-                        <i class="pi pi-map" style="color: #34d399;"></i><label>Tablero</label>
+                            <FA icon="table-list" color="#34d399" /><label>Tablero</label>
                     </li>
                     </RouterLink>
                 </ul>
@@ -358,5 +358,17 @@ RouterLink {
     .sideBar {
         width: 80%;
     }
+}
+
+li{
+    text-decoration: none;
+}
+
+RouterLink{
+    text-decoration: none;
+}
+
+label{
+    text-decoration: none;
 }
 </style>

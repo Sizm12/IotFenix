@@ -2,10 +2,10 @@
 
 import { httpService } from "@/services/https.services";
 import { ref, onMounted } from "vue";
+import BarChart from "@/components/BarChart.vue";
 
 const selectedVehicle = ref<Device | null>(null);
 
-const value = ref(70);
 
 const telemetry = ref();
 const filtertelemetry = ref();
@@ -46,8 +46,7 @@ const ObtenerDatosDispositivo = async (id: number) => {
 
         )
 
-        if(filtertelemetry.value !== null)
-        {
+        if (filtertelemetry.value !== null) {
             chartData.value = setChartData();
         }
 
@@ -65,9 +64,8 @@ const chartData = ref();
 const chartOptions = ref();
 
 const setChartData = () => {
-    const documentStyle = getComputedStyle(document.documentElement);
     console.log(filtertelemetry);
-    
+
 
     return {
         labels: ['Combustible (l)', 'Combustible (ml)', 'Consumo Total', 'Consumo Total', 'Nivel Combustible'],
@@ -128,15 +126,6 @@ const setChartOptions = () => {
 
     <div class="cont">
         <div>
-            <div class="icons">
-                <FA style="font-size: 2rem;" icon="car-on" class="on" />
-                <FA style="font-size: 2rem;" icon="car-rear" class="off" />
-                <FA style="font-size: 2rem;" icon="gas-pump" class="on" />
-                <FA style="font-size: 2rem;" icon="car-battery" class="on" />
-                <FA style="font-size: 2rem;" icon="caret-left" class="off" />
-                <FA style="font-size: 2rem;" icon="caret-right" class="on" />
-            </div>
-
             <div id="dashboard">
                 <div id="revmeter">
                     <div class="gauge" style="--rpm: 750; --limiter: 6700; --gauge-value: var(--rpm) / 1000;">
@@ -363,7 +352,6 @@ const setChartOptions = () => {
                     </div>
                 </div>
             </div>
-
         </div>
 
         <div class="circulo">
@@ -372,45 +360,94 @@ const setChartOptions = () => {
                 <img src="../../src/assets/car.png" class="car">
             </div>
         </div>
+
     </div>
+
+    <div class="icons">
+                <span v-tooltip.top="'Vehiculo encendido'">
+                    <FA style="font-size: 2rem;" icon="car-rear" class="on" />
+                </span>
+                <span v-tooltip.top="'Nivel de combustible:'">
+                    <FA style="font-size: 2rem;" icon="gas-pump" class="on" />
+                </span>
+                <span v-tooltip.top="'Bateria: %'">
+                    <FA style="font-size: 2rem;" icon="car-battery" class="on" />
+                </span>
+                <span v-tooltip.top="'Jirar a la izquierda'">
+                    <FA style="font-size: 2rem;" icon="caret-left" class="off" />
+                </span>
+                <span v-tooltip.top="'Jirar a la derecha'">
+                    <FA style="font-size: 2rem;" icon="caret-right" class="off" />
+                </span>
+            </div>
     <cDivider></cDivider>
     <div class="flex">
         <cCard v-if="telemetry && 'external.powersource.voltage' in telemetry">
-            <template #title>Bateria Principal</template>
+            <template #title>
+                <FA icon="car-on" />&nbsp;<small>Aceleracion</small>
+            </template>
             <template #content>
-                <cKnob v-model="telemetry['external.powersource.voltage']" valueColor="#F2b53C" :strokeWidth="8" readonly />
+                <div style="display:flex; justify-content:center; align-items:center;">
+                   <BarChart titulo="aceleracion" data="23" name="aceleracion" />
+                </div>
             </template>
         </cCard>
-        <cCard v-if="telemetry && 'battery.voltage' in telemetry">
-            <template #title>Bateria Interna</template>
+        <cCard v-if="telemetry && 'external.powersource.voltage' in telemetry" class="min">
+            <template #title>
+                <FA icon="car-battery" />&nbsp;<small>Bateria Principal </small>
+            </template>
             <template #content>
-                <cKnob v-model="telemetry['battery.voltage']" class="ind1" valueColor="#8c3df9" readonly :strokeWidth="8" />
+                <div style="display:flex; justify-content:center; align-items:center;">
+                    <cKnob v-model="telemetry['external.powersource.voltage']" valueColor="#F2b53C" :strokeWidth="8"
+                        readonly />
+                </div>
             </template>
         </cCard>
-        <cCard v-if="telemetry && 'device.temperature' in telemetry">
-            <template #title>Temperatura Dispositivo</template>
+        <cCard v-if="telemetry && 'battery.voltage' in telemetry" class="min">
+            <template #title>
+                <FA icon="car-battery" />&nbsp;<small>Bateria interna</small>
+            </template>
             <template #content>
-                <cKnob v-model="telemetry['device.temperature']" valueColor="#F2b53C" :strokeWidth="8" readonly />
+                <div style="display:flex; justify-content:center; align-items:center;">
+                    <cKnob v-model="telemetry['battery.voltage']" class="ind1" valueColor="#8c3df9" readonly
+                        :strokeWidth="8" />
+                </div>
+            </template>
+        </cCard>
+        <cCard v-if="telemetry && 'device.temperature' in telemetry" class="min">
+            <template #title>
+                <FA icon="temperature-quarter" />&nbsp;<small>Temperatura del vehiculo</small>
+            </template>
+            <template #content>
+                <div style="display:flex; justify-content:center; align-items:center;">
+                    <cKnob v-model="telemetry['device.temperature']" valueColor="#F2b53C" :strokeWidth="8" readonly />
+                </div>
             </template>
         </cCard>
 
-        <cCard v-if="telemetry && 'can.engine.temperature' in telemetry">
-            <template #title>Temperatura del Motor</template>
+        <cCard v-if="telemetry && 'can.engine.temperature' in telemetry"
+            style="display:flex; justify-content:center; align-items:center;" class="min">
+            <template #title>
+                <FA icon="temperature-quarter" />&nbsp;<small>Temperatura de motor</small>
+            </template>
             <template #content>
-                <cKnob v-model="telemetry['can.engine.temperature']" valueColor="#F2b53C" :strokeWidth="8" readonly />
+                <div style="display:flex; justify-content:center; align-items:center;">
+                    <cKnob v-model="telemetry['can.engine.temperature']" valueColor="#F2b53C" :strokeWidth="8" readonly />
+                </div>
+
             </template>
         </cCard>
-        
+
     </div>
     <div class="flex">
 
-        <cCard v-if="telemetry">
+        <cCard v-if="telemetry" style="width:600px;">
             <template #title>Kilometraje</template>
             <template #content>
                 <cChart type="bar" :data="chartData" :options="chartOptions" class="h-30rem" />
             </template>
         </cCard>
-        
+
     </div>
 </template>
 <style scoped>
@@ -912,14 +949,19 @@ h3 {
     width: 100%;
     gap: 10px;
     padding: 15px;
+    flex-wrap: wrap;
 
     @media screen and (max-width: 767px) {
         flex-direction: column;
     }
 }
 
+.min {
+    width:fit-content;
+    height:fit-content
+}
+
 .p-card {
     padding: 10px;
-    width: 100%;
 }
 </style>
