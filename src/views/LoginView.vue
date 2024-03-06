@@ -1,12 +1,12 @@
 <script setup lang="ts" >
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 
 const value = ref(null);
 
 </script>
 <template>
     <div class="cont1">
-        <cCard>
+        <cCard style="z-index: 30;">
             <template #title> Inicia sesión <cDivider></cDivider> </template>
 
             <template #content>
@@ -38,6 +38,18 @@ const value = ref(null);
     justify-content: center;
     align-items: center;
     height: 100dvh;
+    background: url(../assets/bg2.webp);
+    background-size:cover;
+}
+
+.cont1::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(28, 34, 48, 0.6); /* color y opacidad de la capa (en este caso, negro con 50% de opacidad) */
 }
 
 .p-button {

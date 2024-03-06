@@ -12,7 +12,6 @@
                     <span class="line"></span>
                     <span class="line"></span>
                     <span class="line"></span>
-
                     <div class="label">0</div>
                 </div>
                 <div class="digit">
@@ -25,7 +24,6 @@
                     <span class="line"></span>
                     <span class="line"></span>
                     <span class="line"></span>
-
                     <div class="label">1</div>
                 </div>
                 <div class="digit">
