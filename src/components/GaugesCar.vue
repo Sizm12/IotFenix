@@ -232,8 +232,8 @@
 import { computed, ref, defineProps } from 'vue';
 
 const props = defineProps(['rpm']);
-
 const rpmValue = ref(props.rpm);
+console.log("RPM VALOR: ",rpmValue.value);
 
 const className = computed(() => {
     return 'gauge';
