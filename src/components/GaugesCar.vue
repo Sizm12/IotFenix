@@ -578,7 +578,7 @@ body {
             border-radius: 100%;
             display: block;
             box-sizing: border-box;
-            transform: rotate(calc(45deg + var(--digits-angle) * (var(--limiter) / 1000 - var(--digits-count))));
+            transform: rotate(calc(70deg + var(--digits-angle) * (var(--limiter) / 1000 - var(--digits-count))));
         }
     }
 }

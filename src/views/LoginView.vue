@@ -1,14 +1,24 @@
 <script setup lang="ts" >
+import LoaderCar from '@/components/LoaderCar.vue';
 import { ref } from 'vue';
 
 const value = ref(null);
+const value2 = ref(null);
+
+const loader = ref(false);
+
+const showLoader = () => {
+    loader.value = true;
+    setTimeout(() => {
+        loader.value = false;
+    }, 3000);
+};
 
 </script>
 <template>
     <div class="cont1">
         <cCard style="z-index: 30;">
             <template #title> Inicia sesión <cDivider></cDivider> </template>
-
             <template #content>
                 <span class="p-float-label">
                     <InputText id="username" v-model="value" />
@@ -17,7 +27,7 @@ const value = ref(null);
                 <br>
                 <br>
                 <span class="p-float-label">
-                    <cPassword v-model="value" :feedback="false" inputId="password" toggleMask />
+                    <cPassword v-model="value2" :feedback="false" inputId="password" toggleMask />
                     <label for="password">Contraseña</label>
                 </span>
                 <br>
@@ -25,10 +35,11 @@ const value = ref(null);
                     Olvido su contrseña?
                 </div>
                 <br>
-                <CustomButton label="Iniciar" routerLink='/Dashboard/General' routerLinkActive="router-link-active"  />
+                <CustomButton label="Iniciar" @click="showLoader()" routerLink='/Dashboard/General' routerLinkActive="router-link-active"  />
             </template>
         </cCard>
     </div>
+    <LoaderCar v-if="loader"></LoaderCar>
 </template>
 
 <style scoped>

@@ -62,27 +62,31 @@ const ObtenerDatosDispositivo = async (id: number) => {
 }
 
 const vehiculoOn = computed(() => {
-    if( telemetry.value['can.engine.ignition.status'] === true ){
+    return 'on';
+   /* if( telemetry.value['can.engine.ignition.status'] === true ){
         return 'on';
     }else{
         return 'off';
-    }
+    }*/
 });
 
 const moverLinea = computed(() => {
-    if( telemetry.value['can.engine.ignition.status'] === true ){
-        return 'animation: mover-linea 2s linear infinite;';
+    return 'activar-linea';
+   
+   /* if( telemetry.value['can.engine.ignition.status'] === true ){
+        return 'activar-linea';
     }else{
         return '';
-    }
+    }*/
 });
 
 const moverAuto = computed(() => {
-    if( telemetry.value['can.engine.ignition.status'] === true ){
-        return 'animation: mover-auto 2s linear infinite;';
+    return 'activar-auto';
+   /* if( telemetry.value['can.engine.ignition.status'] === true ){
+        return 'activar-auto';
     }else{
         return '';
-    }
+    }*/
 });
 
 const AnguloVehiculo = computed(() => {
@@ -172,7 +176,7 @@ const setChartOptions = () => {
             <div class="circulo" :class="AnguloVehiculo">
                 <div class="carretera">
                     <div class="linea" :class="moverLinea"  ></div>
-                    <img src="../../src/assets/car.png" class="car" :class="moverAuto">
+                    <img src="../../src/assets/car.png" class="car" :class="moverAuto" >
                 </div>
             </div>
 
@@ -337,7 +341,10 @@ h3 {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    
+}
+
+.activar-linea{
+    animation: mover-linea 2s linear infinite;
 }
 
 @keyframes mover-linea {
@@ -357,6 +364,10 @@ h3 {
     transform: translateX(-50%);
 }
 
+.activar-auto{
+    animation: mover-auto 2s linear infinite;
+}
+
 @keyframes mover-auto {
     0% {
         transform: translateY(0);
@@ -372,10 +383,12 @@ h3 {
 }
 
 .cont {
+    width:100%;
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 15px 0px;
+    justify-content: center;
 }
 
 .flex {
