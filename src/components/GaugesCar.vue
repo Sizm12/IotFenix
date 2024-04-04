@@ -217,7 +217,7 @@
                 <div class="digit">
                     <div class="label">270</div>
                 </div>
-
+                
                 <div class="pointer">
                     <div class="hand"></div>
                 </div>
@@ -227,7 +227,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, defineProps } from 'vue';
+import { computed, ref, watch, defineProps } from 'vue';
 
 const props = defineProps(['rpm']);
 
@@ -246,17 +246,23 @@ const dynamicStyles = computed(() => {
 });
 
 const rotationAngle = computed(() => {
-  if (rpmValue.value === 0) {
-    return '';
-  } else {
-    return `rotate(calc(var(--start-angle) + (${rpmValue.value} / 1000 * var(--digits-angle))))`;
-  }
+    if (rpmValue.value === 0) {
+        return '';
+    } else {
+        // Calcular el ángulo de rotación en función de las rpm
+        return `rotate(calc(var(--start-angle) + (${rpmValue.value} / 1000 * var(--digits-angle))))`;
+    }
 });
 
 const handStyles = computed(() => {
     return {
         transform: rotationAngle.value,
     };
+});
+
+// Observar cambios en las rpm
+watch(() => props.rpm, (newRpm) => {
+    rpmValue.value = newRpm;
 });
 </script>
 

@@ -6,6 +6,9 @@ import BarChart from "@/components/BarChart.vue";
 import GaugesCar from "@/components/GaugesCar.vue";
 import Bars3Chart from "@/components/Bars3Chart.vue";
 import AnimationSvg from "@/components/AnimationSvg.vue";
+import SignalsComponent from "@/components/SignalsComponent.vue";
+import BatteryComponent from "@/components/BatteryComponent.vue";
+
 const selectedVehicle = ref<Device | null>(null);
 
 
@@ -44,10 +47,11 @@ const ObtenerDatosDispositivo = async (id: number) => {
 
         telemetry.value = response[0].telemetry;
 
-        const selectParams = ['can.fuel.volume', 'can.fuel.level', 'can.fuel.consumed', 'can.fuel.consumed.high.resolution', 'can.engine.fuel.rate'];
+        console.log(telemetry.value);
+
+        const selectParams = ['can.fuel.volume', 'can.fuel.level', 'can.fuel.consumed', 'can.fuel.consumed.high.resolution', 'can.engine.fuel.rate', 'position.direction', 'gsm.signal.dbm'];
         filtertelemetry.value = Object.fromEntries(
             Object.entries(telemetry.value).filter(([key]) => selectParams.includes(key))
-
         )
 
         if (filtertelemetry.value !== null) {
@@ -62,39 +66,35 @@ const ObtenerDatosDispositivo = async (id: number) => {
 }
 
 const vehiculoOn = computed(() => {
-    return 'on';
-   /* if( telemetry.value['can.engine.ignition.status'] === true ){
-        return 'on';
-    }else{
-        return 'off';
-    }*/
+    //return 'on';
+    if (telemetry.value['can.engine.ignition.status'] === true) {
+        return true;
+    } else {
+        return false;
+    }
 });
 
 const moverLinea = computed(() => {
-    return 'activar-linea';
-   
-   /* if( telemetry.value['can.engine.ignition.status'] === true ){
+    //return 'activar-linea';
+    if (telemetry.value['can.engine.ignition.status'] === true) {
         return 'activar-linea';
-    }else{
+    } else {
         return '';
-    }*/
+    }
 });
 
 const moverAuto = computed(() => {
-    return 'activar-auto';
-   /* if( telemetry.value['can.engine.ignition.status'] === true ){
+    // return 'activar-auto';
+    if (telemetry.value['can.engine.ignition.status'] === true) {
         return 'activar-auto';
-    }else{
+    } else {
         return '';
-    }*/
+    }
 });
 
 const AnguloVehiculo = computed(() => {
-  if (telemetry.value && telemetry.value.movement && telemetry.value.movement.status !== undefined) {
-    return `transform: rotate(${telemetry.value.movement.status}deg);`;
-  } else {
-    return ''; // or any default value or handle the undefined case appropriately
-  }
+    const angulo = telemetry.value.position.direction || 0;
+    return angulo ? { transform: `rotate(${angulo}deg)` } : ' ';
 });
 
 onMounted(() => {
@@ -165,7 +165,7 @@ const setChartOptions = () => {
         <DropDown v-model="selectedVehicle" :options="device" @change="OnChange" optionLabel="name"
             placeholder="Seleccione el vehiculo" class="w-full md:w-14rem" />
     </div>
-    <AnimationSvg v-if="!telemetry"  />
+    <AnimationSvg v-if="!telemetry" />
     <div v-if="telemetry">
         <div class="cont">
             <div>
@@ -173,10 +173,10 @@ const setChartOptions = () => {
                 <GaugesCar :rpm="telemetry['can.engine.rpm']" />
             </div>
 
-            <div class="circulo" :class="AnguloVehiculo">
+            <div class="circulo" :style="AnguloVehiculo">
                 <div class="carretera">
-                    <div class="linea" :class="moverLinea"  ></div>
-                    <img src="../../src/assets/car.png" class="car" :class="moverAuto" >
+                    <div class="linea" :class="moverLinea"></div>
+                    <img src="../../src/assets/car.png" class="car" :class="moverAuto">
                 </div>
             </div>
 
@@ -187,27 +187,34 @@ const setChartOptions = () => {
 
         </div>
 
-        <div class="icons">
-            <span v-tooltip.top="'Vehiculo'">
-                <FA style="font-size: 2rem;" icon="car-rear" :class="vehiculoOn" />
-            </span>
-            <span v-tooltip.top="'Nivel de combustible:'"
-                style="display:flex; flex-direction: column; justify-content:center; gap: 5px;">
-                <FA style="font-size: 2rem;" icon="gas-pump" class="on" />
-                <small>{{ telemetry['can.fuel.level'] }} lt</small>
-            </span>
-            <span v-tooltip.top="'Bateria: %'"
-                style="display:flex; flex-direction: column; justify-content:center; gap: 5px;">
-                <FA style="font-size: 2rem;" icon="car-battery" class="on" />
-                <small>{{ telemetry['external.powersource.voltage'] }} %</small>
-            </span>
-            <span v-tooltip.top="'Jirar a la izquierda'">
-                <FA style="font-size: 2rem;" icon="caret-left" class="desac" />
-            </span>
-            <span v-tooltip.top="'Jirar a la derecha'">
-                <FA style="font-size: 2rem;" icon="caret-right" class="desac" />
-            </span>
+        <div
+            style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0px 20px;">
+            <BatteryComponent :battery="telemetry['battery.voltage']" ></BatteryComponent>
+            <div class="icons">
+                <span v-tooltip.top="vehiculoOn ? 'Encendido' : 'Apagado'">
+                    <FA style="font-size: 2rem;" icon="car-rear" :class="vehiculoOn ? 'on' : 'off'" />
+                </span>
+                <span v-tooltip.top="'Nivel de combustible:'"
+                    style="display:flex; flex-direction: column; justify-content:center; gap: 5px;">
+                    <FA style="font-size: 2rem;" icon="gas-pump" class="on" />
+                    <small>{{ telemetry['can.fuel.level'] }} lt</small>
+                </span>
+                <span v-tooltip.top="'Bateria: %'"
+                    style="display:flex; flex-direction: column; justify-content:center; gap: 5px;">
+                    <FA style="font-size: 2rem;" icon="car-battery" class="on" />
+                    <small>{{ telemetry['external.powersource.voltage'] }} %</small>
+                </span>
+                <span v-tooltip.top="'Jirar a la izquierda'">
+                    <FA style="font-size: 2rem;" icon="caret-left" class="desac" />
+                </span>
+                <span v-tooltip.top="'Jirar a la derecha'">
+                    <FA style="font-size: 2rem;" icon="caret-right" class="desac" />
+                </span>
+            </div>
+            <SignalsComponent :dbm="telemetry['gsm.signal.dbm']" :satellites="telemetry['position.satellites']">
+            </SignalsComponent>
         </div>
+
         <cDivider></cDivider>
         <div class="flex">
             <cCard v-if="telemetry && 'external.powersource.voltage' in telemetry">
@@ -248,7 +255,8 @@ const setChartOptions = () => {
                 </template>
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="telemetry['device.temperature']" valueColor="#F2b53C" :strokeWidth="8" readonly />
+                        <cKnob v-model="telemetry['device.temperature']" valueColor="#F2b53C" :strokeWidth="8"
+                            readonly />
                     </div>
                 </template>
             </cCard>
@@ -305,7 +313,7 @@ h3 {
     color: #1f2937;
 }
 
-.off{
+.off {
     color: red;
 
     filter: drop-shadow(0 0 0.5rem red);
@@ -343,7 +351,7 @@ h3 {
     transform: translateX(-50%);
 }
 
-.activar-linea{
+.activar-linea {
     animation: mover-linea 2s linear infinite;
 }
 
@@ -358,13 +366,13 @@ h3 {
 }
 
 .car {
-    width: 130%;
+    width: 120%;
     position: absolute;
     bottom: 0;
-    transform: translateX(-50%);
+
 }
 
-.activar-auto{
+.activar-auto {
     animation: mover-auto 2s linear infinite;
 }
 
@@ -383,7 +391,7 @@ h3 {
 }
 
 .cont {
-    width:100%;
+    width: 100%;
     display: flex;
     align-items: center;
     gap: 10px;
