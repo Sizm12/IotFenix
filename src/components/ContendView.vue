@@ -152,33 +152,29 @@ const setChartOptions = () => {
     <cDivider></cDivider>
     <div class="flex">
         <cCard>
-            <template #title>Conductores</template>
+            <template #title>Dispositivos</template>
             <template #content>
                 <div class="c-card">
-                    <cKnob v-model="value" valueColor="#F2b53C" :strokeWidth="8" readonly valueTemplate="2" />
-                    Conductores en Activo
+                    <cKnob v-model="value" valueColor="#F2b53C" :strokeWidth="8" readonly valueTemplate="3" />
+                    Dispositivos Registrados
                 </div>
             </template>
         </cCard>
 
         <cCard>
-            <template #title>Vehiculos Activos</template>
+            <template #title>Vehiculos</template>
             <template #content>
-                <cKnob v-model="value" valueColor="#F2b53C" :strokeWidth="8" readonly valueTemplate="2" />
-                Vehiculos en Activo
+                <cKnob v-model="value" valueColor="#F2b53C" :strokeWidth="8" readonly valueTemplate="3" />
+                Vehiculos Registrados
             </template>
         </cCard>
         <cCard>
-            <template #title>Vehiculos Inactivos</template>
+            <template #title>Conductores</template>
             <template #content>
-                <cKnob v-model="value" valueColor="#F2b53C" :strokeWidth="8" readonly valueTemplate="33%" />
-                Vehiculos Inactivos
+                <cKnob v-model="value" valueColor="#F2b53C" :strokeWidth="8" readonly valueTemplate="3" />
+                Conductores Registrados
             </template>
         </cCard>
-    </div>
-
-    <div class="flex" style="height: 100%; width: 100%;">
-        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15615.355143606817!2d-86.15500415156954!3d11.91630540837058!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f740459e2eeaf4b%3A0xcfba68d80c1c3d4a!2sMasatepe!5e0!3m2!1ses!2sni!4v1706207853372!5m2!1ses!2sni" width="100%" height="100%" style="border:0;" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
     </div>
 
     <div class="flex">
@@ -201,6 +197,24 @@ const setChartOptions = () => {
     <div class="flex">
         <cCard>
             <template #title>Vehiculos</template>
+            <template #content>
+                <DataTable :value="vehicles" tableStyle="min-width: 50rem">
+                    <cColumn field="id" header="No. de Registro"></cColumn>
+                    <cColumn field="title" header="Nombre Vehiculo"></cColumn>
+                    <cColumn field="identification" header="Identificación"></cColumn>
+                    <cColumn field="device" header="Dispositivo Asociado"></cColumn>
+                    <cColumn header="Estado">
+                        <template #body="slotProps">
+                            <cTag :value="slotProps.data.state" :severity="getState(slotProps.data)"></cTag>
+                        </template>
+                    </cColumn>
+                </DataTable>
+            </template>
+        </cCard>
+    </div>
+    <div class="flex">
+        <cCard>
+            <template #title>Dispositivos</template>
             <template #content>
                 <DataTable :value="vehicles" tableStyle="min-width: 50rem">
                     <cColumn field="id" header="No. de Registro"></cColumn>

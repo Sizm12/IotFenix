@@ -36,7 +36,7 @@ const selectItem = (item: string) => {
                 <div>
                     <img :src="logoUrl">
                     <button class="close-button-mobile" v-if="isMenuVisible" @click="closeMenu">
-                        <FA icon="xmark" style="font-size: 2rem;"/>
+                        <FA icon="xmark" style="font-size: 2rem;" />
                     </button>
                 </div>
                 <ul>
@@ -46,35 +46,41 @@ const selectItem = (item: string) => {
                             <i class="pi pi-home" style="color: #34d399;"></i><label>Dashboard</label>
                         </li>
                     </RouterLink>
+
+                    <RouterLink to="/Dashboard/Tablero">
+                        <li @click="selectItem('Tablero')">
+                            <FA icon="table-list" color="#34d399" /><label>Tablero</label>
+                        </li>
+                    </RouterLink>
+                    <RouterLink to="/Dashboard/TrackIt">
+                        <li @click="selectItem('TrackIt')">
+                            <i class="pi pi-map" style="color: #34d399;"></i><label>Seguimiento</label>
+                        </li>
+                    </RouterLink>
                     <RouterLink to="/Dashboard/Vehiculos">
                         <li @click="selectItem('Vehiculos')">
                             <i class="pi pi-car" style="color: #34d399;"></i><label>Vehiculos</label>
                         </li>
                     </RouterLink>
-                    <!-- <RouterLink to="/Dashboard/Seguimiento">
-                        <li @click="selectItem('Rutas')">
-                        <i class="pi pi-map" style="color: #34d399;"></i><label>Seguimiento</label>
-                    </li>
+                    <RouterLink to="/Dashboard/Conductores">
+                        <li @click="selectItem('Conductores')">
+                            <i class="pi pi-user" style="color: #34d399;"></i><label>Conductores</label>
+                        </li>
                     </RouterLink>
-                    <RouterLink to="/Dashboard/Seguimiento">
-                        <li @click="selectItem('Rutas')">
-                            <FA icon="id-card" color="#34d399" /><label>Conductores</label>
-                    </li>
+                    <RouterLink to="/Dashboard/Dispositivos">
+                        <li @click="selectItem('Dispositivos')">
+                            <i class="pi pi-box" style="color: #34d399;"></i><label>Dispositivos</label>
+                        </li>
                     </RouterLink>
-                    <RouterLink to="/Dashboard/Seguimiento">
-                        <li @click="selectItem('Rutas')">
-                            <FA icon="location-dot" color="#34d399" /><label>tareas</label>
-                    </li>
-                    </RouterLink> -->
-                    <RouterLink to="/Dashboard/Tablero">
-                        <li @click="selectItem('Tablero')">
-                            <FA icon="table-list" color="#34d399" /><label>Tablero</label>
-                    </li>
+                    <RouterLink to="/Dashboard/Usuarios">
+                        <li @click="selectItem('Usuarios')">
+                            <i class="pi pi-users" style="color: #34d399;"></i><label>Usuarios</label>
+                        </li>
                     </RouterLink>
-                    <RouterLink to="/Dashboard/TrackIt">
-                        <li @click="selectItem('TrackIt')">
-                        <i class="pi pi-map" style="color: #34d399;"></i><label>TrackIt</label>
-                    </li>
+                    <RouterLink to="/Dashboard/Reporte">
+                        <li @click="selectItem('Reporte')">
+                            <i class="pi pi-chart-line" style="color: #34d399;"></i><label>Reporte</label>
+                        </li>
                     </RouterLink>
                 </ul>
                 <span class="cross-icon" @click="closeMenu"><i class="fas fa-times"></i></span>
@@ -88,7 +94,7 @@ const selectItem = (item: string) => {
                     <div class="menu-button" id="mobile" @click="openMenu">
                         <li class="pi pi-bars" style="font-size: 2rem;"></li>
                     </div>
-                    
+
                     <h1>{{ title }}</h1> <img :src="profileImageUrl" />
                 </header>
                 <div class="content-data">
@@ -365,15 +371,15 @@ RouterLink {
     }
 }
 
-li{
+li {
     text-decoration: none;
 }
 
-RouterLink{
+RouterLink {
     text-decoration: none;
 }
 
-label{
+label {
     text-decoration: none;
 }
 </style>

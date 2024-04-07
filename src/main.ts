@@ -31,6 +31,13 @@ import Column from 'primevue/column';
 import Tag from 'primevue/tag';
 import Tooltip from 'primevue/tooltip';
 
+import Toolbar from 'primevue/toolbar';
+import Toast from 'primevue/toast';
+import ToastService from 'primevue/toastservice';
+import Textarea from 'primevue/textarea';
+import Calendar from 'primevue/calendar';
+import RadioButton from 'primevue/radiobutton'
+
 const app = createApp(App);
 
 const router = createRouter({
@@ -41,6 +48,7 @@ const router = createRouter({
 app.directive('tooltip', Tooltip);
 app.use(router);
 app.use(PrimeVue);
+app.use(ToastService);
 
 library.add(fas);
 
@@ -61,6 +69,14 @@ app.component('DialogVue',Dialog);
 app.component('CascadeSelect',CascadeSelect);
 app.component('SelectedButtom', SelectButton)
 app.component('DataTable', DataTable);
+
+app.component('cToolbar', Toolbar);
+app.component('Toast', Toast);
+app.component('Textarea', Textarea);
+app.component('Calendar', Calendar);
+app.component('RadioButton', RadioButton);
+
+
 app.component('cColumn', Column);
 app.component('cTag', Tag);
 app.mount('#app');

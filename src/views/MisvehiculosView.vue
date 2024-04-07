@@ -1,12 +1,16 @@
 <template>
     <div class="flex">
         <h2>Mis vehiculos</h2>
-        <CustomButton @click="visible = true" size="small" icon="pi pi-plus" label="Agregar vehiculo"></CustomButton>
+        <!-- <CustomButton @click="visible = true" size="small" icon="pi pi-plus" label="Agregar vehiculo"></CustomButton> -->
     </div>
     <cDivider></cDivider>
-
+<!-- 
     <div class="cont">
         <CardVehiculo v-for="(vehicle, index) in vehicles" :key="index" :vehicle="vehicle" />
+    </div> -->
+
+    <div>
+        <VehiculeTable></VehiculeTable>
     </div>
 
     <DialogVue v-model:visible="visible" modal header="Agregar nueva unidad">
@@ -76,6 +80,7 @@ import { ref } from "vue";
 
 const visible = ref(false);
 import CardVehiculo from '../components/CardVehiculo.vue'
+import VehiculeTable from "../components/VehiculeTable.vue";
 
 const selectedOption = ref();
 const options = ref([
