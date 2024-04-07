@@ -1,5 +1,7 @@
-<template>
-    <div v-tooltip.top="props.dbm + ' : dbm'" style="display:flex; justify-content: center; align-items: center; margin-right: 5px;">
+<template >
+    <div class="dflex col">
+
+        <div v-tooltip.top="props.dbm + ' : dbm'" style="display:flex; justify-content: center; align-items: center; margin-right: 5px; ">
         <!-- señal baja -->
         <template v-if="condicion === 1">
             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none"
@@ -75,7 +77,7 @@
         </small>
     </div>
 
-    <div style="display: flex; justify-content:center; align-items: center;" > 
+    <div class="dflex"> 
         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#33c0f0"
             stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
             class="icon icon-tabler icons-tabler-outline icon-tabler-satellite">
@@ -91,6 +93,8 @@
         <small>
             {{ props.satellites }}
         </small>
+    </div>
+
     </div>
 </template>
 
@@ -130,3 +134,17 @@ switch (true) {
 }
 
 </script>
+
+<style scoped>
+
+.dflex{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+@media screen and (max-width: 767px) {
+    .col{
+        flex-direction: column;
+    }
+}
+</style>

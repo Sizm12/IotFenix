@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { httpService } from "@/services/https.services";
 import { ref, onMounted, computed } from "vue";
 import BarChart from "@/components/BarChart.vue";
@@ -8,9 +7,9 @@ import Bars3Chart from "@/components/Bars3Chart.vue";
 import AnimationSvg from "@/components/AnimationSvg.vue";
 import SignalsComponent from "@/components/SignalsComponent.vue";
 import BatteryComponent from "@/components/BatteryComponent.vue";
+import CarAnimation from "@/components/CarAnimation.vue";
 
 const selectedVehicle = ref<Device | null>(null);
-
 
 const telemetry = ref();
 const filtertelemetry = ref();
@@ -22,7 +21,6 @@ interface Device {
 
 const device = ref<Device[]>([]);
 
-
 onMounted(async () => {
     try {
 
@@ -31,7 +29,6 @@ onMounted(async () => {
         console.error('Error recuperando valores: ', error)
     }
 })
-
 
 const OnChange = () => {
     const selected = selectedVehicle.value ? selectedVehicle.value.id : null;
@@ -49,7 +46,7 @@ const ObtenerDatosDispositivo = async (id: number) => {
 
         console.log(telemetry.value);
 
-        const selectParams = ['can.fuel.volume', 'can.fuel.level', 'can.fuel.consumed', 'can.fuel.consumed.high.resolution', 'can.engine.fuel.rate', 'position.direction', 'gsm.signal.dbm'];
+        const selectParams = ['can.fuel.volume', 'can.fuel.level', 'can.fuel.consumed', 'can.fuel.consumed.high.resolution', 'can.engine.fuel.rate', 'position.direction', 'gsm.signal.dbm', 'can.vehicle.speed'];
         filtertelemetry.value = Object.fromEntries(
             Object.entries(telemetry.value).filter(([key]) => selectParams.includes(key))
         )
@@ -74,29 +71,6 @@ const vehiculoOn = computed(() => {
     }
 });
 
-const moverLinea = computed(() => {
-    //return 'activar-linea';
-    if (telemetry.value['can.engine.ignition.status'] === true) {
-        return 'activar-linea';
-    } else {
-        return '';
-    }
-});
-
-const moverAuto = computed(() => {
-    // return 'activar-auto';
-    if (telemetry.value['can.engine.ignition.status'] === true) {
-        return 'activar-auto';
-    } else {
-        return '';
-    }
-});
-
-const AnguloVehiculo = computed(() => {
-    const angulo = telemetry.value.position.direction || 0;
-    return angulo ? { transform: `rotate(${angulo}deg)` } : ' ';
-});
-
 onMounted(() => {
     //chartData.value = setChartData();
     chartOptions.value = setChartOptions();
@@ -107,7 +81,6 @@ const chartOptions = ref();
 
 const setChartData = () => {
     console.log(filtertelemetry);
-
 
     return {
         labels: ['Combustible (l)', 'Combustible (ml)', 'Consumo Total', 'Consumo Total', 'Nivel Combustible'],
@@ -170,26 +143,24 @@ const setChartOptions = () => {
         <div class="cont">
             <div>
                 <!--aqui el velocimetro-->
-                <GaugesCar :rpm="telemetry['can.engine.rpm']" />
+                <GaugesCar :rpm="telemetry['can.engine.rpm']" :velocidad="telemetry['can.vehicle.speed']" />
             </div>
+            <div style="display:flex; justify-content:center; width:100%;font-weight:400;">
+                <!--aqui el carro-->
+                <CarAnimation :angulo="telemetry['position.direction']"
+                    :status="telemetry['can.engine.ignition.status']">
+                </CarAnimation>
 
-            <div class="circulo" :style="AnguloVehiculo">
-                <div class="carretera">
-                    <div class="linea" :class="moverLinea"></div>
-                    <img src="../../src/assets/car.png" class="car" :class="moverAuto">
+                <div v-if="telemetry && 'external.powersource.voltage' in telemetry"
+                    style="display:flex; justify-content:center; align-items:center;">
+                    <BarChart titulo="Aceleración" data="36" name="aceleración" class="none"></BarChart>
                 </div>
             </div>
-
-            <div v-if="telemetry && 'external.powersource.voltage' in telemetry"
-                style="display:flex; justify-content:center; align-items:center;">
-                <BarChart titulo="Aceleración" data="36" name="aceleración"></BarChart>
-            </div>
-
         </div>
 
         <div
             style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0px 20px;">
-            <BatteryComponent :battery="telemetry['battery.voltage']" ></BatteryComponent>
+            <BatteryComponent :battery="telemetry['battery.voltage']"></BatteryComponent>
             <div class="icons">
                 <span v-tooltip.top="vehiculoOn ? 'Encendido' : 'Apagado'">
                     <FA style="font-size: 2rem;" icon="car-rear" :class="vehiculoOn ? 'on' : 'off'" />
@@ -284,7 +255,6 @@ const setChartOptions = () => {
                     <cChart type="bar" :data="chartData" :options="chartOptions" class="h-30rem" />
                 </template>
             </cCard>
-
         </div>
     </div>
 </template>
@@ -315,79 +285,7 @@ h3 {
 
 .off {
     color: red;
-
     filter: drop-shadow(0 0 0.5rem red);
-
-}
-
-.circulo {
-    width: 270px;
-    height: 270px;
-    border-radius: 50%;
-    background-color: #1f2937;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    transition: 2s ease-in-out;
-}
-
-.carretera {
-    width: 150px;
-    height: 100%;
-    position: relative;
-    background-color: black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.linea {
-    width: 4px;
-    height: 100%;
-    background-color: white;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.activar-linea {
-    animation: mover-linea 2s linear infinite;
-}
-
-@keyframes mover-linea {
-    0% {
-        top: 0;
-    }
-
-    100% {
-        top: 100%;
-    }
-}
-
-.car {
-    width: 120%;
-    position: absolute;
-    bottom: 0;
-
-}
-
-.activar-auto {
-    animation: mover-auto 2s linear infinite;
-}
-
-@keyframes mover-auto {
-    0% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-50px);
-    }
-
-    100% {
-        transform: translateY(0);
-    }
 }
 
 .cont {
@@ -397,6 +295,7 @@ h3 {
     gap: 10px;
     padding: 15px 0px;
     justify-content: center;
+
 }
 
 .flex {
@@ -418,5 +317,21 @@ h3 {
 
 .p-card {
     padding: 10px;
+}
+
+@media screen and (max-width: 767px) {
+    .none {
+        display: none;
+    }
+
+    .ocul {
+        display: none
+    }
+
+    .cont {
+        flex-direction: column;
+        justify-content: baseline;
+        align-items: start;
+    }
 }
 </style>

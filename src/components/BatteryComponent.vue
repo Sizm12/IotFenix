@@ -1,6 +1,5 @@
 <template>
-    <div 
-        style="display:flex; justify-content: center; align-items: center; margin-right: 5px;">
+    <div class="dflex col" >
         <!-- señal baja -->
      
             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none"
@@ -28,3 +27,16 @@ import { defineProps } from 'vue';
 const props = defineProps(['battery']);
 
 </script>
+
+<style scoped>
+.dflex{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+@media screen and (max-width: 767px) {
+    .col{
+        flex-direction: column;
+    }
+}
+</style>
