@@ -1,14 +1,46 @@
-<script setup lang="ts" >
-import { ref, onMounted } from 'vue';
+<script setup lang="ts">
+import LoaderCar from '@/components/LoaderCar.vue';
+import { httpService } from '@/services/https.services';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const value = ref(null);
+const value2 = ref(null);
+
+const loader = ref(false);
+const router = useRouter();
+
+
+
+const Login = async () => {
+
+    const login = value.value;
+    const password = value2.value;
+
+    //const response = await httpService.Login(`login`, login, password)
+    const response = await httpService.GetOdoo();
+    console.log(response);
+
+}
+
+const showLoader = () => {
+    console.log(value.value);
+    console.log(value2.value);
+
+
+    loader.value = true;
+    setTimeout(() => {
+        loader.value = false;
+        router.push('/Dashboard/General')
+    }, 3000);
+
+};
 
 </script>
 <template>
     <div class="cont1">
-        <cCard>
+        <cCard style="z-index: 30;">
             <template #title> Inicia sesión <cDivider></cDivider> </template>
-
             <template #content>
                 <span class="p-float-label">
                     <InputText id="username" v-model="value" />
@@ -17,7 +49,7 @@ const value = ref(null);
                 <br>
                 <br>
                 <span class="p-float-label">
-                    <cPassword v-model="value" :feedback="false" inputId="password" toggleMask />
+                    <cPassword v-model="value2" :feedback="false" inputId="password" toggleMask />
                     <label for="password">Contraseña</label>
                 </span>
                 <br>
@@ -25,10 +57,12 @@ const value = ref(null);
                     Olvido su contrseña?
                 </div>
                 <br>
-                <CustomButton label="Iniciar" routerLink='/Dashboard/General' routerLinkActive="router-link-active"  />
+                <CustomButton label="Iniciar" @click="Login()" routerLink='/Dashboard/General'
+                    routerLinkActive="router-link-active" />
             </template>
         </cCard>
     </div>
+    <LoaderCar v-if="loader"></LoaderCar>
 </template>
 
 <style scoped>
@@ -38,6 +72,19 @@ const value = ref(null);
     justify-content: center;
     align-items: center;
     height: 100dvh;
+    background: url(../assets/bg2.webp);
+    background-size: cover;
+}
+
+.cont1::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(28, 34, 48, 0.6);
+    /* color y opacidad de la capa (en este caso, negro con 50% de opacidad) */
 }
 
 .p-button {

@@ -12,7 +12,6 @@
                     <span class="line"></span>
                     <span class="line"></span>
                     <span class="line"></span>
-
                     <div class="label">0</div>
                 </div>
                 <div class="digit">
@@ -25,7 +24,6 @@
                     <span class="line"></span>
                     <span class="line"></span>
                     <span class="line"></span>
-
                     <div class="label">1</div>
                 </div>
                 <div class="digit">
@@ -113,7 +111,7 @@
                 <div class="limiter"></div>
 
                 <div class="pointer">
-                    <div class="hand" :style="handStyles" style="transition: 1s ease-in-out;">
+                    <div class="hand" :style="handStylesRpm" style="transition: 1s ease-in-out;">
                     </div>
                 </div>
 
@@ -221,7 +219,7 @@
                 </div>
 
                 <div class="pointer">
-                    <div class="hand"></div>
+                    <div class="hand" :style="handStylesvl"></div>
                 </div>
             </div>
         </div>
@@ -229,11 +227,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, defineProps } from 'vue';
+import { computed, ref, watch, defineProps, onMounted } from 'vue';
 
-const props = defineProps(['rpm']);
+const props = defineProps(['rpm','velocidad']);
+
 const rpmValue = ref(props.rpm);
-console.log("RPM VALOR: ",rpmValue.value);
+const velocidad1 = ref(props.velocidad)
+//const rpmValue = ref(5000);
+//const velocidad1 = ref(80);
+
+onMounted(() => {
+    const customGearValue = rpmValue.value.toString();
+    const customGearValuevl = velocidad1.value.toString();
+    document.documentElement.style.setProperty('--custom-gear-value', customGearValue);
+    document.documentElement.style.setProperty('--custom-geer-vl', customGearValuevl);
+})
 
 const className = computed(() => {
     return 'gauge';
@@ -241,29 +249,41 @@ const className = computed(() => {
 
 const dynamicStyles = computed(() => {
     return {
-        '--rpm': `${rpmValue.value}px`,
+        '--rpm': `0px`,
         '--limiter': '6700',
-        '--gauge-value': `var(--rpm) / 1000`,
+        '--gauge-value': `var(0deg) / 1000`,
     };
 });
 
-const rotationAngle = computed(() => {
-  if (rpmValue.value === 0) {
-    return '';
-  } else {
-    return `rotate(calc(var(--start-angle) + (${rpmValue.value} / 1000 * var(--digits-angle))))`;
-  }
+const handStylesRpm = computed(() => {
+    const angule = rpmValue.value / 33;
+    return `transform: rotate(${angule}deg);`;
 });
 
-const handStyles = computed(() => {
-    return {
-        transform: rotationAngle.value,
-    };
+const handStylesvl = computed(() => {
+    const angule = velocidad1.value ;
+    //const angule = 50 ;
+    return `transform: rotate(${angule}deg);`;
 });
+
+// Observar cambios en las rpm
+watch(() => props.rpm, (newRpm) => {
+    rpmValue.value = newRpm;
+    const customGearValue = rpmValue.value.toString();
+    const customGearValuevl = velocidad1.value.toString();
+    document.documentElement.style.setProperty('--custom-gear-value', customGearValue);
+    document.documentElement.style.setProperty('--custom-geer-vl', customGearValuevl);
+});
+
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css?family=Changa+One:400,400i');
+
+:root {
+    --custom-gear-value: '';
+    --custom-geer-vl:'';
+}
 
 html {
     font-size: 30px;
@@ -276,11 +296,11 @@ body {
 }
 
 .gauge {
-    --start-angle: -30deg;
+    --start-angle: 0deg;
     --digits-angle: 30deg;
     --lines-count: 10;
     --digits-count: 8;
-    --gauge-value: 0;
+    --gauge-value: -deg;
 
     position: relative;
     border: 0.2rem solid #137;
@@ -339,9 +359,7 @@ body {
             right: 0;
             bottom: 0;
             transform-origin: center center;
-
             transition: transform ease 0.2s;
-
 
             &::after {
                 content: '';
@@ -580,14 +598,14 @@ body {
             border-radius: 100%;
             display: block;
             box-sizing: border-box;
-            transform: rotate(calc(45deg + var(--digits-angle) * (var(--limiter) / 1000 - var(--digits-count))));
+            transform: rotate(calc(70deg + var(--digits-angle) * (var(--limiter) / 1000 - var(--digits-count))));
         }
     }
 }
 
 
 #speedmeter {
-    margin: 1rem 2rem;
+    margin: 5px 15px;
     width: 15rem;
     display: inline-block;
 
@@ -596,8 +614,13 @@ body {
             content: 'km/h';
         }
 
+        .label {
+            font-size: 1.2rem;
+      
+        }
+
         .pointer::after {
-            counter-reset: kmh var(--kmh);
+            counter-reset: kmh var(--custom-geer-vl);
             content: counter(kmh) " km/h";
             color: #fff;
             top: 65%;
@@ -606,13 +629,13 @@ body {
             text-align: center;
             display: block;
             position: absolute;
-            font-size: 0.5rem;
+            font-size: 0.6rem;
         }
     }
 }
 
 #revmeter {
-    margin: 1rem 2rem;
+    margin: 1rem 20px;
     width: 15rem;
     display: inline-block;
 
@@ -630,7 +653,7 @@ body {
         .pointer::after {
             font-family: 'Changa One', cursive;
             font-style: italic;
-            counter-reset: gear var(--gear);
+            counter-reset: gear var(--custom-gear-value);
             content: counter(gear);
             color: #99c459;
             top: 70%;
@@ -644,21 +667,42 @@ body {
     }
 }
 
-#controls {
-    position: fixed;
-    right: 0;
-    top: 0;
-    width: 7rem;
-    font-size: 16px;
-
-    input[type=range] {
-        transform: rotate(180deg);
-    }
-}
-
 #dashboard {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+@media screen and (max-width: 767px) {
+    #dashboard {
+        gap: 10px
+    }
+
+    #revmeter {
+        width: 179px;
+        margin: 5px 0px;
+    }
+
+    #speedmeter {
+        width: 179px;
+        margin: 5px 0px;
+    }
+
+    #revmeter {
+        .gauge {
+            .label {
+                font-size: 1.2rem;
+            }
+        }
+    }
+
+    #speedmeter {
+        .gauge {
+            .label {
+                font-size: 14px;
+            }
+        }
+    }
+
 }
 </style>

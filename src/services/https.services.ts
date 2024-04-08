@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 import axios from 'axios';
 
 const token = 'fSPwrl2xrIy1g3BYl2m2cACUpbS7YOS1uvnKGg7VMtLRlcFw2So2gOMvPvsB98su';
@@ -9,6 +10,15 @@ const api_url = axios.create({
         Authorization: `FlespiToken ${token}`
     },
 });
+
+const odoo_api = axios.create({
+    baseURL: 'https://sizm12-testfenix2-test-12596522.dev.odoo.com/',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    
+})
+
 
 export const httpService = {
     async get(ruta, params = {}) {
@@ -25,13 +35,13 @@ export const httpService = {
             throw error;
         }
     },
-    async getTelemetry(ruta, params ={}){
+    async getTelemetry(ruta, params = {}) {
         // eslint-disable-next-line no-useless-catch
         try {
             if (Object.keys(params).length > 0) {
-                const queryString = `data=${encodeURIComponent(JSON.stringify(params))}` ;
+                const queryString = `data=${encodeURIComponent(JSON.stringify(params))}`;
                 console.log('Ruta: ', `${ruta}?${queryString}`);
-                
+
                 const response = await api_url.get(`${ruta}?${queryString}`);
                 return response.data.result;
             } else {
@@ -49,8 +59,28 @@ export const httpService = {
             //const response = await api_url.post(ruta);
             const queryString = encodeURIComponent(JSON.stringify(data));
             //console.log(queryString);
-            const response = await api_url.post(`${ruta}?data=${queryString}` );
+            const response = await api_url.post(`${ruta}?data=${queryString}`);
             return response.data.result;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async Login(ruta, login, password) {
+        try {
+            const response = await odoo_api.post(`${ruta}?login=${login}&password=${password}`)
+            console.log(response);
+
+            return true;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async GetOdoo() {
+        try {
+            const response = odoo_api.get('https://sizm12-testfenix2-test-12596522.dev.odoo.com/getUser')
+            return response;
         } catch (error) {
             throw error;
         }

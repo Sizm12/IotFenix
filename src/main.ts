@@ -65,8 +65,8 @@ app.component('FA', FontAwesomeIcon);
 app.component('DropDown', Dropdown);
 app.component('TabView', TabView);
 app.component('TabPanel', TabPanel);
-app.component('DialogVue',Dialog);
-app.component('CascadeSelect',CascadeSelect);
+app.component('DialogVue', Dialog);
+app.component('CascadeSelect', CascadeSelect);
 app.component('SelectedButtom', SelectButton)
 app.component('DataTable', DataTable);
 

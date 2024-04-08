@@ -2,6 +2,9 @@
 import { ref, onMounted } from "vue";
 
 const value = ref(70);
+const fechaInicio = ref();
+const fechaFinal = ref();
+const selectedCalculate = ref();
 
 onMounted(() => {
     chartData.value = setChartData();
@@ -61,97 +64,101 @@ const setChartDataHorizontal = () => {
     };
 }
 
-    const setChartOptions = () => {
-        const documentStyle = getComputedStyle(document.documentElement);
-        const textColor = documentStyle.getPropertyValue('--text-color');
-        const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-        const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+const setChartOptions = () => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color');
+    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
+    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
-        return {
-            maintainAspectRatio: false,
-            aspectRatio: 0.6,
-            plugins: {
-                legend: {
-                    labels: {
-                        color: textColor
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    ticks: {
-                        color: textColorSecondary
-                    },
-                    grid: {
-                        color: surfaceBorder
-                    }
-                },
-                y: {
-                    ticks: {
-                        color: textColorSecondary
-                    },
-                    grid: {
-                        color: surfaceBorder
-                    }
+    return {
+        maintainAspectRatio: false,
+        aspectRatio: 0.6,
+        plugins: {
+            legend: {
+                labels: {
+                    color: textColor
                 }
             }
-        };
-    }
-
-    const setChartOptionsHorizontal = () => {
-        const documentStyle = getComputedStyle(document.documentElement);
-        const textColor = documentStyle.getPropertyValue('--text-color');
-        const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
-        const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
-
-        return {
-            indexAxis: 'y',
-            maintainAspectRatio: false,
-            aspectRatio: 0.6,
-            plugins: {
-                legend: {
-                    labels: {
-                        color: textColor
-                    }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: textColorSecondary
+                },
+                grid: {
+                    color: surfaceBorder
                 }
             },
-            scales: {
-                x: {
-                    ticks: {
-                        color: textColorSecondary
-                    },
-                    grid: {
-                        color: surfaceBorder
-                    }
+            y: {
+                ticks: {
+                    color: textColorSecondary
                 },
-                y: {
-                    ticks: {
-                        color: textColorSecondary
-                    },
-                    grid: {
-                        color: surfaceBorder
-                    }
+                grid: {
+                    color: surfaceBorder
                 }
             }
-        };
-    }
+        }
+    };
+}
+
+const setChartOptionsHorizontal = () => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const textColor = documentStyle.getPropertyValue('--text-color');
+    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
+    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+
+    return {
+        indexAxis: 'y',
+        maintainAspectRatio: false,
+        aspectRatio: 0.6,
+        plugins: {
+            legend: {
+                labels: {
+                    color: textColor
+                }
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: textColorSecondary
+                },
+                grid: {
+                    color: surfaceBorder
+                }
+            },
+            y: {
+                ticks: {
+                    color: textColorSecondary
+                },
+                grid: {
+                    color: surfaceBorder
+                }
+            }
+        }
+    };
+}
 </script>
 
 <template>
     <h2>Resumen</h2>
     <div class="flex flex-wrap gap-3">
         <div class="flex align-items-center">
-            <RadioButton v-model="ingredient" inputId="ingredient1" name="pizza" value="Cheese" />
-            <label for="ingredient1" class="ml-2">Hoy</label>
+            <label class="ml-2">Fecha de Inicio</label>
+            <Calendar v-model="fechaInicio" />
         </div>
         <div class="flex align-items-center">
-            <RadioButton v-model="ingredient" inputId="ingredient2" name="pizza" value="Mushroom" />
-            <label for="ingredient2" class="ml-2">Ultima Semana</label>
+            <label class="ml-2">Fecha Final</label>
+            <Calendar v-model="fechaFinal" />
         </div>
         <div class="flex align-items-center">
-            <RadioButton v-model="ingredient" inputId="ingredient3" name="pizza" value="Pepper" />
-            <label for="ingredient3" class="ml-2">Ultimo Mes</label>
+            <label class="ml-2">Criterio a Evaluar</label>
+            <DropDown v-model="selectedCalculate" optionLabel="name" placeholder="Seleccione el Criterio"
+                class="w-full md:w-14rem" />
         </div>
+    </div>
+    <div class="flex flex-wrap gap-3">
+        <CustomButton label="Filtrar"></CustomButton>
     </div>
     <cDivider></cDivider>
     <div class="flex">
