@@ -10,23 +10,25 @@ const value2 = ref(null);
 const loader = ref(false);
 const router = useRouter();
 
-
-
 const Login = async () => {
 
     const login = value.value;
     const password = value2.value;
 
-    //const response = await httpService.Login(`login`, login, password)
-    const response = await httpService.GetOdoo();
+    const response = await httpService.Login(`login`, login, password)
     console.log(response);
-
+    sessionStorage.setItem('token', response.token)
+    sessionStorage.setItem('rol', response.rol)
+    sessionStorage.setItem('user_id', response.user_id)
+    const token = sessionStorage.getItem('token')
+    
+    if(token)
+    {
+        showLoader();
+    }
 }
 
 const showLoader = () => {
-    console.log(value.value);
-    console.log(value2.value);
-
 
     loader.value = true;
     setTimeout(() => {

@@ -62,6 +62,11 @@ const selectItem = (item: string) => {
                             <i class="pi pi-car" style="color: #34d399;"></i><label>Vehiculos</label>
                         </li>
                     </RouterLink>
+                    <RouterLink to="/Dashboard/Modelos">
+                        <li @click="selectItem('Modelos')">
+                            <i class="pi pi-user" style="color: #34d399"></i><label>Modelos</label>
+                        </li>
+                    </RouterLink>
                     <RouterLink to="/Dashboard/Conductores">
                         <li @click="selectItem('Conductores')">
                             <i class="pi pi-user" style="color: #34d399;"></i><label>Conductores</label>

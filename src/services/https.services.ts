@@ -12,7 +12,7 @@ const api_url = axios.create({
 });
 
 const odoo_api = axios.create({
-    baseURL: 'https://sizm12-testfenix2-test-12596522.dev.odoo.com/',
+    baseURL: 'http://localhost:8069/',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -69,18 +69,16 @@ export const httpService = {
     async Login(ruta, login, password) {
         try {
             const response = await odoo_api.post(`${ruta}?login=${login}&password=${password}`)
-            console.log(response);
-
-            return true;
+            return response.data.data;
         } catch (error) {
             throw error;
         }
     },
 
-    async GetOdoo() {
+    async GetModelList() {
         try {
-            const response = odoo_api.get('https://sizm12-testfenix2-test-12596522.dev.odoo.com/getUser')
-            return response;
+            const response = await odoo_api.get('http://localhost:8069/getModelwithFormat')
+            return response.data;
         } catch (error) {
             throw error;
         }

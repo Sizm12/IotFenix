@@ -8,6 +8,7 @@ import ConductoresView from './views/ConductoresView.vue'
 import DispositivosView from './views/DispositivosView.vue'
 import ReporteView from './views/ReporteView.vue'
 import UsuariosView from './views/UsuariosView.vue'
+import ModeloViewVue from './views/ModeloView.vue'
 
 export const routes = [
     {
@@ -25,6 +26,10 @@ export const routes = [
             {
                 path:'Vehiculos',
                 component: MisvehiculosViewVue
+            },
+            {
+                path: 'Modelos',
+                component: ModeloViewVue
             },
             {
                 path: 'Seguimiento',
