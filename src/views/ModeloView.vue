@@ -153,28 +153,16 @@ import { ref, onMounted } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'primevue/usetoast';
 import { ProductService } from '../services/ProductService';
-import { httpService } from '@/services/https.services';
 
-interface Models {
-    name: string;
-    value: number;
-}
 
-const model = ref<Models[]>([])
+const model = ref()
 
 onMounted(() => {
     ProductService.getProducts().then((data) => (products.value = data));
-    GetModelsList();
+   
 });
 
-const GetModelsList = async () =>{
-    try {
-        const response = await httpService.GetModelList();
-        console.log(response);
-    } catch (error) {
-        console.log("Error: ", error)
-    }
-}
+
 
 const toast = useToast();
 const dt = ref();
