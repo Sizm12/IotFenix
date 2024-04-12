@@ -77,7 +77,7 @@ export const httpService = {
 
     async GetModelList() {
         try {
-            const response = await odoo_api.get('http://localhost:8069/getModelwithFormat')
+            const response = await odoo_api.get('getModelwithFormat')
             return response.data;
         } catch (error) {
             throw error;
