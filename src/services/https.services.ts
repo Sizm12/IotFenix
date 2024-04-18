@@ -16,7 +16,7 @@ const odoo_api = axios.create({
     headers: {
         'Content-Type': 'application/json',
     },
-    
+
 })
 
 
@@ -58,7 +58,7 @@ export const httpService = {
             //const response = await api_url.post(`${ruta}?${new URLSearchParams(params)}`);
             //const response = await api_url.post(ruta);
             const queryString = encodeURIComponent(JSON.stringify(data));
-            //console.log(queryString);
+            console.log(queryString);
             const response = await api_url.post(`${ruta}?data=${queryString}`);
             return response.data.result;
         } catch (error) {
@@ -75,9 +75,63 @@ export const httpService = {
         }
     },
 
+    //Endpoint Modulo Vehiculo
+    async CreateVehicule(ruta: string, data={}) {
+        try {           
+            const response = await odoo_api.post(`${ruta}?model_id=${data.modelo}&driver_id=${data.conductor}&license_plate=${data.matricula}&device_id=${data.dispositivo}&vin=${data.vin}&id=2`)
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async GetVehicule(ruta: string) {
+        try {           
+            const response = await odoo_api.get(`${ruta}?id=2`)
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    //Endpoint Modulo Modelos de Vehiculo
+    async GetModels() {
+        try {
+            const response = await odoo_api.get('getModel')
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
     async GetModelList() {
         try {
             const response = await odoo_api.get('getModelwithFormat')
+<<<<<<< HEAD
+=======
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    //Endpoint Modulo Contactos
+    async GetDriverList(id: number)
+    {
+        try {
+            const response = await odoo_api.get(`getContact?id=${id}`)
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    //Endpoint Modulo Contactos
+    async GetDeviceList(id: number)
+    {
+        try {
+            const response = await odoo_api.get(`getDevicewithFormat?id=${id}`)
+>>>>>>> e2055f7654848d6095b413efab37d29461f1c1c8
             return response.data;
         } catch (error) {
             throw error;
