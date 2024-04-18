@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { httpService } from "@/services/https.services";
 
 import CharBars from "@/components/CharBars.vue";
 const value = ref(70);
@@ -7,42 +8,75 @@ const value = ref(70);
 onMounted(() => {
     chartData.value = setChartData();
     chartOptions.value = setChartOptions();
+    GetDeviceList();
+    GetDriversList();
+    GetVehicules();
 });
 
 const chartData = ref();
 const chartOptions = ref();
 
 const getState = (state) => {
-    switch (state.state) {
-        case 'Activo':
+    
+    switch (state.active) {
+        case true:
             return 'success';
-        case 'Inactivo':
+        case false:
             return 'danger';
         default:
             return 'success';
     }
 }
 
-const conductores = [
-    {
-        id: 1,
-        name: 'Rafael Alcantara',
-        vehiculo: 'Vehiculo 1',
-        state: 'Activo',
-    },
-    {
-        id: 2,
-        name: 'Miguel Zuñiga',
-        vehiculo: 'Vehiculo 2',
-        state: 'Inactivo',
-    },
-    {
-        id: 3,
-        name: 'Jose Cardenas',
-        vehiculo: 'Vehiculo 3',
-        state: 'Activo',
-    },
-]
+const getStateValue = (state) => {
+    
+    switch (state.active) {
+        case true:
+            return 'Activo';
+        case false:
+            return 'Inactivo';
+        default:
+            return 'Desconocido';
+    }
+}
+
+const driver = ref()
+const device = ref()
+const vehicules = ref();
+const deviceqty = ref();
+const driverqty = ref();
+const vehiculeqty = ref(); 
+
+const GetVehicules = async () =>{
+    try {
+        const response = await httpService.GetVehicule('getVehicule');
+        vehicules.value = response
+        vehiculeqty.value = vehicules.value.length
+    } catch (error) {
+        console.log("Error: ", error)
+    }
+}
+
+const GetDriversList = async () =>{
+    try {
+        const response = await httpService.GetDrivers();    
+        driver.value = response
+        driverqty.value = driver.value.length
+    } catch (error) {
+        console.log("Error: ", error)
+    }
+}
+
+const GetDeviceList = async () =>{
+    try {
+        const response = await httpService.GetDevices();
+        device.value = response
+        deviceqty.value = device.value.length
+    } catch (error) {
+        console.log("Error: ", error)
+    }
+}
+
 
 const vehicles = [
     {
@@ -155,7 +189,7 @@ const setChartOptions = () => {
             <template #title>Dispositivos</template>
             <template #content>
                 <div class="c-card">
-                    <cKnob v-model="value" valueColor="#F2b53C" :strokeWidth="8" readonly valueTemplate="3" />
+                    <cKnob v-model="deviceqty" valueColor="#F2b53C" :strokeWidth="8" :min="0" :max="15" readonly />
                     Dispositivos Registrados
                 </div>
             </template>
@@ -164,14 +198,14 @@ const setChartOptions = () => {
         <cCard>
             <template #title>Vehiculos</template>
             <template #content>
-                <cKnob v-model="value" valueColor="#F2b53C" :strokeWidth="8" readonly valueTemplate="3" />
+                <cKnob v-model="vehiculeqty" valueColor="#F2b53C" :strokeWidth="8" :min="0" :max="15" readonly />
                 Vehiculos Registrados
             </template>
         </cCard>
         <cCard>
             <template #title>Conductores</template>
             <template #content>
-                <cKnob v-model="value" valueColor="#F2b53C" :strokeWidth="8" readonly valueTemplate="3" />
+                <cKnob v-model="driverqty" valueColor="#F2b53C" :strokeWidth="8" :min="0" :max="15" readonly />
                 Conductores Registrados
             </template>
         </cCard>
@@ -181,13 +215,16 @@ const setChartOptions = () => {
         <cCard>
             <template #title>Conductores</template>
             <template #content>
-                <DataTable :value="conductores" tableStyle="min-width: 50rem">
+                <DataTable :value="driver" tableStyle="min-width: 50rem">
                     <cColumn field="id" header="No. de Registro"></cColumn>
                     <cColumn field="name" header="Nombre Conductor"></cColumn>
-                    <cColumn field="vehiculo" header="Vehiculo Asignado"></cColumn>
+                    <cColumn field="email" header="Correo Electrónico"></cColumn>
+                    <cColumn field="phone" header="Teléfono"></cColumn>
+                    <cColumn field="vat" header="Identificación Fiscal"></cColumn>
+                    <cColumn field="address" header="Dirección"></cColumn>
                     <cColumn header="Estado">
                         <template #body="slotProps">
-                            <cTag :value="slotProps.data.state" :severity="getState(slotProps.data)"></cTag>
+                            <cTag :value="getStateValue(slotProps.data)" :severity="getState(slotProps.data)"></cTag>
                         </template>
                     </cColumn>
                 </DataTable>
@@ -198,16 +235,13 @@ const setChartOptions = () => {
         <cCard>
             <template #title>Vehiculos</template>
             <template #content>
-                <DataTable :value="vehicles" tableStyle="min-width: 50rem">
+                <DataTable :value="vehicules" tableStyle="min-width: 50rem">
                     <cColumn field="id" header="No. de Registro"></cColumn>
-                    <cColumn field="title" header="Nombre Vehiculo"></cColumn>
-                    <cColumn field="identification" header="Identificación"></cColumn>
-                    <cColumn field="device" header="Dispositivo Asociado"></cColumn>
-                    <cColumn header="Estado">
-                        <template #body="slotProps">
-                            <cTag :value="slotProps.data.state" :severity="getState(slotProps.data)"></cTag>
-                        </template>
-                    </cColumn>
+                    <cColumn field="model_name" header="Modelo de Vehículo"></cColumn>
+                    <cColumn field="license_plate" header="Matrícula"></cColumn>
+                    <cColumn field="vin" header="VIN"></cColumn>
+                    <cColumn field="device_name" header="Dispositivo Asociado"></cColumn>
+                    <cColumn field="driver_name" header="Nombre Conductor"></cColumn>
                 </DataTable>
             </template>
         </cCard>
@@ -216,16 +250,12 @@ const setChartOptions = () => {
         <cCard>
             <template #title>Dispositivos</template>
             <template #content>
-                <DataTable :value="vehicles" tableStyle="min-width: 50rem">
+                <DataTable :value="device" tableStyle="min-width: 50rem">
                     <cColumn field="id" header="No. de Registro"></cColumn>
-                    <cColumn field="title" header="Nombre Vehiculo"></cColumn>
-                    <cColumn field="identification" header="Identificación"></cColumn>
-                    <cColumn field="device" header="Dispositivo Asociado"></cColumn>
-                    <cColumn header="Estado">
-                        <template #body="slotProps">
-                            <cTag :value="slotProps.data.state" :severity="getState(slotProps.data)"></cTag>
-                        </template>
-                    </cColumn>
+                    <cColumn field="name" header="Nombre Dispositivo"></cColumn>
+                    <cColumn field="imei" header="IMEI"></cColumn>
+                    <cColumn field="fecha_obtencion" header="Fecha Compra"></cColumn>
+                    <cColumn field="device_type_name" header="Tipo de Dispositivo"></cColumn>
                 </DataTable>
             </template>
         </cCard>

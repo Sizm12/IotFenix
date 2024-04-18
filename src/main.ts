@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import PrimeVue from 'primevue/config';
 import { createRouter, createWebHistory } from 'vue-router'; // Import the necessary router functions
+import store from './store/auth'
 import { routes } from './routes';
 import 'primevue/resources/themes/lara-dark-green/theme.css';
 import 'primevue/resources/primevue.min.css';
@@ -49,6 +50,7 @@ app.directive('tooltip', Tooltip);
 app.use(router);
 app.use(PrimeVue);
 app.use(ToastService);
+app.use(store)
 
 library.add(fas);
 

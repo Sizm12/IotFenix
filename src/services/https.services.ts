@@ -1,7 +1,17 @@
 /* eslint-disable no-useless-catch */
 import axios from 'axios';
+import { tokenService } from '@/services/token.services'
 
 const token = 'fSPwrl2xrIy1g3BYl2m2cACUpbS7YOS1uvnKGg7VMtLRlcFw2So2gOMvPvsB98su';
+let userData = null;
+
+tokenService.GetToken().then(data => {
+    userData = data,
+    console.log("Servicio", data);
+    
+}).catch(error => {
+    console.error('Error al obtener el Dato', error)
+})
 
 const api_url = axios.create({
     baseURL: 'https://flespi.io/gw/',
@@ -11,8 +21,10 @@ const api_url = axios.create({
     },
 });
 
+const user_id = sessionStorage.getItem('user_id')
+
 const odoo_api = axios.create({
-    baseURL: 'http://localhost:8069/',
+    baseURL: 'http://62.72.24.91:8069/',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -58,7 +70,6 @@ export const httpService = {
             //const response = await api_url.post(`${ruta}?${new URLSearchParams(params)}`);
             //const response = await api_url.post(ruta);
             const queryString = encodeURIComponent(JSON.stringify(data));
-            console.log(queryString);
             const response = await api_url.post(`${ruta}?data=${queryString}`);
             return response.data.result;
         } catch (error) {
@@ -78,7 +89,7 @@ export const httpService = {
     //Endpoint Modulo Vehiculo
     async CreateVehicule(ruta: string, data={}) {
         try {           
-            const response = await odoo_api.post(`${ruta}?model_id=${data.modelo}&driver_id=${data.conductor}&license_plate=${data.matricula}&device_id=${data.dispositivo}&vin=${data.vin}&id=2`)
+            const response = await odoo_api.post(`${ruta}?model_id=${data.modelo}&driver_id=${data.conductor}&license_plate=${data.matricula}&device_id=${data.dispositivo}&vin=${data.vin}&id=${user_id}`)
             return response.data;
         } catch (error) {
             throw error;
@@ -86,8 +97,13 @@ export const httpService = {
     },
 
     async GetVehicule(ruta: string) {
-        try {           
-            const response = await odoo_api.get(`${ruta}?id=2`)
+        try {
+            if (!userData) {
+                userData = await tokenService.GetToken();
+                console.log("Data",userData);
+            }
+               
+            const response = await odoo_api.get(`${ruta}?id=${userData.user_id}`)   
             return response.data;
         } catch (error) {
             throw error;
@@ -97,7 +113,7 @@ export const httpService = {
     //Endpoint Modulo Modelos de Vehiculo
     async GetModels() {
         try {
-            const response = await odoo_api.get('getModel')
+            const response = await odoo_api.get(`getModel?id=${user_id}`)
             return response.data;
         } catch (error) {
             throw error;
@@ -106,7 +122,7 @@ export const httpService = {
 
     async GetModelList() {
         try {
-            const response = await odoo_api.get('getModelwithFormat')
+            const response = await odoo_api.get(`getModelwithFormat?id=${user_id}`)
             return response.data;
         } catch (error) {
             throw error;
@@ -114,10 +130,20 @@ export const httpService = {
     },
 
     //Endpoint Modulo Contactos
-    async GetDriverList(id: number)
+    async GetDriverList()
     {
         try {
-            const response = await odoo_api.get(`getContact?id=${id}`)
+            const response = await odoo_api.get(`getContactList?id=${user_id}`)
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async GetDrivers()
+    {
+        try {
+            const response = await odoo_api.get(`getContact?id=${user_id}`)
             return response.data;
         } catch (error) {
             throw error;
@@ -125,13 +151,22 @@ export const httpService = {
     },
 
     //Endpoint Modulo Contactos
-    async GetDeviceList(id: number)
+    async GetDeviceList()
     {
         try {
-            const response = await odoo_api.get(`getDevicewithFormat?id=${id}`)
+            const response = await odoo_api.get(`getDevicewithFormat?id=${user_id}`)
             return response.data;
         } catch (error) {
             throw error;
         }
-    }
+    },
+    async GetDevices()
+    {
+        try {
+            const response = await odoo_api.get(`getDevice?id=${user_id}`)
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
 }

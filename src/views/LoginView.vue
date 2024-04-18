@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import LoaderCar from '@/components/LoaderCar.vue';
 import { httpService } from '@/services/https.services';
+import { tokenService } from '@/services/token.services'
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import {useStore} from 'vuex'
 
 const value = ref(null);
 const value2 = ref(null);
 
 const loader = ref(false);
 const router = useRouter();
+const store = useStore();
 
 const Login = async () => {
 
@@ -16,14 +19,11 @@ const Login = async () => {
     const password = value2.value;
 
     const response = await httpService.Login(`login`, login, password)
-    console.log(response);
-    sessionStorage.setItem('token', response.token)
-    sessionStorage.setItem('rol', response.rol)
-    sessionStorage.setItem('user_id', response.user_id)
-    const token = sessionStorage.getItem('token')
+    localStorage.setItem('token', response)
     
-    if(token)
+    if(response)
     {
+        tokenService.SetToken(store);
         showLoader();
     }
 }

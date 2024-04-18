@@ -24,7 +24,6 @@
                     </div>
                 </template>
 
-                <cColumn field="id" header="ID" sortable style="min-width:12rem"></cColumn>
                 <cColumn field="model_name" header="Modelo" sortable style="min-width:16rem"></cColumn>
                 <!-- <cColumn header="Imagen">
                      <template #body="slotProps">
@@ -42,14 +41,14 @@
                             :severity="getStatusLabel(slotProps.data.inventoryStatus)" />
                     </template>
                 </cColumn> -->
-                <cColumn :exportable="false" style="min-width:8rem">
+                <!-- <cColumn :exportable="false" style="min-width:8rem">
                     <template #body="slotProps">
                         <CustomButton icon="pi pi-pencil" outlined rounded class="mr-2"
                             @click="editProduct(slotProps.data)" />
                         <CustomButton icon="pi pi-trash" outlined rounded severity="danger"
                             @click="confirmDeleteProduct(slotProps.data)" />
                     </template>
-                </cColumn>
+                </cColumn> -->
             </DataTable>
         </div>
 
@@ -108,7 +107,6 @@
 import { ref, onMounted } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'primevue/usetoast';
-import { ProductService } from '../services/ProductService';
 import { httpService } from '@/services/https.services';
 
 const model = ref()
@@ -145,8 +143,10 @@ const GetModelsList = async () =>{
 
 const GetDriversList = async () =>{
     try {
-        const response = await httpService.GetDriverList(2);
+        const response = await httpService.GetDriverList();
         driver.value = response
+        console.log(response);
+        
     } catch (error) {
         console.log("Error: ", error)
     }
@@ -154,7 +154,7 @@ const GetDriversList = async () =>{
 
 const GetDeviceList = async () =>{
     try {
-        const response = await httpService.GetDeviceList(2);
+        const response = await httpService.GetDeviceList();
         device.value = response
     } catch (error) {
         console.log("Error: ", error)

@@ -52,11 +52,11 @@ const selectItem = (item: string) => {
                             <FA icon="table-list" color="#34d399" /><label>Tablero</label>
                         </li>
                     </RouterLink>
-                    <RouterLink to="/Dashboard/TrackIt">
+                    <!-- <RouterLink to="/Dashboard/TrackIt">
                         <li @click="selectItem('TrackIt')">
                             <i class="pi pi-map" style="color: #34d399;"></i><label>Seguimiento</label>
                         </li>
-                    </RouterLink>
+                    </RouterLink> -->
                     <RouterLink to="/Dashboard/Vehiculos">
                         <li @click="selectItem('Vehiculos')">
                             <i class="pi pi-car" style="color: #34d399;"></i><label>Vehiculos</label>
