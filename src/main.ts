@@ -1,7 +1,9 @@
 import { createApp } from 'vue';
 import App from './App.vue';
+import { jwtDecode } from "jwt-decode";
 import PrimeVue from 'primevue/config';
 import { createRouter, createWebHistory } from 'vue-router'; // Import the necessary router functions
+import store from './store/auth'
 import { routes } from './routes';
 import 'primevue/resources/themes/lara-dark-green/theme.css';
 import 'primevue/resources/primevue.min.css';
@@ -37,6 +39,7 @@ import ToastService from 'primevue/toastservice';
 import Textarea from 'primevue/textarea';
 import Calendar from 'primevue/calendar';
 import RadioButton from 'primevue/radiobutton'
+import MultiSelect from 'primevue/multiselect';
 
 const app = createApp(App);
 
@@ -45,10 +48,48 @@ const router = createRouter({
   routes
 });
 
+const isAuthenticated = () => {
+  const token = localStorage.getItem('token')
+  IsRole();
+  return !!token
+}
+
+const IsRole = () => {
+
+  const jwtToken = localStorage.getItem('token');
+  if (jwtToken) {
+    const decodedTokenData = jwtDecode(jwtToken);
+    return decodedTokenData;
+  }
+}
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth) {
+    if (isAuthenticated()) {
+      const token = IsRole();
+      if (token) {
+        console.log(token.rol);
+
+        if (to.meta.roles && to.meta.roles.includes(token.rol)) {
+          next()
+        } else {
+          next('/')
+        }
+      }
+    }
+    else {
+      next('/')
+    }
+  } else {
+    next()
+  }
+})
+
 app.directive('tooltip', Tooltip);
 app.use(router);
 app.use(PrimeVue);
 app.use(ToastService);
+app.use(store)
 
 library.add(fas);
 
@@ -69,7 +110,7 @@ app.component('DialogVue', Dialog);
 app.component('CascadeSelect', CascadeSelect);
 app.component('SelectedButtom', SelectButton)
 app.component('DataTable', DataTable);
-
+app.component('MultiSelect', MultiSelect)
 app.component('cToolbar', Toolbar);
 app.component('Toast', Toast);
 app.component('Textarea', Textarea);

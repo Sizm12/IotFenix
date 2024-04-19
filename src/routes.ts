@@ -17,49 +17,90 @@ export const routes = [
     },
     {
         path: '/Dashboard',
-        component: ()=> import('../src/views/DashboardView.vue'),
-        children:[
+        component: () => import('../src/views/DashboardView.vue'),
+        children: [
             {
-                path:'General',
+                path: 'General',
                 component: ContendViewVue,
+                meta: {
+                    requiresAuth: true,
+                    roles:['Administrador', 'Supervisor', 'Operativo']
+                }
             },
             {
-                path:'Vehiculos',
-                component: MisvehiculosViewVue
+                path: 'Vehiculos',
+                component: MisvehiculosViewVue,
+                meta: {
+                    requiresAuth: true,
+                    roles:['Administrador', 'Supervisor', 'Operativo']
+                }
+                
             },
             {
                 path: 'Modelos',
-                component: ModeloViewVue
+                component: ModeloViewVue,
+                meta: {
+                    requiresAuth: true,
+                    roles:['Administrador', 'Supervisor', 'Operativo']
+                }
             },
             {
                 path: 'Seguimiento',
-                component: RutasViewVue
+                component: RutasViewVue,
+                meta: {
+                    requiresAuth: true,
+                    roles:['Administrador', 'Supervisor', 'Operativo']
+                }
             },
             {
                 path: 'Tablero',
-                component: TableroViewVue
+                component: TableroViewVue,
+                meta: {
+                    requiresAuth: true,
+                    roles:['Administrador', 'Supervisor', 'Operativo']
+                }
             },
             {
                 path: 'TrackIt',
-                component: TrackItView 
+                component: TrackItView,
+                meta: {
+                    requiresAuth: true,
+                    roles:['Administrador', 'Supervisor', 'Operativo']
+                }
             },
             {
                 path: 'Conductores',
                 component: ConductoresView,
+                meta: {
+                    requiresAuth: true,
+                    roles:['Administrador', 'Supervisor', 'Operativo']
+                }
             },
             {
                 path: 'Dispositivos',
-                component: DispositivosView
+                component: DispositivosView,
+                meta: {
+                    requiresAuth: true,
+                    roles:['Administrador', 'Supervisor', 'Operativo']
+                }
             },
             {
                 path: 'Usuarios',
-                component: UsuariosView
+                component: UsuariosView,
+                meta: {
+                    requiresAuth: true,
+                    roles:['Administrador', 'Supervisor', 'Operativo']
+                }
             },
             {
                 path: 'Reporte',
-                component: ReporteView
+                component: ReporteView,
+                meta: {
+                    requiresAuth: true,
+                    roles:['Administrador', 'Supervisor', 'Operativo']
+                }
             }
-        
+
         ]
     }
 ]

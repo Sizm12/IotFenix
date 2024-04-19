@@ -1,6 +1,6 @@
 <template>
     <div class="cont">
-        <iframe src="http://localhost:7006/#/login" width="100%" height="550" frameborder="0"></iframe>
+        <iframe src="http://62.72.24.91:7006/#/login" width="100%" height="550" frameborder="0"></iframe>
     </div>
 </template>
 

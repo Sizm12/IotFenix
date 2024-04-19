@@ -3,7 +3,8 @@
         <div class="card">
             <cToolbar class="mb-4">
                 <template #start>
-                    <CustomButton label="Agregar Vehiculo" icon="pi pi-plus" severity="success" class="mr-2" @click="openNew" />
+                    <CustomButton label="Agregar Vehiculo" icon="pi pi-plus" severity="success" class="mr-2"
+                        @click="openNew" />
                 </template>
             </cToolbar>
 
@@ -21,10 +22,10 @@
                             </InputIcon>
                             <InputText v-model="filters['global'].value" placeholder="Buscar" />
                         </IconField>
+
                     </div>
                 </template>
 
-                <cColumn field="id" header="ID" sortable style="min-width:12rem"></cColumn>
                 <cColumn field="model_name" header="Modelo" sortable style="min-width:16rem"></cColumn>
                 <!-- <cColumn header="Imagen">
                      <template #body="slotProps">
@@ -42,56 +43,62 @@
                             :severity="getStatusLabel(slotProps.data.inventoryStatus)" />
                     </template>
                 </cColumn> -->
-                <cColumn :exportable="false" style="min-width:8rem">
+                <!-- <cColumn :exportable="false" style="min-width:8rem">
                     <template #body="slotProps">
                         <CustomButton icon="pi pi-pencil" outlined rounded class="mr-2"
                             @click="editProduct(slotProps.data)" />
                         <CustomButton icon="pi pi-trash" outlined rounded severity="danger"
                             @click="confirmDeleteProduct(slotProps.data)" />
                     </template>
-                </cColumn>
+                </cColumn> -->
             </DataTable>
         </div>
 
-        <DialogVue v-model:visible="productDialog" :style="{ width: '450px' }" header="Detalle de Vehiculo" :modal="true"
-            class="p-fluid">
+        <DialogVue v-model:visible="productDialog" :style="{ width: '450px' }" header="Detalle de Vehiculo"
+            :modal="true" class="p-fluid">
             <TabView>
-            <TabPanel header="Información">
-                <div class="formcont">
-                    <div class="flex align-items-center gap-3 mb-3">
-                        <label for="tipo" class="font-semibold w-6rem">Modelo</label>
-                        <DropDown size="small" v-model="vehicule.selectedModel" :options="model" optionLabel="name" optionValue="value"
-                            placeholder="Seleccione Modelo de Vehiculo" class="drop" required />
+                <TabPanel header="Información">
+                    <div class="formcont">
+                        <div class="flex align-items-center gap-3 mb-3">
+                            <label for="tipo" class="font-semibold w-6rem">Modelo</label>
+                            <DropDown size="small" v-model="vehicule.selectedModel" :options="model" optionLabel="name"
+                                optionValue="value" placeholder="Seleccione Modelo de Vehiculo" class="drop" required />
+                        </div>
+                        <div class="flex align-items-center gap-3 mb-3">
+                            <label for="nombre" class="font-semibold w-6rem">Matricula</label>
+                            <InputText size="small" v-model="vehicule.matricula" required class="flex-auto"
+                                autocomplete="off" />
+                        </div>
+                        <div class="flex align-items-center gap-3 mb-3">
+                            <label for="tipo" class="font-semibold w-6rem">Conductor</label>
+                            <DropDown size="small" id="tipo" v-model="vehicule.selectedDriver" required
+                                :options="driver" optionLabel="name" optionValue="id" placeholder="Asignar Conductor"
+                                class="drop" />
+                        </div>
+                        <div class="flex align-items-center gap-3 mb-3">
+                            <label for="id" class="font-semibold w-6rem">VIN</label>
+                            <InputText size="small" id="id" v-model="vehicule.vin" required class="flex-auto"
+                                autocomplete="off" />
+                        </div>
+                        <div class="flex align-items-center gap-3 mb-3">
+                            <label for="creador" class="font-semibold w-6rem">Dispositivo Asociado</label>
+                            <DropDown size="small" id="creador" v-model="vehicule.selectedDevice" :options="device"
+                                optionLabel="name" optionValue="value" placeholder="Dispositivo Asociado"
+                                class="drop" />
+                        </div>
                     </div>
-                    <div class="flex align-items-center gap-3 mb-3">
-                        <label for="nombre" class="font-semibold w-6rem">Matricula</label>
-                        <InputText size="small" v-model="vehicule.matricula" required class="flex-auto" autocomplete="off" />
-                    </div>
-                    <div class="flex align-items-center gap-3 mb-3">
-                        <label for="tipo" class="font-semibold w-6rem">Conductor</label>
-                        <DropDown size="small" id="tipo" v-model="vehicule.selectedDriver" required :options="driver" optionLabel="name" optionValue="id"
-                            placeholder="Asignar Conductor" class="drop" />
-                    </div>
-                    <div class="flex align-items-center gap-3 mb-3">
-                        <label for="id" class="font-semibold w-6rem">VIN</label>
-                        <InputText size="small" id="id" v-model="vehicule.vin" required class="flex-auto" autocomplete="off" />
-                    </div>
-                    <div class="flex align-items-center gap-3 mb-3">
-                        <label for="creador" class="font-semibold w-6rem">Dispositivo Asociado</label>
-                        <DropDown size="small" id="creador" v-model="vehicule.selectedDevice" :options="device" optionLabel="name" optionValue="value"
-                            placeholder="Dispositivo Asociado" class="drop" />
-                    </div>
-                </div>
 
-            </TabPanel>
-        </TabView>
+                </TabPanel>
+            </TabView>
             <div class="btncont">
-                <CustomButton size="small" severity="secondary" icon="pi pi-times" label="Cancelar" @click="hideDialog"></CustomButton>
-                <CustomButton size="small" icon="pi pi-check" label="Guardar" @click="Save" ></CustomButton>
+                <CustomButton size="small" severity="secondary" icon="pi pi-times" label="Cancelar" @click="hideDialog">
+                </CustomButton>
+                <CustomButton size="small" icon="pi pi-check" label="Guardar" @click="Save"></CustomButton>
             </div>
         </DialogVue>
 
-        <DialogVue v-model:visible="deleteProductDialog" :style="{ width: '450px' }" header="Confirmación" :modal="true">
+        <DialogVue v-model:visible="deleteProductDialog" :style="{ width: '450px' }" header="Confirmación"
+            :modal="true">
             <div class="confirmation-content">
                 <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
                 <span v-if="product">¿Está seguro de borrar el registro <b>{{ vehicules.model_name }}</b>?</span>
@@ -108,13 +115,12 @@
 import { ref, onMounted } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'primevue/usetoast';
-import { ProductService } from '../services/ProductService';
 import { httpService } from '@/services/https.services';
 
 const model = ref()
 const driver = ref()
 const device = ref()
-const vehicules = ref(); 
+const vehicules = ref();
 
 
 onMounted(() => {
@@ -124,37 +130,39 @@ onMounted(() => {
     GetVehicules();
 });
 
-const GetVehicules = async () =>{
+const GetVehicules = async () => {
     try {
         const response = await httpService.GetVehicule('getVehicule');
         vehicules.value = response
-        
+
     } catch (error) {
         console.log("Error: ", error)
     }
 }
 
-const GetModelsList = async () =>{
+const GetModelsList = async () => {
     try {
-        const response = await httpService.GetModelList();  
+        const response = await httpService.GetModelList();
         model.value = response
     } catch (error) {
         console.log("Error: ", error)
     }
 }
 
-const GetDriversList = async () =>{
+const GetDriversList = async () => {
     try {
-        const response = await httpService.GetDriverList(2);
+        const response = await httpService.GetDriverList();
         driver.value = response
+        console.log(response);
+
     } catch (error) {
         console.log("Error: ", error)
     }
 }
 
-const GetDeviceList = async () =>{
+const GetDeviceList = async () => {
     try {
-        const response = await httpService.GetDeviceList(2);
+        const response = await httpService.GetDeviceList();
         device.value = response
     } catch (error) {
         console.log("Error: ", error)
@@ -198,9 +206,9 @@ const Save = async () => {
         'conductor': vehicule.value.selectedDriver,
         'vin': vehicule.value.vin,
         'dispositivo': vehicule.value.selectedDevice,
-        
+
     }
-    const response = await httpService.CreateVehicule('createFleet', data )
+    const response = await httpService.CreateVehicule('createFleet', data)
     toast.add({ severity: 'success', summary: 'Successful', detail: 'Registro Creado', life: 3000 });
     productDialog.value = false;
     vehicule.value = {};
