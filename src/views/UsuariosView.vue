@@ -29,14 +29,14 @@
                 <cColumn field="last_authentication" header="Ultima Conexión" sortable style="min-width:12rem">
                 </cColumn>
                 <cColumn field="state" header="Estado" sortable style="min-width:12rem"></cColumn>
-                <cColumn :exportable="false" style="min-width:8rem">
+                <!-- <cColumn :exportable="false" style="min-width:8rem">
                     <template #body="slotProps">
                         <CustomButton icon="pi pi-pencil" outlined rounded class="mr-2"
                             @click="editProduct(slotProps.data)" />
                         <CustomButton icon="pi pi-trash" outlined rounded severity="danger"
                             @click="confirmDeleteProduct(slotProps.data)" />
                     </template>
-                </cColumn>
+                </cColumn> -->
             </DataTable>
         </div>
 
@@ -71,28 +71,6 @@
             </div>
         </DialogVue>
 
-        <DialogVue v-model:visible="deleteProductDialog" :style="{ width: '450px' }" header="Confirmación"
-            :modal="true">
-            <div class="confirmation-content">
-                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                <span v-if="product">¿Está seguro de borrar el registro <b>{{ product.name }}</b>?</span>
-            </div>
-            <template #footer>
-                <CustomButton label="No" icon="pi pi-times" text @click="deleteProductDialog = false" />
-                <CustomButton label="Yes" icon="pi pi-check" text @click="deleteProduct" />
-            </template>
-        </DialogVue>
-
-        <DialogVue v-model:visible="deleteProductsDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
-            <div class="confirmation-content">
-                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                <span v-if="product">Are you sure you want to delete the selected products?</span>
-            </div>
-            <template #footer>
-                <CustomButton label="No" icon="pi pi-times" text @click="deleteProductsDialog = false" />
-                <CustomButton label="Yes" icon="pi pi-check" text @click="deleteSelectedProducts" />
-            </template>
-        </DialogVue>
     </div>
 </template>
 

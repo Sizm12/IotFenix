@@ -240,7 +240,7 @@ export const httpService = {
         }
     },
 
-    //Endpoint Modulo Contactos
+    //Endpoint Modulo Dispositivos
     async GetDeviceList() {
         try {
             if (!userData) {
@@ -263,4 +263,48 @@ export const httpService = {
             throw error;
         }
     },
+
+    async CreateDevices(ruta: string, data = {}) {
+        try {
+            if (!userData) {
+                userData = await tokenService.GetToken();
+            }
+            const response = await odoo_api.post(`${ruta}?name=${data.name}&flespi_id=${data.flespi_id}&imei=${data.imei}&fecha_obtencion=${data.fecha_obtencion}&device_type=${data.device_type}&id=${userData.user_id}`)
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async GetTypeDeviceList() {
+        try {
+            const response = await odoo_api.get(`getDeviceTypewithFormat`)
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async GetTypeDevices() {
+        try {
+            const response = await odoo_api.get(`getDeviceType`)
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    async CreateTypeDevices(ruta: string, data = {}) {
+        try {
+            if (!userData) {
+                userData = await tokenService.GetToken();
+            }
+            const response = await odoo_api.post(`${ruta}?name=${data.name}&proveedor=${data.proveedor}&modelo=${data.modelo}&id=${userData.user_id}`)
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
+    
 }

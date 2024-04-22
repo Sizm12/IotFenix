@@ -8,11 +8,10 @@
                 </template>
             </cToolbar>
 
-            <DataTable ref="dt" :value="products" v-model:selection="selectedProducts" dataKey="id" :paginator="true"
-                :rows="10" :filters="filters"
+            <DataTable ref="dt" :value="devices" dataKey="id" :paginator="true" :rows="10" :filters="filters"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
-                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} products">
+                currentPageReportTemplate="Mostrando {first} para {last} de {totalRecords} Dispositivos">
                 <template #header>
                     <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
                         <h4 class="m-0">Administrar Dispositivos</h4>
@@ -27,21 +26,10 @@
 
                 <cColumn selectionMode="multiple" style="width: 3rem" :exportable="false"></cColumn>
                 <cColumn field="name" header="Nombre" sortable style="min-width:16rem"></cColumn>
-                <cColumn field="code" header="IMEI" sortable style="min-width:12rem"></cColumn>
-                <cColumn header="Imagen">
-                    <!-- <template #body="slotProps">
-                    <img :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.data.image}`"
-                        :alt="slotProps.data.image" class="border-round" style="width: 64px" />
-                </template> -->
+                <cColumn field="imei" header="IMEI" sortable style="min-width:12rem"></cColumn>
+                <cColumn field="device_type_name" header="Tipo de Dispositivo" sortable style="min-width:10rem">
                 </cColumn>
-                <cColumn field="category" header="Tipo de Dispositivo" sortable style="min-width:10rem"></cColumn>
-                <cColumn header="Fecha de Compra" sortable style="min-width:10rem"></cColumn>
-                <cColumn field="inventoryStatus" header="Estado" sortable style="min-width:12rem">
-                    <template #body="slotProps">
-                        <cTag :value="slotProps.data.inventoryStatus"
-                            :severity="getStatusLabel(slotProps.data.inventoryStatus)" />
-                    </template>
-                </cColumn>
+                <cColumn field="fecha_obtencion" header="Fecha de Compra" sortable style="min-width:10rem"></cColumn>
                 <cColumn :exportable="false" style="min-width:8rem">
                     <template #body="slotProps">
                         <CustomButton icon="pi pi-pencil" outlined rounded class="mr-2"
@@ -60,50 +48,37 @@
                     <div class="formcont">
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="nombre" class="font-semibold w-6rem">Nombre</label>
-                            <InputText size="small" id="nombre" class="flex-auto" autocomplete="off" />
+                            <InputText size="small" id="nombre" v-model="device.name" class="flex-auto"
+                                autocomplete="off" />
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="tipo" class="font-semibold w-6rem">IMEI</label>
-                            <InputText size="small" id="address" class="flex-auto" autocomplete="off" />
+                            <InputText size="small" id="address" v-model="device.imei" class="flex-auto"
+                                autocomplete="off" />
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
-                            <label for="id" class="font-semibold w-6rem">Tipo de Dispositivo</label>
-                            <InputText size="small" id="vat" class="flex-auto" autocomplete="off" />
+                            <label for="tipo" class="font-semibold w-6rem">Identificador</label>
+                            <InputText size="small" id="address" v-model="device.flespi_id" class="flex-auto"
+                                autocomplete="off" />
+                        </div>
+                        <div class="flex align-items-center gap-3 mb-3">
+                            <label for="tipo" class="font-semibold w-6rem">Fabricante</label>
+                            <DropDown size="small" id="tipo" v-model="device.device_type" :options="type"
+                                optionLabel="name" optionValue="value" placeholder="Marca" class="drop" />
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label class="font-semibold w-6rem">Fecha de Compra</label>
-                            <Calendar v-model="date" dateFormat="dd/mm/yy" />
+                            <Calendar v-model="device.fecha_obtencion" dateFormat="dd/mm/yy" />
                         </div>
                     </div>
                 </TabPanel>
             </TabView>
             <div class="btncont">
-                <CustomButton size="small" severity="secondary" icon="pi pi-times" label="Cancelar"></CustomButton>
-                <CustomButton size="small" icon="pi pi-check" label="Crear"></CustomButton>
+                <CustomButton size="small" severity="secondary" icon="pi pi-times" label="Cancelar"
+                    @click="hideDialog()">
+                </CustomButton>
+                <CustomButton size="small" icon="pi pi-check" label="Crear" @click="save()"></CustomButton>
             </div>
-        </DialogVue>
-
-        <DialogVue v-model:visible="deleteProductDialog" :style="{ width: '450px' }" header="Confirmación"
-            :modal="true">
-            <div class="confirmation-content">
-                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                <span v-if="product">¿Está seguro de borrar el registro <b>{{ product.name }}</b>?</span>
-            </div>
-            <template #footer>
-                <CustomButton label="No" icon="pi pi-times" text @click="deleteProductDialog = false" />
-                <CustomButton label="Yes" icon="pi pi-check" text @click="deleteProduct" />
-            </template>
-        </DialogVue>
-
-        <DialogVue v-model:visible="deleteProductsDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
-            <div class="confirmation-content">
-                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                <span v-if="product">Are you sure you want to delete the selected products?</span>
-            </div>
-            <template #footer>
-                <CustomButton label="No" icon="pi pi-times" text @click="deleteProductsDialog = false" />
-                <CustomButton label="Yes" icon="pi pi-check" text @click="deleteSelectedProducts" />
-            </template>
         </DialogVue>
     </div>
 </template>
@@ -113,11 +88,33 @@ import { ref, onMounted } from 'vue';
 import { FilterMatchMode } from 'primevue/api';
 import { useToast } from 'primevue/usetoast';
 import { ProductService } from '../services/ProductService';
-
+import { httpService } from '@/services/https.services';
 onMounted(() => {
     ProductService.getProducts().then((data) => (products.value = data));
+    GetTypeDevices();
+    GetDevices();
 });
 
+const GetTypeDevices = async () => {
+    try {
+        const response = await httpService.GetTypeDeviceList();
+        type.value = response
+    } catch (error) {
+        console.log("Error: ", error)
+    }
+}
+
+const GetDevices = async () => {
+    try {
+        const response = await httpService.GetDevices();
+        devices.value = response;
+    } catch (error) {
+        console.log("Error: ", error)
+    }
+}
+
+const type = ref();
+const devices = ref();
 const toast = useToast();
 const dt = ref();
 const products = ref();
@@ -125,22 +122,13 @@ const productDialog = ref(false);
 const deleteProductDialog = ref(false);
 const deleteProductsDialog = ref(false);
 const product = ref({});
+const device = ref({})
 const selectedProducts = ref();
 const filters = ref({
     'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
 });
 const submitted = ref(false);
-const statuses = ref([
-    { label: 'INSTOCK', value: 'instock' },
-    { label: 'LOWSTOCK', value: 'lowstock' },
-    { label: 'OUTOFSTOCK', value: 'outofstock' }
-]);
 
-const formatCurrency = (value) => {
-    if (value)
-        return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-    return;
-};
 const openNew = () => {
     product.value = {};
     submitted.value = false;
@@ -150,27 +138,32 @@ const hideDialog = () => {
     productDialog.value = false;
     submitted.value = false;
 };
-const saveProduct = () => {
+
+const formattedDate = (date) => {
+      if (!date) return ''; 
+      const isoDate = date.toISOString().split('T')[0];
+      return isoDate;
+    }
+
+const save = async () => {
     submitted.value = true;
 
-    if (product.value.name.trim()) {
-        if (product.value.id) {
-            product.value.inventoryStatus = product.value.inventoryStatus.value ? product.value.inventoryStatus.value : product.value.inventoryStatus;
-            products.value[findIndexById(product.value.id)] = product.value;
-            toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
-        }
-        else {
-            product.value.id = createId();
-            product.value.code = createId();
-            product.value.image = 'product-placeholder.svg';
-            product.value.inventoryStatus = product.value.inventoryStatus ? product.value.inventoryStatus.value : 'INSTOCK';
-            products.value.push(product.value);
-            toast.add({ severity: 'success', summary: 'Successful', detail: 'Product Created', life: 3000 });
-        }
+    const date_format = formattedDate(device.value.fecha_obtencion)
 
-        productDialog.value = false;
-        product.value = {};
+    const data = {
+        'name': device.value.name,
+        'flespi_id': device.value.flespi_id,
+        'imei': device.value.imei,
+        'fecha_obtencion': date_format,
+        'device_type': device.value.device_type,
     }
+
+    const response = await httpService.CreateDevices('createDevice', data)
+    toast.add({ severity: 'success', summary: 'Successful', detail: 'Registro Creado', life: 3000 });
+    productDialog.value = false;
+    device.value = {};
+    GetDevices();
+
 };
 const editProduct = (prod) => {
     product.value = { ...prod };
