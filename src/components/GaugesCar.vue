@@ -231,10 +231,10 @@ import { computed, ref, watch, defineProps, onMounted } from 'vue';
 
 const props = defineProps(['rpm','velocidad']);
 
-const rpmValue = ref(props.rpm);
-const velocidad1 = ref(props.velocidad)
-//const rpmValue = ref(5000);
-//const velocidad1 = ref(80);
+//const rpmValue = ref(props.rpm);
+//const velocidad1 = ref(props.velocidad)
+const rpmValue = ref(2500);
+const velocidad1 = ref(35);
 
 onMounted(() => {
     const customGearValue = rpmValue.value.toString();
