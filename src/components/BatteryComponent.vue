@@ -34,9 +34,4 @@ const props = defineProps(['battery']);
     justify-content: center;
     align-items: center;
 }
-@media screen and (max-width: 767px) {
-    .col{
-        flex-direction: column;
-    }
-}
 </style>

@@ -15,13 +15,13 @@
                 currentPageReportTemplate="Mostrando {first} para {last} de {totalRecords} Marcas">
                 <template #header>
                     <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
-                        <h4 class="m-0">Administrar Tipos de Dispositivos</h4>
-                        <IconField iconPosition="left">
-                            <InputIcon>
+                        <h3 class="m-0">Administrar Tipos de Dispositivos</h3>
+                        <InputGroup iconPosition="left">
+                            <InputGroupAddon>
                                 <i class="pi pi-search" />
-                            </InputIcon>
+                            </InputGroupAddon>
                             <InputText v-model="filters['global'].value" placeholder="Buscar" />
-                        </IconField>
+                        </InputGroup>
                     </div>
                 </template>
 
@@ -43,7 +43,7 @@
             :modal="true" class="p-fluid">
             <TabView>
                 <TabPanel header="Información del Dispositivo">
-                    <div class="formcont">
+                    <div class="formcont" style="display:flex; flex-direction:column; gap:15px;" >
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="nombre" class="font-semibold w-6rem">Nombre</label>
                             <InputText size="small" id="nombre" v-model="type.name" class="flex-auto" autocomplete="off" />
@@ -59,7 +59,7 @@
                     </div>
                 </TabPanel>
             </TabView>
-            <div class="btncont">
+            <div class="btncont" style="display:flex; gap:10px; width:100%" >
                 <CustomButton size="small" severity="secondary" icon="pi pi-times" label="Cancelar" @click="hideDialog()"></CustomButton>
                 <CustomButton size="small" icon="pi pi-check" label="Crear" @click="save()"></CustomButton>
             </div>

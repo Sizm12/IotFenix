@@ -14,13 +14,13 @@
                 currentPageReportTemplate="Mostrando {first} para {last} de {totalRecords} Dispositivos">
                 <template #header>
                     <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
-                        <h4 class="m-0">Administrar Dispositivos</h4>
-                        <IconField iconPosition="left">
-                            <InputIcon>
+                        <h3 class="m-0">Administrar Dispositivos</h3>
+                        <InputGroup iconPosition="left">
+                            <InputGroupAddon>
                                 <i class="pi pi-search" />
-                            </InputIcon>
+                            </InputGroupAddon>
                             <InputText v-model="filters['global'].value" placeholder="Buscar" />
-                        </IconField>
+                        </InputGroup>
                     </div>
                 </template>
 
@@ -31,11 +31,13 @@
                 </cColumn>
                 <cColumn field="fecha_obtencion" header="Fecha de Compra" sortable style="min-width:10rem"></cColumn>
                 <cColumn :exportable="false" style="min-width:8rem">
-                    <template #body="slotProps">
-                        <CustomButton icon="pi pi-pencil" outlined rounded class="mr-2"
+                    <template #body="slotProps" >
+                        <div style="display:flex; gap:5px;" >
+                            <CustomButton icon="pi pi-pencil" outlined rounded class="mr-2"
                             @click="editProduct(slotProps.data)" />
                         <CustomButton icon="pi pi-trash" outlined rounded severity="danger"
                             @click="confirmDeleteProduct(slotProps.data)" />
+                        </div>
                     </template>
                 </cColumn>
             </DataTable>
@@ -45,7 +47,7 @@
             :modal="true" class="p-fluid">
             <TabView>
                 <TabPanel header="Información del Dispositivo">
-                    <div class="formcont">
+                    <div class="formcont" style="display:flex; flex-direction:column; gap:15px;" >
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="nombre" class="font-semibold w-6rem">Nombre</label>
                             <InputText size="small" id="nombre" v-model="device.name" class="flex-auto"
@@ -73,7 +75,7 @@
                     </div>
                 </TabPanel>
             </TabView>
-            <div class="btncont">
+            <div class="btncont" style="display:flex; gap:10px; width:100%" >
                 <CustomButton size="small" severity="secondary" icon="pi pi-times" label="Cancelar"
                     @click="hideDialog()">
                 </CustomButton>

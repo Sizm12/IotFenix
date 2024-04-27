@@ -40,6 +40,8 @@ import Textarea from 'primevue/textarea';
 import Calendar from 'primevue/calendar';
 import RadioButton from 'primevue/radiobutton'
 import MultiSelect from 'primevue/multiselect';
+import InputGroup from 'primevue/inputgroup';
+import InputGroupAddon from 'primevue/inputgroupaddon';
 
 const app = createApp(App);
 
@@ -116,8 +118,8 @@ app.component('Toast', Toast);
 app.component('Textarea', Textarea);
 app.component('Calendar', Calendar);
 app.component('RadioButton', RadioButton);
-
-
+app.component('InputGroup', InputGroup);
+app.component('InputGroupAddon', InputGroupAddon);
 app.component('cColumn', Column);
 app.component('cTag', Tag);
 app.mount('#app');

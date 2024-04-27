@@ -108,7 +108,7 @@ const Save = async () => {
         'doors': model.value.doors
     }
     console.log(data);
-    
+
     const response = await httpService.CreateModels('createModels', data)
     toast.add({ severity: 'success', summary: 'Successful', detail: 'Registro Creado', life: 3000 });
     productDialog.value = false;
@@ -128,7 +128,7 @@ const Save = async () => {
                         @click="openNew" />
                 </template>
             </cToolbar>
-
+            <br>
             <DataTable ref="dt" :value="models" v-model:selection="selectedProducts" resizableColumns
                 columnResizeMode="fit" showGridlines dataKey="id" :paginator="true" :rows="10" :filters="filters"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -136,15 +136,19 @@ const Save = async () => {
                 currentPageReportTemplate="Mostrando {first} para {last} de {totalRecords} modelos">
                 <template #header>
                     <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
-                        <h4 class="m-0">Administrar Modelos de Vehículos</h4>
-                        <IconField iconPosition="left">
-                            <InputIcon>
-                                <i class="pi pi-search" />
-                            </InputIcon>
-                            <InputText v-model="filters['global'].value" placeholder="Buscar" />
-                        </IconField>
-                        <MultiSelect :modelValue="selectedColumns" :options="columns" optionLabel="header"
-                            @update:modelValue="onToggle" display="chip" placeholder="Seleccionar Columnas" />
+                        <h3 class="m-0">Administrar Modelos de Vehículos</h3>
+
+                        <div class="col" style="display: flex; gap: 10px; width:100%;">
+                            <InputGroup iconPosition="left">
+                                <InputGroupAddon>
+                                    <i class="pi pi-search" />
+                                </InputGroupAddon>
+                                <InputText v-model="filters['global'].value" placeholder="Buscar" />
+                            </InputGroup>
+                            <MultiSelect :modelValue="selectedColumns" :options="columns" optionLabel="header"
+                                @update:modelValue="onToggle" display="chip" placeholder="Seleccionar Columnas" />
+                        </div>
+
                     </div>
                 </template>
 
@@ -165,7 +169,7 @@ const Save = async () => {
             <TabView>
                 <TabPanel header="Información General">
                     <h3>Información General</h3>
-                    <div class="formcont">
+                    <div class="formcont" style="display:flex; flex-direction:column; gap:15px;" >
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="nombre" class="font-semibold w-6rem">Nombre Modelo</label>
                             <InputText size="small" id="nombre" v-model="model.name" class="flex-auto"
@@ -173,13 +177,13 @@ const Save = async () => {
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="tipo" class="font-semibold w-6rem">Fabricante</label>
-                            <DropDown size="small" id="tipo" v-model="model.brand_id" :options="brands" optionLabel="name"
-                            optionValue="id" placeholder="Fabricantes" class="drop" />
+                            <DropDown size="small" id="tipo" v-model="model.brand_id" :options="brands"
+                                optionLabel="name" optionValue="id" placeholder="Fabricantes" class="drop" />
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="tipo" class="font-semibold w-6rem">Tipo de Vehiculo</label>
-                            <DropDown size="small" id="tipo" v-model="model.category_id" :options="categories" optionLabel="name"
-                            optionValue="id" placeholder="Tipos de Vehiculos" class="drop" />
+                            <DropDown size="small" id="tipo" v-model="model.category_id" :options="categories"
+                                optionLabel="name" optionValue="id" placeholder="Tipos de Vehiculos" class="drop" />
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="nombre" class="font-semibold w-6rem">No. Asientos</label>
@@ -233,8 +237,9 @@ const Save = async () => {
                     </div>
                 </TabPanel>
             </TabView>
-            <div class="btncont">
-                <CustomButton size="small" severity="secondary" icon="pi pi-times" label="Cancelar" @click="hideDialog"></CustomButton>
+            <div class="btncont" style="display:flex; gap:10px; width:100%">
+                <CustomButton size="small" severity="secondary" icon="pi pi-times" label="Cancelar" @click="hideDialog">
+                </CustomButton>
                 <CustomButton size="small" icon="pi pi-check" label="Crear" @click="Save"></CustomButton>
             </div>
         </DialogVue>
@@ -277,6 +282,12 @@ body {
     padding: 1rem;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+@media screen and (max-width: 767px) {
+    .col {
+        flex-direction: column;
+    }
 }
 
 .card {

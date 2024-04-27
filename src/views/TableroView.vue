@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { httpService } from "@/services/https.services";
 import { ref, onMounted, computed } from "vue";
-import BarChart from "@/components/BarChart.vue";
 import GaugesCar from "@/components/GaugesCar.vue";
-import Bars3Chart from "@/components/Bars3Chart.vue";
 import AnimationSvg from "@/components/AnimationSvg.vue";
 import SignalsComponent from "@/components/SignalsComponent.vue";
 import BatteryComponent from "@/components/BatteryComponent.vue";
 import CarAnimation from "@/components/CarAnimation.vue";
-
+import IconAcelerador from "@/components/icons/IconAcelerador.vue";
 const selectedVehicle = ref<Device | null>(null);
 
 const telemetry = ref();
@@ -16,7 +14,6 @@ const filtertelemetry = ref();
 const linear = ref();
 const timestamp = ref();
 const battery = ref();
-const fuel = ref();
 const mileage = ref();
 const calc = ref();
 
@@ -195,7 +192,7 @@ const ObtenerDatosDispositivo = async (id: number) => {
 
         telemetry.value = response[0].telemetry;
 
-        console.log(telemetry.value);
+        console.log( '--dispositivo' ,telemetry.value);
 
         const selectParams = ['can.fuel.volume', 'can.fuel.level', 'can.fuel.consumed', 'can.fuel.consumed.high.resolution', 'can.engine.fuel.rate', 'position.direction', 'gsm.signal.dbm', 'can.vehicle.speed'];
         filtertelemetry.value = Object.fromEntries(
@@ -214,36 +211,22 @@ const ObtenerDatosDispositivo = async (id: number) => {
 }
 
 const vehiculoOn = computed(() => {
-    if (telemetry.value['can.engine.ignition.status'] === true) {
-        return 'on';
+    //return 'on';
+    if (telemetry.value['config.engine.ignition.status']) {
+        return true;
     } else {
-        return 'off';
+        return false;
     }
 });
 
-const moverLinea = computed(() => {
-    if (telemetry.value['can.engine.ignition.status'] === true) {
-        return 'animation: mover-linea 2s linear infinite;';
+const getClassAcelerador = computed(() => {
+    if (telemetry.value['can.throttle.pedal.level'] > 0) {
+        return 'aceleradorOn';
     } else {
-        return '';
+        return 'aceleradorOff';
     }
 });
 
-const moverAuto = computed(() => {
-    if (telemetry.value['can.engine.ignition.status'] === true) {
-        return 'animation: mover-auto 2s linear infinite;';
-    } else {
-        return '';
-    }
-});
-
-const AnguloVehiculo = computed(() => {
-    if (telemetry.value && telemetry.value.movement && telemetry.value.movement.status !== undefined) {
-        return `transform: rotate(${telemetry.value.movement.status}deg);`;
-    } else {
-        return ''; // or any default value or handle the undefined case appropriately
-    }
-});
 
 onMounted(() => {
     //chartData.value = setChartData();
@@ -314,27 +297,26 @@ const setChartOptions = () => {
     </div>
     <AnimationSvg v-if="!telemetry" />
     <div v-if="telemetry">
+        <div style="display:flex; width:100%; justify-content:flex-end; gap: 10px;">
+            <BatteryComponent :battery="telemetry['battery.voltage']"></BatteryComponent>
+            <SignalsComponent :dbm="telemetry['gsm.signal.dbm']" :satellites="telemetry['position.satellites']">
+            </SignalsComponent>
+        </div>
         <div class="cont">
             <div>
                 <!--aqui el velocimetro-->
-                <GaugesCar :rpm="telemetry['can.engine.rpm']" :velocidad="telemetry['can.vehicle.speed']" />
+                <GaugesCar :rpm="telemetry['can.engine.rpm']" :velocidad="telemetry['can.wheel.speed']" />
             </div>
             <div style="display:flex; justify-content:center; width:100%;font-weight:400;">
                 <!--aqui el carro-->
-                <CarAnimation :angulo="telemetry['position.direction']"
-                    :status="telemetry['can.engine.ignition.status']">
+                <CarAnimation :angulo="telemetry['position.direction']" :status="telemetry['movement.status']">
                 </CarAnimation>
-
-                <div v-if="telemetry && 'external.powersource.voltage' in telemetry"
-                    style="display:flex; justify-content:center; align-items:center;">
-                    <BarChart titulo="Aceleración" data="36" name="aceleración" class="none"></BarChart>
-                </div>
             </div>
         </div>
 
         <div
             style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0px 20px;">
-            <BatteryComponent :battery="telemetry['battery.voltage']"></BatteryComponent>
+           
             <div class="icons">
                 <span v-tooltip.top="vehiculoOn ? 'Encendido' : 'Apagado'">
                     <FA style="font-size: 2rem;" icon="car-rear" :class="vehiculoOn ? 'on' : 'off'" />
@@ -355,9 +337,13 @@ const setChartOptions = () => {
                 <span v-tooltip.top="'Jirar a la derecha'">
                     <FA style="font-size: 2rem;" icon="caret-right" class="desac" />
                 </span>
+                <span v-tooltip.top="'Aceleración'"
+                    style="display:flex; flex-direction: column; justify-content:center; gap: 5px; align-items:center;">
+                    <IconAcelerador :class="getClassAcelerador" ></IconAcelerador>
+                    <small>{{ telemetry['can.throttle.pedal.level'] }} %</small>
+                </span>
             </div>
-            <SignalsComponent :dbm="telemetry['gsm.signal.dbm']" :satellites="telemetry['position.satellites']">
-            </SignalsComponent>
+            
         </div>
 
         <cDivider></cDivider>
@@ -508,69 +494,6 @@ h3 {
 
 }
 
-.circulo {
-    width: 270px;
-    height: 270px;
-    border-radius: 50%;
-    background-color: #1f2937;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    transition: 2s ease-in-out;
-}
-
-.carretera {
-    width: 150px;
-    height: 100%;
-    position: relative;
-    background-color: black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.linea {
-    width: 4px;
-    height: 100%;
-    background-color: white;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    
-}
-
-@keyframes mover-linea {
-    0% {
-        top: 0;
-    }
-
-    100% {
-        top: 100%;
-    }
-}
-
-.car {
-    width: 130%;
-    position: absolute;
-    bottom: 0;
-    transform: translateX(-50%);
-}
-
-@keyframes mover-auto {
-    0% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-50px);
-    }
-
-    100% {
-        transform: translateY(0);
-    }
-}
-
 .cont {
     width: 100%;
     display: flex;
@@ -596,6 +519,15 @@ h3 {
 .min {
     width: fit-content;
     height: fit-content
+}
+
+.aceleradorOff {
+    color: #1f2937;
+}
+
+.aceleradorOn {
+    color: #00ff00;
+    filter: drop-shadow(0 0 0.5rem #00ff00);
 }
 
 .p-card {

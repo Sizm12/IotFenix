@@ -15,13 +15,13 @@
                 currentPageReportTemplate="Mostrando {first} para {last} de {totalRecords} vehículos">
                 <template #header>
                     <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
-                        <h4 class="m-0">Administrar Vehiculos</h4>
-                        <IconField iconPosition="left">
-                            <InputIcon>
+                        <h3 class="m-0">Administrar Vehiculos</h3>
+                        <InputGroup>
+                            <InputGroupAddon>
                                 <i class="pi pi-search" />
-                            </InputIcon>
+                            </InputGroupAddon>
                             <InputText v-model="filters['global'].value" placeholder="Buscar" />
-                        </IconField>
+                        </InputGroup>
 
                     </div>
                 </template>
@@ -58,7 +58,7 @@
             :modal="true" class="p-fluid">
             <TabView>
                 <TabPanel header="Información">
-                    <div class="formcont">
+                    <div class="formcont" style="display:flex; flex-direction:column; gap:15px;">
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="tipo" class="font-semibold w-6rem">Modelo</label>
                             <DropDown size="small" v-model="vehicule.selectedModel" :options="model" optionLabel="name"
@@ -90,7 +90,7 @@
 
                 </TabPanel>
             </TabView>
-            <div class="btncont">
+            <div style="display:flex; gap:10px; width:100%">
                 <CustomButton size="small" severity="secondary" icon="pi pi-times" label="Cancelar" @click="hideDialog">
                 </CustomButton>
                 <CustomButton size="small" icon="pi pi-check" label="Guardar" @click="Save"></CustomButton>
