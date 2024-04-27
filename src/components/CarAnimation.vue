@@ -8,14 +8,14 @@
 
 </template>
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { defineProps } from 'vue';
 
 const props = defineProps(['angulo', 'status']);
 
 const moverLinea = computed(() => {
     //return 'activar-linea';
-    if (props.angulo === true) {
+    if (props.status === true) {
         return 'activar-linea';
     } else {
         return '';
@@ -34,6 +34,10 @@ const moverAuto = computed(() => {
 const AnguloVehiculo = computed(() => {
     const angulo = props.angulo || 0;
     return angulo ? { transform: `rotate(${angulo}deg)` } : ' ';
+});
+
+onMounted(() => {
+    console.log('Componente montado', ' ',props.angulo, props.status);
 });
 </script>
 <style scoped>
@@ -111,7 +115,7 @@ const AnguloVehiculo = computed(() => {
         width: 140px;
         height: 140px;
         border: 3px solid #34d399;
-        z-index:100;
+     
     }
 
     .car {
