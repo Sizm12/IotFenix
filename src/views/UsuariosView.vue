@@ -28,15 +28,12 @@
                 <cColumn field="email" header="Correo Electrónico" sortable style="min-width:12rem"></cColumn>
                 <cColumn field="last_authentication" header="Ultima Conexión" sortable style="min-width:12rem">
                 </cColumn>
-                <cColumn field="state" header="Estado" sortable style="min-width:12rem"></cColumn>
-                <!-- <cColumn :exportable="false" style="min-width:8rem">
+                <cColumn header="Estado" sortable style="min-width:12rem">
                     <template #body="slotProps">
-                        <CustomButton icon="pi pi-pencil" outlined rounded class="mr-2"
-                            @click="editProduct(slotProps.data)" />
-                        <CustomButton icon="pi pi-trash" outlined rounded severity="danger"
-                            @click="confirmDeleteProduct(slotProps.data)" />
-                    </template>
-                </cColumn> -->
+                            <cTag :value="getStateValue(slotProps.data)" :severity="getState(slotProps.data)"></cTag>
+                        </template>
+                </cColumn>
+               
             </DataTable>
         </div>
 
@@ -109,6 +106,7 @@ const GetUsers = async () => {
     } catch (error) {
         console.log("Error: ", error)
     }
+    console.log(users.value);
 }
 
 const GetRoles = async () => {
@@ -147,6 +145,30 @@ const save = async () => {
     user.value = {};
     GetUsers();
 };
+
+const getState = (state) => {
+    
+    switch (state.state) {
+        case 'active':
+            return 'success';
+        case 'inactive':
+            return 'danger';
+        default:
+            return 'warning';
+    }
+}
+
+const getStateValue = (state) => {
+    
+    switch (state.state) {
+        case 'active':
+            return 'Activo';
+        case 'inactive':
+            return 'Inactivo';
+        default:
+            return 'Nuevo';
+    }
+}
 
 </script>
 

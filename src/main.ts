@@ -42,6 +42,8 @@ import RadioButton from 'primevue/radiobutton'
 import MultiSelect from 'primevue/multiselect';
 import InputGroup from 'primevue/inputgroup';
 import InputGroupAddon from 'primevue/inputgroupaddon';
+import ConfirmDialog from 'primevue/confirmdialog';
+import ConfirmationService from 'primevue/confirmationservice';
 
 const app = createApp(App);
 
@@ -91,7 +93,8 @@ app.directive('tooltip', Tooltip);
 app.use(router);
 app.use(PrimeVue);
 app.use(ToastService);
-app.use(store)
+app.use(ConfirmationService);
+app.use(store);
 
 library.add(fas);
 
@@ -122,4 +125,5 @@ app.component('InputGroup', InputGroup);
 app.component('InputGroupAddon', InputGroupAddon);
 app.component('cColumn', Column);
 app.component('cTag', Tag);
+app.component('ConfirmDialog', ConfirmDialog);
 app.mount('#app');

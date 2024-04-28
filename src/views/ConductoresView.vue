@@ -115,6 +115,8 @@ const GetDrivers = async () => {
     } catch (error) {
         console.log("Error: ", error)
     }
+
+    console.log(drivers.value);
 }
 
 const openNew = () => {

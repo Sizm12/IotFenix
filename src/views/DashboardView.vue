@@ -2,6 +2,8 @@
 import { ref } from 'vue';
 import FooterView from '@/components/FooterView.vue';
 
+import { useToast } from "primevue/usetoast";
+
 const isMenuVisible = ref(false);
 const isWidthChanged = ref(false);
 const selectedItem = ref('Home');
@@ -9,6 +11,7 @@ const profileImageUrl = 'https://img.freepik.com/free-vector/illustration-busine
 const logoUrl = 'https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=322,fit=crop,q=95/YZ978xNPGMsMRZ5P/white-isotipo-dOq7DM3R33CNkjBx.png'
 const title = 'FENIX';
 
+const toast = useToast();
 
 const openMenu = () => {
     isMenuVisible.value = true;
@@ -28,9 +31,32 @@ const selectItem = (item: string) => {
     isMenuVisible.value = false;
 };
 
-const closeSession = () =>{
+const closeSession = () => {
     localStorage.clear();
 }
+
+// Moved useConfirm inside setup
+import { useConfirm } from "primevue/useconfirm";
+const confirm = useConfirm();
+
+const confirmAction = () => {
+    confirm.require({
+        message: 'Seguro de cerrar sesión?',
+        header: 'Confirmación',
+        icon: 'pi pi-exclamation-triangle',
+        rejectClass: 'p-button-secondary p-button-outlined',
+        rejectLabel: 'Cancelar',
+        acceptLabel: 'Cerrar Sesión',
+        accept: () => {
+            toast.add({ severity: 'info', summary: 'Hasta pronto..', detail: '', life: 3000 });
+            closeSession();
+            window.location.reload();
+            window.location.href = '/';
+        },
+        reject: () => {}
+    });
+};
+
 </script>
 
 <template>
@@ -53,7 +79,8 @@ const closeSession = () =>{
 
                     <RouterLink to="/Dashboard/Tablero">
                         <li @click="selectItem('Tablero')">
-                            <FA icon="table-list" color="#34d399" /><label>Tablero</label>
+
+                            <i class="fas fa-table" style="color: #34d399;"></i><label>Tablero</label>
                         </li>
                     </RouterLink>
                     <RouterLink to="/Dashboard/TrackIt">
@@ -68,7 +95,8 @@ const closeSession = () =>{
                     </RouterLink>
                     <RouterLink to="/Dashboard/Modelos">
                         <li @click="selectItem('Modelos')">
-                            <i class="pi pi-user" style="color: #34d399"></i><label>Modelos</label>
+                            <i class="far fa-bookmark" style=" color: #34d399;"></i>
+                            <label>Modelos</label>
                         </li>
                     </RouterLink>
                     <RouterLink to="/Dashboard/Conductores">
@@ -78,7 +106,8 @@ const closeSession = () =>{
                     </RouterLink>
                     <RouterLink to="/Dashboard/Dispositivos">
                         <li @click="selectItem('Dispositivos')">
-                            <i class="pi pi-box" style="color: #34d399;"></i><label>Dispositivos</label>
+                            <i class="pi pi-box" style="color:#34d399;"></i>
+                            <label>Dispositivos</label>
                         </li>
                     </RouterLink>
                     <RouterLink to="/Dashboard/Usuarios">
@@ -91,11 +120,11 @@ const closeSession = () =>{
                             <i class="pi pi-chart-line" style="color: #34d399;"></i><label>Reporte</label>
                         </li>
                     </RouterLink> -->
-                    <RouterLink to="/">
-                        <li @click="closeSession()">
+                    
+                        <li @click="confirmAction()">
                             <i class="pi pi-sign-out" style="color: #34d399;"></i><label>Cerrar Sesión</label>
                         </li>
-                    </RouterLink>
+                   
                 </ul>
                 <span class="cross-icon" @click="closeMenu"><i class="fas fa-times"></i></span>
             </div>
@@ -112,6 +141,8 @@ const closeSession = () =>{
                     <h1>{{ title }}</h1> <img :src="profileImageUrl" />
                 </header>
                 <div class="content-data">
+                    <Toast />
+                    <ConfirmDialog></ConfirmDialog>
                     <RouterView></RouterView>
                     <FooterView></FooterView>
                 </div>

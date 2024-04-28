@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import LoaderCar from '@/components/LoaderCar.vue';
 import { httpService } from '@/services/https.services';
-import { tokenService } from '@/services/token.services'
+import { tokenService } from '@/services/token.services';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import {useStore} from 'vuex'
+import { useStore } from 'vuex';
+import { useToast } from 'primevue/usetoast';
 
 const value = ref(null);
 const value2 = ref(null);
@@ -12,35 +13,58 @@ const value2 = ref(null);
 const loader = ref(false);
 const router = useRouter();
 const store = useStore();
+const toast = useToast();
 
 const Login = async () => {
 
     const login = value.value;
     const password = value2.value;
 
-    const response = await httpService.Login(`login`, login, password)
-    localStorage.setItem('token', response)
-    
-    if(response)
-    {
-        tokenService.SetToken(store);
-        showLoader();
+    try {
+        const response = await httpService.Login(`login`, login, password);
+        localStorage.setItem('token', response)
+
+        if (response) {
+            toast.add({ severity: 'info', summary: 'Bienvenido', detail: 'Un gusto que estes de vuelta.', life: 3000 });
+            tokenService.SetToken(store);
+            showLoader();
+        }
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Usuario o contraseña incorrecta.', life: 3000 });
     }
 }
 
-const showLoader = () => {
+// const Login = async () => {
 
+//     const login = value.value;
+//     const password = value2.value;
+
+//     const response = await httpService.Login(`login`, login, password)
+//     localStorage.setItem('token', response)
+
+//     if (response) {
+//         toast.add({ severity: 'info', summary: 'Bienvenido', detail: 'Un gusto que estes de vuelta.', life: 3000 });
+//         tokenService.SetToken(store);
+//         showLoader();
+//     } else {
+//         toast.add({ severity: 'error', summary: 'Error', detail: 'Usuario o contraseña incorrecta.', life: 3000 });
+//     }
+// }
+
+
+const showLoader = () => {
     loader.value = true;
     setTimeout(() => {
         loader.value = false;
         router.push('/Dashboard/General')
     }, 3000);
-
 };
 
 </script>
 <template>
+
     <div class="cont1">
+        <Toast />
         <cCard style="z-index: 30;">
             <template #title> Inicia sesión <cDivider></cDivider> </template>
             <template #content>

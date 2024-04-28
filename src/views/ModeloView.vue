@@ -171,15 +171,16 @@ const Save = async () => {
                     <h3>Información General</h3>
                     <div class="formcont" style="display:flex; flex-direction:column; gap:15px;" >
                         <div class="flex align-items-center gap-3 mb-3">
-                            <label for="nombre" class="font-semibold w-6rem">Nombre Modelo</label>
-                            <InputText size="small" id="nombre" v-model="model.name" class="flex-auto"
-                                autocomplete="off" />
-                        </div>
-                        <div class="flex align-items-center gap-3 mb-3">
                             <label for="tipo" class="font-semibold w-6rem">Fabricante</label>
                             <DropDown size="small" id="tipo" v-model="model.brand_id" :options="brands"
                                 optionLabel="name" optionValue="id" placeholder="Fabricantes" class="drop" />
                         </div>
+                        <div class="flex align-items-center gap-3 mb-3">
+                            <label for="nombre" class="font-semibold w-6rem">Nombre Modelo</label>
+                            <InputText size="small" id="nombre" v-model="model.name" class="flex-auto"
+                                autocomplete="off" />
+                        </div>
+                       
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="tipo" class="font-semibold w-6rem">Tipo de Vehiculo</label>
                             <DropDown size="small" id="tipo" v-model="model.category_id" :options="categories"
