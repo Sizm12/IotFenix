@@ -14,7 +14,7 @@ const props = defineProps({
 
 const chartOptions = ref({
     chart: {
-        type: "bar",
+        type: "column",
         width: 300, 
         height: 200,
         backgroundColor: 'transparent',

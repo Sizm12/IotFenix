@@ -110,7 +110,7 @@
 
                 <div class="limiter"></div>
 
-                <div class="pointer">
+                <div class="pointer" :style="{ '--rpm-content': `'${rpmValue.toFixed(2)}'`}">
                     <div class="hand" :style="handStylesRpm" style="transition: 1s ease-in-out;">
                     </div>
                 </div>
@@ -120,7 +120,7 @@
 
         </div>
 
-        <div id="speedmeter">
+        <div id="speedmeter"  >
             <div class="gauge"
                 style="--kmh: 0; --start-angle: 0deg; --digits-angle: 30deg; --lines-count: 6; --digits-count: 10; --gauge-value: var(--kmh) / 30;">
 
@@ -218,8 +218,11 @@
                     <div class="label">270</div>
                 </div>
 
-                <div class="pointer">
-                    <div class="hand" :style="handStylesvl"></div>
+                <div class="pointer" :style="{ '--vel-value': `'${velocidad1.toFixed(2)} /Kph'`}" >
+
+                    <div class="hand" :style="handStylesvl">
+                       
+                    </div>
                 </div>
             </div>
         </div>
@@ -229,19 +232,13 @@
 <script setup lang="ts">
 import { computed, ref, watch, defineProps, onMounted } from 'vue';
 
-const props = defineProps(['rpm','velocidad']);
+const props = defineProps(['rpm', 'velocidad']);
 
 const rpmValue = ref(props.rpm);
 const velocidad1 = ref(props.velocidad)
 //const rpmValue = ref(2500);
 //const velocidad1 = ref(35);
 
-onMounted(() => {
-    const customGearValue = rpmValue.value.toString();
-    const customGearValuevl = velocidad1.value.toString();
-    document.documentElement.style.setProperty('--custom-gear-value', customGearValue);
-    document.documentElement.style.setProperty('--custom-geer-vl', customGearValuevl);
-})
 
 const className = computed(() => {
     return 'gauge';
@@ -261,18 +258,9 @@ const handStylesRpm = computed(() => {
 });
 
 const handStylesvl = computed(() => {
-    const angule = velocidad1.value ;
+    const angule = velocidad1.value;
     //const angule = 50 ;
     return `transform: rotate(${angule}deg);`;
-});
-
-// Observar cambios en las rpm
-watch(() => props.rpm, (newRpm) => {
-    rpmValue.value = newRpm;
-    const customGearValue = rpmValue.value.toString();
-    const customGearValuevl = velocidad1.value.toString();
-    document.documentElement.style.setProperty('--custom-gear-value', customGearValue);
-    document.documentElement.style.setProperty('--custom-geer-vl', customGearValuevl);
 });
 
 </script>
@@ -281,8 +269,8 @@ watch(() => props.rpm, (newRpm) => {
 @import url('https://fonts.googleapis.com/css?family=Changa+One:400,400i');
 
 :root {
-    --custom-gear-value: '';
-    --custom-geer-vl:'';
+    --customgearvalue: '23';
+    --custom-geer-vl: '23';
 }
 
 html {
@@ -616,12 +604,11 @@ body {
 
         .label {
             font-size: 1.2rem;
-      
+
         }
 
         .pointer::after {
-            counter-reset: kmh var(--custom-geer-vl);
-            content: counter(kmh) " km/h";
+            content: var(--vel-value);
             color: #fff;
             top: 65%;
             left: 0;
@@ -629,7 +616,8 @@ body {
             text-align: center;
             display: block;
             position: absolute;
-            font-size: 0.6rem;
+            font-size: 0.8rem;
+            font-weight:600;
         }
     }
 }
@@ -653,8 +641,8 @@ body {
         .pointer::after {
             font-family: 'Changa One', cursive;
             font-style: italic;
-            counter-reset: gear var(--custom-gear-value);
-            content: counter(gear);
+            content: var(--rpm-content);
+            /* Mostrar el valor de --custom-gear-value */
             color: #99c459;
             top: 70%;
             left: 0;

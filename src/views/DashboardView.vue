@@ -2,6 +2,8 @@
 import { ref } from 'vue';
 import FooterView from '@/components/FooterView.vue';
 
+import { useToast } from "primevue/usetoast";
+
 const isMenuVisible = ref(false);
 const isWidthChanged = ref(false);
 const selectedItem = ref('Home');
@@ -9,6 +11,7 @@ const profileImageUrl = 'https://img.freepik.com/free-vector/illustration-busine
 const logoUrl = 'https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=322,fit=crop,q=95/YZ978xNPGMsMRZ5P/white-isotipo-dOq7DM3R33CNkjBx.png'
 const title = 'FENIX';
 
+const toast = useToast();
 
 const openMenu = () => {
     isMenuVisible.value = true;
@@ -28,9 +31,37 @@ const selectItem = (item: string) => {
     isMenuVisible.value = false;
 };
 
-const closeSession = () =>{
+const closeSession = () => {
     localStorage.clear();
 }
+
+// Moved useConfirm inside setup
+import { useConfirm } from "primevue/useconfirm";
+const confirm = useConfirm();
+
+const confirmAction = () => {
+    confirm.require({
+        message: 'Seguro de cerrar sesión?',
+        header: 'Confirmación',
+        icon: 'pi pi-exclamation-triangle',
+        rejectClass: 'p-button-secondary p-button-outlined',
+        rejectLabel: 'Cancelar',
+        acceptLabel: 'Cerrar Sesión',
+        accept: () => {
+            toast.add({ severity: 'info', summary: 'Hasta pronto..', detail: '', life: 3000 });
+            closeSession();
+            window.location.reload();
+            window.location.href = '/';
+        },
+        reject: () => { }
+    });
+};
+
+const op = ref();
+const toggle = (event) => {
+    op.value.toggle(event);
+}
+
 </script>
 
 <template>
@@ -44,44 +75,47 @@ const closeSession = () =>{
                     </button>
                 </div>
                 <ul>
-                    <RouterLink to="/Dashboard/General">
+                    <RouterLink to="/Dashboard/General" style="text-decoration: none;">
                         <li routerLinkActive="router-link-active" :class="{ selected: selectedItem === 'Home' }"
                             @click="selectItem('Home')">
                             <i class="pi pi-home" style="color: #34d399;"></i><label>Dashboard</label>
                         </li>
                     </RouterLink>
 
-                    <RouterLink to="/Dashboard/Tablero">
+                    <RouterLink to="/Dashboard/Tablero" style="text-decoration: none;">
                         <li @click="selectItem('Tablero')">
-                            <FA icon="table-list" color="#34d399" /><label>Tablero</label>
+
+                            <i class="fas fa-table" style="color: #34d399;"></i><label>Tablero</label>
                         </li>
                     </RouterLink>
-                    <RouterLink to="/Dashboard/TrackIt">
+                    <RouterLink to="/Dashboard/TrackIt" style="text-decoration: none;">
                         <li @click="selectItem('TrackIt')">
                             <i class="pi pi-map" style="color: #34d399;"></i><label>Seguimiento</label>
                         </li>
                     </RouterLink>
-                    <RouterLink to="/Dashboard/Vehiculos">
+                    <RouterLink to="/Dashboard/Vehiculos" style="text-decoration: none;">
                         <li @click="selectItem('Vehiculos')">
                             <i class="pi pi-car" style="color: #34d399;"></i><label>Vehiculos</label>
                         </li>
                     </RouterLink>
-                    <RouterLink to="/Dashboard/Modelos">
+                    <RouterLink to="/Dashboard/Modelos" style="text-decoration: none;">
                         <li @click="selectItem('Modelos')">
-                            <i class="pi pi-user" style="color: #34d399"></i><label>Modelos</label>
+                            <i class="far fa-bookmark" style=" color: #34d399;"></i>
+                            <label>Modelos</label>
                         </li>
                     </RouterLink>
-                    <RouterLink to="/Dashboard/Conductores">
+                    <RouterLink to="/Dashboard/Conductores" style="text-decoration: none;">
                         <li @click="selectItem('Conductores')">
                             <i class="pi pi-user" style="color: #34d399;"></i><label>Conductores</label>
                         </li>
                     </RouterLink>
-                    <RouterLink to="/Dashboard/Dispositivos">
+                    <RouterLink to="/Dashboard/Dispositivos" style="text-decoration: none;">
                         <li @click="selectItem('Dispositivos')">
-                            <i class="pi pi-box" style="color: #34d399;"></i><label>Dispositivos</label>
+                            <i class="pi pi-box" style="color:#34d399;"></i>
+                            <label>Dispositivos</label>
                         </li>
                     </RouterLink>
-                    <RouterLink to="/Dashboard/Usuarios">
+                    <RouterLink to="/Dashboard/Usuarios" style="text-decoration: none;">
                         <li @click="selectItem('Usuarios')">
                             <i class="pi pi-users" style="color: #34d399;"></i><label>Usuarios</label>
                         </li>
@@ -91,11 +125,11 @@ const closeSession = () =>{
                             <i class="pi pi-chart-line" style="color: #34d399;"></i><label>Reporte</label>
                         </li>
                     </RouterLink> -->
-                    <RouterLink to="/">
-                        <li @click="closeSession()">
-                            <i class="pi pi-sign-out" style="color: #34d399;"></i><label>Cerrar Sesión</label>
-                        </li>
-                    </RouterLink>
+
+                    <li @click="confirmAction()" style="cursor: pointer;">
+                        <i class="pi pi-sign-out" style="color: #34d399;"></i><label>Cerrar Sesión</label>
+                    </li>
+
                 </ul>
                 <span class="cross-icon" @click="closeMenu"><i class="fas fa-times"></i></span>
             </div>
@@ -109,15 +143,35 @@ const closeSession = () =>{
                         <li class="pi pi-bars" style="font-size: 2rem;"></li>
                     </div>
 
-                    <h1>{{ title }}</h1> <img :src="profileImageUrl" />
+                    <h1>{{ title }}</h1> <img :src="profileImageUrl" @click="toggle" style="cursor: pointer;" />
                 </header>
                 <div class="content-data">
+                    <Toast />
+                    <ConfirmDialog></ConfirmDialog>
                     <RouterView></RouterView>
                     <FooterView></FooterView>
                 </div>
             </div>
         </div>
     </div>
+    <OverlayPanel ref="op">
+        <div style="display: flex; flex-direction: column; gap: 15px; width: auto;">
+            <h4>Mi cuenta</h4>
+            <li style="cursor: pointer; width:100%;">
+                <i class="fas fa-info" style="color: #34d399;"></i>  <label style="cursor:pointer;">Editar mi información</label>
+            </li>
+
+            <li style="cursor: pointer; width:100%;">
+                <i class="fas fa-key" style="color: #34d399;"></i>  <label style="cursor:pointer;">Cambiar contraseña</label>
+            </li>
+            
+            <li @click="confirmAction()" style="cursor: pointer; width:100%;">
+                <i class="pi pi-sign-out" style="color: #34d399;"></i>  <label style="cursor:pointer;">Cerrar
+                    Sesión</label>
+            </li>
+        </div>
+
+    </OverlayPanel>
 </template>
 
 <style scoped>
@@ -192,7 +246,7 @@ label {
 }
 
 .sideBar li:hover {
-    background-color: #34d399;
+    background-color: #1C2230;
 }
 
 .selected {
@@ -233,6 +287,7 @@ header {
 #mobile {
     display: none;
 }
+
 
 .menu-button {
     position: relative;
