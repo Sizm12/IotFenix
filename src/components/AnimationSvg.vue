@@ -1,6 +1,6 @@
 <template>
     <div style="height: 70%; width:100%; justify-content:center; align-items:center; display:flex; flex-direction:column; gap:20px;" >
-        <h2>Selecione el vehiculo</h2>
+        <h2>Selecione el vehículo</h2>
         <img src="../assets/City-driver.svg" class="city-driver"/>
     </div>
 

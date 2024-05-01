@@ -7,6 +7,8 @@ import SignalsComponent from "@/components/SignalsComponent.vue";
 import BatteryComponent from "@/components/BatteryComponent.vue";
 import CarAnimation from "@/components/CarAnimation.vue";
 import IconAcelerador from "@/components/icons/IconAcelerador.vue";
+import BarChart from "@/components/BarChart.vue";
+import type { color } from "highcharts";
 const selectedVehicle = ref<Device | null>(null);
 
 const telemetry = ref();
@@ -192,7 +194,7 @@ const ObtenerDatosDispositivo = async (id: number) => {
 
         telemetry.value = response[0].telemetry;
 
-        console.log( '--dispositivo' ,telemetry.value);
+        console.log('--dispositivo', telemetry.value);
 
         const selectParams = ['can.fuel.volume', 'can.fuel.level', 'can.fuel.consumed', 'can.fuel.consumed.high.resolution', 'can.engine.fuel.rate', 'position.direction', 'gsm.signal.dbm', 'can.vehicle.speed'];
         filtertelemetry.value = Object.fromEntries(
@@ -279,7 +281,7 @@ const setChartOptions = () => {
             y: {
                 beginAtZero: true,
                 ticks: {
-                    color: textColorSecondary
+                    color: textColorSecondary,
                 },
                 grid: {
                     color: surfaceBorder
@@ -293,7 +295,7 @@ const setChartOptions = () => {
     <div style="display:flex; align-items:center; justify-content: space-around;">
         <h1>Tablero</h1>
         <DropDown v-model="selectedVehicle" :options="device" @change="OnChange" optionLabel="name"
-            placeholder="Seleccione el vehiculo" class="w-full md:w-14rem" />
+            placeholder="Seleccione el vehículo" class="w-full md:w-14rem" />
     </div>
     <AnimationSvg v-if="!telemetry" />
     <div v-if="telemetry">
@@ -312,11 +314,27 @@ const setChartOptions = () => {
                 <CarAnimation :angulo="telemetry['position.direction']" :status="telemetry['movement.status']">
                 </CarAnimation>
             </div>
+
+            <cChart type="bar" :data=" {
+        labels: ['Aceleración'],
+        datasets: [
+            {
+                label: 'Aceleracion',
+                //data: [telemetry['can.throttle.pedal.level']],
+                data: [telemetry['can.throttle.pedal.level']],
+                backgroundColor: [ 'rgba(6, 182, 212, 0.2)', 'rgb(107, 114, 128, 0.2)', 'rgba(139, 92, 246 0.2)'],
+                borderColor: [ 'rgb(6, 182, 212)', 'rgb(107, 114, 128)', 'rgb(139, 92, 246)'],
+                borderWidth: 1,
+                barThickness: 30,
+                color: '#fff',
+            }
+        ]
+    }"  class="h-30rem" />
         </div>
 
         <div
             style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0px 20px;">
-           
+
             <div class="icons">
                 <span v-tooltip.top="vehiculoOn ? 'Encendido' : 'Apagado'">
                     <FA style="font-size: 2rem;" icon="car-rear" :class="vehiculoOn ? 'on' : 'off'" />
@@ -339,11 +357,11 @@ const setChartOptions = () => {
                 </span>
                 <span v-tooltip.top="'Aceleración'"
                     style="display:flex; flex-direction: column; justify-content:center; gap: 5px; align-items:center;">
-                    <IconAcelerador :class="getClassAcelerador" ></IconAcelerador>
+                    <IconAcelerador :class="getClassAcelerador"></IconAcelerador>
                     <small>{{ telemetry['can.throttle.pedal.level'] }} %</small>
                 </span>
             </div>
-            
+
         </div>
 
         <cDivider></cDivider>
@@ -352,12 +370,12 @@ const setChartOptions = () => {
                 <template #title>
 
                 </template>
-                <template #content>
+<template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
                         <Bars3Chart />
                     </div>
                 </template>
-            </cCard> -->
+</cCard> -->
             <!-- <cCard v-if="telemetry && 'external.powersource.voltage' in telemetry" class="min">
                 <template #title>
                     <FA icon="car-battery" />&nbsp;<small>Bateria Principal </small>
@@ -369,6 +387,19 @@ const setChartOptions = () => {
                     </div>
                 </template>
             </cCard> -->
+
+            <cCard v-if="telemetry && 'external.powersource.voltage' in telemetry" class="min">
+                <template #title>
+                    <FA icon="car-battery" />&nbsp;<small>Bateria Principal </small>
+                </template>
+                <template #content>
+                    <div style="display:flex; justify-content:center; align-items:center;">
+                        <cKnob v-model="telemetry['external.powersource.voltage']" valueColor="#F2b53C" :strokeWidth="8"
+                            readonly />
+                    </div>
+                </template>
+            </cCard>
+
             <cCard v-if="telemetry && 'battery.voltage' in telemetry" class="min">
                 <template #title>
                     <FA icon="car-battery" />&nbsp;<small>Bateria interna</small>
@@ -380,9 +411,10 @@ const setChartOptions = () => {
                     </div>
                 </template>
             </cCard>
+            
             <cCard v-if="telemetry && 'device.temperature' in telemetry" class="min">
                 <template #title>
-                    <FA icon="temperature-quarter" />&nbsp;<small>Temperatura del Dispositivo</small>
+                    <FA icon="temperature-quarter" />&nbsp;<small>Temperatura del vehiculo</small>
                 </template>
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
@@ -394,7 +426,7 @@ const setChartOptions = () => {
 
             <cCard v-if="calc && 'fuel_consumed' in calc" class="min">
                 <template #title>
-                    <FA icon="temperature-quarter" />&nbsp;<small>Combustible Consumido</small>
+                    <FA icon="gas-pump" />&nbsp;<small>Combustible Consumido</small>
                 </template>
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">

@@ -45,6 +45,9 @@ import InputGroupAddon from 'primevue/inputgroupaddon';
 import ConfirmDialog from 'primevue/confirmdialog';
 import ConfirmationService from 'primevue/confirmationservice';
 
+import OverlayPanel from 'primevue/overlaypanel';
+
+
 const app = createApp(App);
 
 const router = createRouter({
@@ -126,4 +129,5 @@ app.component('InputGroupAddon', InputGroupAddon);
 app.component('cColumn', Column);
 app.component('cTag', Tag);
 app.component('ConfirmDialog', ConfirmDialog);
+app.component('OverlayPanel', OverlayPanel);
 app.mount('#app');

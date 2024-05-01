@@ -110,7 +110,7 @@
 
                 <div class="limiter"></div>
 
-                <div class="pointer" :style="{ '--rpm-content': `'${rpmValue}'`}">
+                <div class="pointer" :style="{ '--rpm-content': `'${rpmValue.toFixed(2)}'`}">
                     <div class="hand" :style="handStylesRpm" style="transition: 1s ease-in-out;">
                     </div>
                 </div>
@@ -218,7 +218,7 @@
                     <div class="label">270</div>
                 </div>
 
-                <div class="pointer" :style="{ '--vel-value': `'${velocidad1} /Kph'`}" >
+                <div class="pointer" :style="{ '--vel-value': `'${velocidad1.toFixed(2)} /Kph'`}" >
 
                     <div class="hand" :style="handStylesvl">
                        
