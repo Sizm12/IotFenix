@@ -151,11 +151,11 @@ const setChartOptionsHorizontal = () => {
             <label class="ml-2">Fecha Final</label>
             <Calendar v-model="fechaFinal" />
         </div>
-        <div class="flex align-items-center">
+        <!--<div class="flex align-items-center">
             <label class="ml-2">Criterio a Evaluar</label>
             <DropDown v-model="selectedCalculate" optionLabel="name" placeholder="Seleccione el Criterio"
                 class="w-full md:w-14rem" />
-        </div>
+        </div>-->
     </div>
     <div class="flex flex-wrap gap-3">
         <CustomButton label="Filtrar"></CustomButton>

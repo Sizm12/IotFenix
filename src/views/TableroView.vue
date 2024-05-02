@@ -17,10 +17,19 @@ const linear = ref();
 const timestamp = ref();
 const battery = ref();
 const mileage = ref();
+const fuel = ref();
+const speed = ref();
 const calc = ref();
+
+const maxspeed = ref();
+const averagespeed = ref();
+const fuelconsumed = ref();
+const distancecovered = ref();
 
 const batteryChart = ref();
 const mileageChart = ref();
+const fuelChart = ref();
+const speedChart = ref();
 
 interface Device {
     id: number;
@@ -58,12 +67,7 @@ const ObtenerCalculadora = async (id: number) => {
             "calc_id": 1685511
         }
         const response = await httpService.post(`/devices/${id}/calculate`, datatoSend);
-        console.log(response[0]);
-
         calc.value = response[0]
-        console.log("Calculado", calc.value);
-
-
     } catch (error) {
         console.error('Error recuperando valores: ', error)
     }
@@ -96,15 +100,66 @@ const setBattery = () => {
     };
 };
 
+const CalculateConsumed = (data) => {
+    const newData = [];
+    let increment = 0;
+    for (let i = 1; i < data.length; i++) {
+        const actual = data[i] - data[i - 1];
+        increment += actual;
+        newData.push(increment)
+    }
+    return newData
+}
+
 const setMileage = () => {
     const documentStyle = getComputedStyle(document.documentElement);
+    const distance = CalculateConsumed(mileage.value)
+    distancecovered.value = Math.round(Math.max(...distance));
 
     return {
         labels: Object.values(timestamp.value),
         datasets: [
             {
                 label: 'Recorrido',
-                data: Object.values(mileage.value),
+                data: Object.values(distance),
+                fill: false,
+                tension: 0.4,
+                borderColor: documentStyle.getPropertyValue('--blue-500')
+            }
+        ]
+    };
+};
+
+const setFuel = () => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    const fuelvalue = CalculateConsumed(fuel.value)
+    fuelconsumed.value = Math.round(Math.max(...fuelvalue));
+
+    return {
+        labels: Object.values(timestamp.value),
+        datasets: [
+            {
+                label: 'Combustible',
+                data: Object.values(fuelvalue),
+                fill: false,
+                tension: 0.4,
+                borderColor: documentStyle.getPropertyValue('--blue-500')
+            }
+        ]
+    };
+};
+
+const setSpeed = () => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    maxspeed.value = Math.round(Math.max(...speed.value));
+    const sum = speed.value.reduce((count, value) => count + value, 0);
+    averagespeed.value = Math.round(sum / speed.value.length)
+    return {
+        labels: Object.values(timestamp.value),
+        datasets: [
+            {
+                label: 'Velocidad',
+                data: Object.values(speed.value),
                 fill: false,
                 tension: 0.4,
                 borderColor: documentStyle.getPropertyValue('--blue-500')
@@ -128,10 +183,12 @@ const ObtenerTelemetriaDispositivo = async (id: number) => {
         fechafinal.setSeconds(0);
         var fechafinaltimestamp = Math.floor(fechafinal.getTime() / 1000);
 
-        const parameters = "can.vehicle.mileage.high.resolution,can.fuel.volume,vehicle.mileage,external.powersource.voltage,timestamp";
+        const parameters = "can.vehicle.mileage.high.resolution,can.fuel.volume,vehicle.mileage,external.powersource.voltage,can.fuel.consumed,can.wheel.speed,timestamp";
         const datatoSend = {
             "from": fechainiciotimestamp,
             "to": fechafinaltimestamp,
+            //"from": 1714545468,
+            //"to": 1714628510,
             "fields": parameters
         }
 
@@ -156,6 +213,25 @@ const ObtenerTelemetriaDispositivo = async (id: number) => {
             })
             .filter(timestamp => timestamp != null);
 
+        fuel.value = Object.values(linear.value)
+            .map(item => {
+                if (typeof item === 'object' && 'can.fuel.consumed' in item) {
+                    return item['can.fuel.consumed'];
+                }
+                return null;
+            })
+            .filter(timestamp => timestamp != null);
+
+        speed.value = Object.values(linear.value)
+            .map(item => {
+                if (typeof item === 'object' && 'can.wheel.speed' in item) {
+                    return item['can.wheel.speed'];
+                }
+                return null;
+            })
+            .filter(timestamp => timestamp != null);
+
+
         mileage.value = Object.values(linear.value)
             .map(item => {
                 if (typeof item === 'object' && 'can.vehicle.mileage.high.resolution' in item) {
@@ -176,12 +252,9 @@ const ObtenerTelemetriaDispositivo = async (id: number) => {
         if (timestamp.value !== null) {
             batteryChart.value = setBattery();
             mileageChart.value = setMileage();
+            fuelChart.value = setFuel();
+            speedChart.value = setSpeed();
         }
-        console.log(linear);
-
-
-
-
     } catch (error) {
         console.error('Error recuperando valores: ', error)
     }
@@ -190,22 +263,13 @@ const ObtenerTelemetriaDispositivo = async (id: number) => {
 const ObtenerDatosDispositivo = async (id: number) => {
     try {
         const response = await httpService.get(`/devices/${id}`, { 'fields': 'name,protocol_id,protocol_name,telemetry' })
-        console.log(response[0].telemetry);
 
         telemetry.value = response[0].telemetry;
-
-        console.log('--dispositivo', telemetry.value);
 
         const selectParams = ['can.fuel.volume', 'can.fuel.level', 'can.fuel.consumed', 'can.fuel.consumed.high.resolution', 'can.engine.fuel.rate', 'position.direction', 'gsm.signal.dbm', 'can.vehicle.speed'];
         filtertelemetry.value = Object.fromEntries(
             Object.entries(telemetry.value).filter(([key]) => selectParams.includes(key))
         )
-
-        if (filtertelemetry.value !== null) {
-            chartData.value = setChartData();
-        }
-
-        console.log(filtertelemetry.value);
 
     } catch (error) {
         console.error('Error recuperando valores: ', error)
@@ -238,23 +302,6 @@ onMounted(() => {
 const chartData = ref();
 const chartOptions = ref();
 
-const setChartData = () => {
-    console.log(filtertelemetry);
-
-    return {
-        labels: ['Combustible (l)', 'Combustible (ml)', 'Consumo Total', 'Consumo Total', 'Nivel Combustible'],
-        datasets: [
-            {
-                label: 'Combustible',
-                data: Object.values(filtertelemetry.value),
-                fill: false,
-                tension: 0.4,
-                backgroundColor: ['rgba(255, 159, 64, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(153, 102, 255, 0.2)'],
-                borderColor: ['rgb(255, 159, 64)', 'rgb(75, 192, 192)', 'rgb(54, 162, 235)', 'rgb(153, 102, 255)'],
-            },
-        ]
-    };
-};
 const setChartOptions = () => {
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color');
@@ -315,21 +362,21 @@ const setChartOptions = () => {
                 </CarAnimation>
             </div>
 
-            <cChart type="bar" :data=" {
-        labels: ['Aceleración'],
-        datasets: [
-            {
-                label: 'Aceleracion',
-                //data: [telemetry['can.throttle.pedal.level']],
-                data: [telemetry['can.throttle.pedal.level']],
-                backgroundColor: [ 'rgba(6, 182, 212, 0.2)', 'rgb(107, 114, 128, 0.2)', 'rgba(139, 92, 246 0.2)'],
-                borderColor: [ 'rgb(6, 182, 212)', 'rgb(107, 114, 128)', 'rgb(139, 92, 246)'],
-                borderWidth: 1,
-                barThickness: 30,
-                color: '#fff',
-            }
-        ]
-    }"  class="h-30rem" />
+            <cChart type="bar" :data="{
+                labels: ['Aceleración'],
+                datasets: [
+                    {
+                        label: 'Aceleracion',
+                        //data: [telemetry['can.throttle.pedal.level']],
+                        data: [telemetry['can.throttle.pedal.level']],
+                        backgroundColor: ['rgba(6, 182, 212, 0.2)', 'rgb(107, 114, 128, 0.2)', 'rgba(139, 92, 246 0.2)'],
+                        borderColor: ['rgb(6, 182, 212)', 'rgb(107, 114, 128)', 'rgb(139, 92, 246)'],
+                        borderWidth: 1,
+                        barThickness: 30,
+                        color: '#fff',
+                    }
+                ]
+            }" class="h-30rem" />
         </div>
 
         <div
@@ -366,55 +413,64 @@ const setChartOptions = () => {
 
         <cDivider></cDivider>
         <div class="flex">
-            <!-- <cCard v-if="telemetry && 'external.powersource.voltage' in telemetry">
-                <template #title>
 
-                </template>
-<template #content>
-                    <div style="display:flex; justify-content:center; align-items:center;">
-                        <Bars3Chart />
-                    </div>
-                </template>
-</cCard> -->
-            <!-- <cCard v-if="telemetry && 'external.powersource.voltage' in telemetry" class="min">
-                <template #title>
-                    <FA icon="car-battery" />&nbsp;<small>Bateria Principal </small>
-                </template>
-                <template #content>
-                    <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="telemetry['external.powersource.voltage']" valueColor="#F2b53C" :strokeWidth="8"
-                            readonly />
-                    </div>
-                </template>
-            </cCard> -->
-
-            <cCard v-if="telemetry && 'external.powersource.voltage' in telemetry" class="min">
-                <template #title>
-                    <FA icon="car-battery" />&nbsp;<small>Bateria Principal </small>
-                </template>
-                <template #content>
-                    <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="telemetry['external.powersource.voltage']" valueColor="#F2b53C" :strokeWidth="8"
-                            readonly />
-                    </div>
-                </template>
-            </cCard>
-
-            <cCard v-if="telemetry && 'battery.voltage' in telemetry" class="min">
-                <template #title>
-                    <FA icon="car-battery" />&nbsp;<small>Bateria interna</small>
-                </template>
-                <template #content>
-                    <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="telemetry['battery.voltage']" class="ind1" valueColor="#8c3df9" readonly
-                            :strokeWidth="8" />
-                    </div>
-                </template>
-            </cCard>
-            
             <cCard v-if="telemetry && 'device.temperature' in telemetry" class="min">
                 <template #title>
-                    <FA icon="temperature-quarter" />&nbsp;<small>Temperatura del vehiculo</small>
+                    <FA icon="gauge" />&nbsp;<small>Velocidad Máxima Alcanzada</small>
+                </template>
+                <template #content>
+                    <div style="display:flex; justify-content:center; align-items:center;">
+                        <cKnob v-model="maxspeed" valueColor="#F2b53C" :strokeWidth="8" readonly />
+                    </div>
+                </template>
+            </cCard>
+
+            <cCard v-if="telemetry && 'device.temperature' in telemetry" class="min">
+                <template #title>
+                    <FA icon="gas-pump" />&nbsp;<small>Combustible Consumido</small>
+                </template>
+                <template #content>
+                    <div style="display:flex; justify-content:center; align-items:center;">
+                        <cKnob v-model="fuelconsumed" valueColor="#F2b53C" :strokeWidth="8" readonly />
+                    </div>
+                </template>
+            </cCard>
+
+            <cCard v-if="telemetry && 'device.temperature' in telemetry" class="min">
+                <template #title>
+                    <FA icon="gauge" />&nbsp;<small>Kilometros Recorridos</small>
+                </template>
+                <template #content>
+                    <div style="display:flex; justify-content:center; align-items:center;">
+                        <cKnob v-model="distancecovered" valueColor="#F2b53C" :strokeWidth="8" readonly />
+                    </div>
+                </template>
+            </cCard>
+            <cCard v-if="telemetry && 'device.temperature' in telemetry" class="min">
+                <template #title>
+                    <FA icon="gauge" />&nbsp;<small>Velocidad Promedio</small>
+                </template>
+                <template #content>
+                    <div style="display:flex; justify-content:center; align-items:center;">
+                        <cKnob v-model="averagespeed" valueColor="#F2b53C" :strokeWidth="8" readonly />
+                    </div>
+                </template>
+            </cCard>
+            <cCard v-if="telemetry && 'device.temperature' in telemetry" class="min">
+                <template #title>
+                    <FA icon="temperature-quarter" />&nbsp;<small>Temperatura Anticongelante</small>
+                </template>
+                <template #content>
+                    <div style="display:flex; justify-content:center; align-items:center;">
+                        <cKnob v-model="telemetry['can.engine.temperature']" :min="0" :max="200" valueColor="#F2b53C"
+                            :strokeWidth="8" readonly />
+                    </div>
+                </template>
+            </cCard>
+
+            <cCard v-if="telemetry && 'device.temperature' in telemetry" class="min">
+                <template #title>
+                    <FA icon="temperature-quarter" />&nbsp;<small>Temperatura del Dispositivo</small>
                 </template>
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
@@ -423,55 +479,9 @@ const setChartOptions = () => {
                     </div>
                 </template>
             </cCard>
-
-            <cCard v-if="calc && 'fuel_consumed' in calc" class="min">
-                <template #title>
-                    <FA icon="gas-pump" />&nbsp;<small>Combustible Consumido</small>
-                </template>
-                <template #content>
-                    <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="calc['fuel_consumed']" valueColor="#F2b53C" :strokeWidth="8" readonly />
-                    </div>
-                </template>
-            </cCard>
-
-            <!-- <cCard v-if="calc && 'fuel_consumed' in calc" class="min">
-                <template #title>
-                    <FA icon="temperature-quarter" />&nbsp;<small>Combustible Total Consumido </small>
-                </template>
-                <template #content>
-                    <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="calc['fuel.consumed.before']" valueColor="#F2b53C" :strokeWidth="8" readonly />
-                    </div>
-                </template>
-            </cCard> -->
-
-            <!-- <cCard v-if="telemetry && 'can.engine.temperature' in telemetry"
-                style="display:flex; justify-content:center; align-items:center;" class="min">
-                <template #title>
-                    <FA icon="temperature-quarter" />&nbsp;<small>Temperatura de motor</small>
-                </template>
-                <template #content>
-                    <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="telemetry['can.engine.temperature']" valueColor="#F2b53C" :strokeWidth="8"
-                            readonly />
-                    </div>
-
-                </template>
-            </cCard> -->
-
         </div>
 
         <div class="flex">
-
-
-
-            <cCard v-if="telemetry">
-                <template #title>Kilometraje</template>
-                <template #content>
-                    <cChart type="bar" :data="chartData" :options="chartOptions" class="h-30rem" />
-                </template>
-            </cCard>
 
             <cCard v-if="linear">
                 <template #title>Voltaje Bateria</template>
@@ -481,9 +491,23 @@ const setChartOptions = () => {
             </cCard>
 
             <cCard v-if="linear">
-                <template #title>Recorrido</template>
+                <template #title>Combustible Consumido</template>
+                <template #content>
+                    <cChart type="line" :data="fuelChart" :options="chartOptions" class="h-30rem" />
+                </template>
+            </cCard>
+
+            <cCard v-if="linear">
+                <template #title>Kilometros Recorridos</template>
                 <template #content>
                     <cChart type="line" :data="mileageChart" :options="chartOptions" class="h-30rem" />
+                </template>
+            </cCard>
+
+            <cCard v-if="linear">
+                <template #title>Monitoreo de Velocidad</template>
+                <template #content>
+                    <cChart type="line" :data="speedChart" :options="chartOptions" class="h-30rem" />
                 </template>
             </cCard>
 

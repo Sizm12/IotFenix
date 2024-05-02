@@ -120,11 +120,11 @@ const toggle = (event) => {
                             <i class="pi pi-users" style="color: #34d399;"></i><label>Usuarios</label>
                         </li>
                     </RouterLink>
-                    <!-- <RouterLink to="/Dashboard/Reporte">
+                    <RouterLink to="/Dashboard/Reporte">
                         <li @click="selectItem('Reporte')">
                             <i class="pi pi-chart-line" style="color: #34d399;"></i><label>Reporte</label>
                         </li>
-                    </RouterLink> -->
+                    </RouterLink>
 
                     <li @click="confirmAction()" style="cursor: pointer;">
                         <i class="pi pi-sign-out" style="color: #34d399;"></i><label>Cerrar Sesión</label>

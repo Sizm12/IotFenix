@@ -50,7 +50,6 @@ export const httpService = {
         try {
             if (Object.keys(params).length > 0) {
                 const queryString = `data=${encodeURIComponent(JSON.stringify(params))}`;
-                console.log('Ruta: ', `${ruta}?${queryString}`);
 
                 const response = await api_url.get(`${ruta}?${queryString}`);
                 return response.data.result;
