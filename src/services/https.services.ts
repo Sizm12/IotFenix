@@ -110,6 +110,18 @@ export const httpService = {
         }
     },
 
+    async GetVehiculeList() {
+        try {
+            if (!userData) {
+                userData = await tokenService.GetToken();
+            }
+            const response = await odoo_api.get(`getVehiculewithFormat?id=${userData.user_id}`)
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
+
     //Endpoint Modulo Fabricantes de Vehiculo
     async GetBrandss() {
         try {

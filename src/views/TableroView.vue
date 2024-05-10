@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { httpService } from "@/services/https.services";
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import GaugesCar from "@/components/GaugesCar.vue";
 import AnimationSvg from "@/components/AnimationSvg.vue";
 import SignalsComponent from "@/components/SignalsComponent.vue";
@@ -8,7 +8,12 @@ import BatteryComponent from "@/components/BatteryComponent.vue";
 import CarAnimation from "@/components/CarAnimation.vue";
 import IconAcelerador from "@/components/icons/IconAcelerador.vue";
 import BarChart from "@/components/BarChart.vue";
+import { useToast } from 'primevue/usetoast';
+
 import type { color } from "highcharts";
+import mqttService from "@/services/mqtt.services"
+const toast = useToast();
+
 const selectedVehicle = ref<Device | null>(null);
 
 const telemetry = ref();
@@ -19,7 +24,10 @@ const battery = ref();
 const mileage = ref();
 const fuel = ref();
 const speed = ref();
-const calc = ref();
+const rpm = ref();
+const fuellevel = ref();
+const accelerate = ref();
+
 
 const maxspeed = ref();
 const averagespeed = ref();
@@ -30,6 +38,21 @@ const batteryChart = ref();
 const mileageChart = ref();
 const fuelChart = ref();
 const speedChart = ref();
+const accelerateChart = ref();
+const fuelLevelChart = ref();
+const rpmChart = ref();
+
+const rpmValue = ref();
+const speedValue = ref();
+const positionValue = ref();
+const vehiculeStateValue = ref();
+const deviceBatteryValue = ref();
+const accelerateValue = ref();
+const signalValue = ref();
+const fuelValue = ref();
+const vehiculeBatteryValue = ref();
+const gsmValue = ref();
+const movementValue = ref();
 
 interface Device {
     id: number;
@@ -37,6 +60,8 @@ interface Device {
 }
 
 const device = ref<Device[]>([]);
+const messageValue = ref();
+const token = 'i9OjixYozzHImqyv7CkOH5mgijWXfjjngYuojjAHG5fSmDbj3kWyd6Fmfp7jwhuD';
 
 onMounted(async () => {
     try {
@@ -47,29 +72,38 @@ onMounted(async () => {
     }
 })
 
-const ObtenerCalculadora = async (id: number) => {
+const MQTTTest = async (id) => {
     try {
-        var fechainicio = new Date();
-        fechainicio.setHours(11);
-        fechainicio.setMinutes(0);
-        fechainicio.setSeconds(0);
-
-        var fechainiciotimestamp = Math.floor(fechainicio.getTime() / 1000);
-
-        var fechafinal = new Date();
-        fechafinal.setHours(23);
-        fechafinal.setMinutes(59);
-        fechafinal.setSeconds(0);
-        var fechafinaltimestamp = Math.floor(fechafinal.getTime() / 1000);
-        const datatoSend = {
-            "from": fechainiciotimestamp,
-            "to": fechafinaltimestamp,
-            "calc_id": 1685511
-        }
-        const response = await httpService.post(`/devices/${id}/calculate`, datatoSend);
-        calc.value = response[0]
+        mqttService.disconnect();
+        toast.add({ severity: 'info', summary: 'Conectando', detail: 'Iniciando Sincronización con el Vehiculo Iniciada', life: 3000 });
+        await mqttService.connect('mqtt://mqtt.flespi.io', {
+            port: 443,
+            protocol: 'mqtts',
+            username: token,
+            password: ''
+        });
+        toast.add({ severity: 'success', summary: 'Conexión Exitosa', detail: 'Sincronización con el Vehiculo Iniciada', life: 3000 });
+        mqttService.subscribe(`flespi/message/gw/devices/${id}`);
+        mqttService.onMessage((topic, message) => {
+            const data = message.toString('utf-8')
+            messageValue.value = JSON.parse(data);
+            const date = messageValue.value['timestamp']
+            const fechaUTC = new Date(date * 1000);
+            const horaCST = fechaUTC.toLocaleTimeString('en-US', { timeZone: 'America/Managua' });
+            toast.add({ severity: 'info', summary: 'Recibiendo Datos', detail: `Datos recibidos a las ${horaCST} ` });
+            positionValue.value = messageValue.value['position.direction']
+            vehiculeStateValue.value = messageValue.value['config.engine.ignition.status']
+            deviceBatteryValue.value = messageValue.value['battery.voltage']
+            accelerateValue.value = messageValue.value['can.throttle.pedal.level']
+            signalValue.value = messageValue.value['position.satellites']
+            fuelValue.value = messageValue.value['can.fuel.level']
+            vehiculeBatteryValue.value = messageValue.value['external.powersource.voltage']--
+            gsmValue.value = messageValue.value['gsm.signal.dbm']
+            movementValue.value = messageValue.value['movement.status']
+        })
     } catch (error) {
-        console.error('Error recuperando valores: ', error)
+        console.error('Error al conectar al servidor MQTT de Flespi:', error);
+        toast.add({ severity: 'error', summary: 'Error en la Conexión', detail: 'Error en la Sincronización, verifique la conexión del equipo', life: 3000 });
     }
 }
 
@@ -79,7 +113,7 @@ const OnChange = () => {
     if (selected !== null) {
         ObtenerDatosDispositivo(selected);
         ObtenerTelemetriaDispositivo(selected);
-        ObtenerCalculadora(selected);
+        MQTTTest(selected)
     }
 }
 
@@ -168,6 +202,54 @@ const setSpeed = () => {
     };
 };
 
+const setRPM = () => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    return {
+        labels: Object.values(timestamp.value),
+        datasets: [
+            {
+                label: 'RPM',
+                data: Object.values(rpm.value),
+                fill: false,
+                tension: 0.4,
+                borderColor: documentStyle.getPropertyValue('--blue-500')
+            }
+        ]
+    };
+};
+
+const setAccelerate = () => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    return {
+        labels: Object.values(timestamp.value),
+        datasets: [
+            {
+                label: 'Aceleración',
+                data: Object.values(accelerate.value),
+                fill: false,
+                tension: 0.4,
+                borderColor: documentStyle.getPropertyValue('--blue-500')
+            }
+        ]
+    };
+};
+
+const setFuelLevel = () => {
+    const documentStyle = getComputedStyle(document.documentElement);
+    return {
+        labels: Object.values(timestamp.value),
+        datasets: [
+            {
+                label: 'Nivel de Combustible en Litros',
+                data: Object.values(fuellevel.value),
+                fill: false,
+                tension: 0.4,
+                borderColor: documentStyle.getPropertyValue('--blue-500')
+            }
+        ]
+    };
+};
+
 const ObtenerTelemetriaDispositivo = async (id: number) => {
     try {
         var fechainicio = new Date();
@@ -183,7 +265,7 @@ const ObtenerTelemetriaDispositivo = async (id: number) => {
         fechafinal.setSeconds(0);
         var fechafinaltimestamp = Math.floor(fechafinal.getTime() / 1000);
 
-        const parameters = "can.vehicle.mileage.high.resolution,can.fuel.volume,vehicle.mileage,external.powersource.voltage,can.fuel.consumed,can.wheel.speed,timestamp";
+        const parameters = "can.vehicle.mileage.high.resolution,vehicle.mileage,can.engine.temperature,external.powersource.voltage,can.fuel.level,can.fuel.consumed,can.wheel.speed,can.engine.rpm,can.throttle.pedal.level,timestamp";
         const datatoSend = {
             "from": fechainiciotimestamp,
             "to": fechafinaltimestamp,
@@ -194,6 +276,8 @@ const ObtenerTelemetriaDispositivo = async (id: number) => {
 
         const response = await httpService.getTelemetry(`/devices/${id}/messages`, datatoSend);
         linear.value = response;
+        console.log(linear);
+
 
         timestamp.value = Object.values(linear.value)
             .map(item => {
@@ -231,11 +315,38 @@ const ObtenerTelemetriaDispositivo = async (id: number) => {
             })
             .filter(timestamp => timestamp != null);
 
+        rpm.value = Object.values(linear.value)
+            .map(item => {
+                if (typeof item === 'object' && 'can.engine.rpm' in item) {
+                    return item['can.engine.rpm'];
+                }
+                return null;
+            })
+            .filter(timestamp => timestamp != null);
+
+        accelerate.value = Object.values(linear.value)
+            .map(item => {
+                if (typeof item === 'object' && 'can.throttle.pedal.level' in item) {
+                    return item['can.throttle.pedal.level'];
+                }
+                return null;
+            })
+            .filter(timestamp => timestamp != null);
+
+        fuellevel.value = Object.values(linear.value)
+            .map(item => {
+                if (typeof item === 'object' && 'can.fuel.level' in item) {
+                    return item['can.fuel.level'];
+                }
+                return null;
+            })
+            .filter(timestamp => timestamp != null);
+
 
         mileage.value = Object.values(linear.value)
             .map(item => {
-                if (typeof item === 'object' && 'can.vehicle.mileage.high.resolution' in item) {
-                    return item['can.vehicle.mileage.high.resolution'];
+                if (typeof item === 'object' && 'vehicle.mileage' in item) {
+                    return item['vehicle.mileage'];
                 }
                 return null;
             })
@@ -243,7 +354,7 @@ const ObtenerTelemetriaDispositivo = async (id: number) => {
 
         const fechasNicaragua = timestamp.value.map(timestamp => {
             const fechaUTC = new Date(timestamp * 1000);
-            const horaCST = fechaUTC.toLocaleTimeString('en-US', { timeZone: 'America/Chicago' });
+            const horaCST = fechaUTC.toLocaleTimeString('en-US', { timeZone: 'America/Managua' });
             return horaCST;
         });
 
@@ -254,6 +365,9 @@ const ObtenerTelemetriaDispositivo = async (id: number) => {
             mileageChart.value = setMileage();
             fuelChart.value = setFuel();
             speedChart.value = setSpeed();
+            accelerateChart.value = setAccelerate();
+            rpmChart.value = setRPM();
+            fuelLevelChart.value = setFuelLevel();
         }
     } catch (error) {
         console.error('Error recuperando valores: ', error)
@@ -265,6 +379,21 @@ const ObtenerDatosDispositivo = async (id: number) => {
         const response = await httpService.get(`/devices/${id}`, { 'fields': 'name,protocol_id,protocol_name,telemetry' })
 
         telemetry.value = response[0].telemetry;
+        rpmValue.value = telemetry.value['can.engine.rpm']--
+        if (telemetry.value['can.wheel.speed'] > 0) {
+            speedValue.value = telemetry.value['can.wheel.speed']--
+        } else {
+            speedValue.value = telemetry.value['position.speed']
+        }
+        positionValue.value = telemetry.value['position.direction']--
+        vehiculeStateValue.value = telemetry.value['config.engine.ignition.status']
+        deviceBatteryValue.value = telemetry.value['battery.voltage']--
+        accelerateValue.value = telemetry.value['can.throttle.pedal.level']--
+        signalValue.value = telemetry.value['position.satellites']--
+        fuelValue.value = telemetry.value['can.fuel.level']--
+        vehiculeBatteryValue.value = telemetry.value['external.powersource.voltage']--
+        gsmValue.value = telemetry.value['gsm.signal.dbm']--
+        movementValue.value = telemetry.value['movement.status']
 
         const selectParams = ['can.fuel.volume', 'can.fuel.level', 'can.fuel.consumed', 'can.fuel.consumed.high.resolution', 'can.engine.fuel.rate', 'position.direction', 'gsm.signal.dbm', 'can.vehicle.speed'];
         filtertelemetry.value = Object.fromEntries(
@@ -278,7 +407,7 @@ const ObtenerDatosDispositivo = async (id: number) => {
 
 const vehiculoOn = computed(() => {
     //return 'on';
-    if (telemetry.value['config.engine.ignition.status']) {
+    if (vehiculeStateValue.value > 0) {
         return true;
     } else {
         return false;
@@ -286,7 +415,7 @@ const vehiculoOn = computed(() => {
 });
 
 const getClassAcelerador = computed(() => {
-    if (telemetry.value['can.throttle.pedal.level'] > 0) {
+    if (accelerateValue.value > 0) {
         return 'aceleradorOn';
     } else {
         return 'aceleradorOff';
@@ -298,6 +427,10 @@ onMounted(() => {
     //chartData.value = setChartData();
     chartOptions.value = setChartOptions();
 });
+
+onBeforeUnmount(()=>{
+    mqttService.disconnect();
+})
 
 const chartData = ref();
 const chartOptions = ref();
@@ -347,18 +480,18 @@ const setChartOptions = () => {
     <AnimationSvg v-if="!telemetry" />
     <div v-if="telemetry">
         <div style="display:flex; width:100%; justify-content:flex-end; gap: 10px;">
-            <BatteryComponent :battery="telemetry['battery.voltage']"></BatteryComponent>
-            <SignalsComponent :dbm="telemetry['gsm.signal.dbm']" :satellites="telemetry['position.satellites']">
+            <BatteryComponent :battery="deviceBatteryValue"></BatteryComponent>
+            <SignalsComponent :dbm="gsmValue" :satellites="signalValue">
             </SignalsComponent>
         </div>
         <div class="cont">
             <div>
                 <!--aqui el velocimetro-->
-                <GaugesCar :rpm="telemetry['can.engine.rpm']" :velocidad="telemetry['can.wheel.speed']" />
+                <GaugesCar :rpm="rpmValue" :velocidad="speedValue" />
             </div>
             <div style="display:flex; justify-content:center; width:100%;font-weight:400;">
                 <!--aqui el carro-->
-                <CarAnimation :angulo="telemetry['position.direction']" :status="telemetry['movement.status']">
+                <CarAnimation :angulo="positionValue" :status="movementValue">
                 </CarAnimation>
             </div>
 
@@ -368,7 +501,7 @@ const setChartOptions = () => {
                     {
                         label: 'Aceleracion',
                         //data: [telemetry['can.throttle.pedal.level']],
-                        data: [telemetry['can.throttle.pedal.level']],
+                        data: [accelerateValue],
                         backgroundColor: ['rgba(6, 182, 212, 0.2)', 'rgb(107, 114, 128, 0.2)', 'rgba(139, 92, 246 0.2)'],
                         borderColor: ['rgb(6, 182, 212)', 'rgb(107, 114, 128)', 'rgb(139, 92, 246)'],
                         borderWidth: 1,
@@ -389,12 +522,12 @@ const setChartOptions = () => {
                 <span v-tooltip.top="'Nivel de combustible:'"
                     style="display:flex; flex-direction: column; justify-content:center; gap: 5px;">
                     <FA style="font-size: 2rem;" icon="gas-pump" class="on" />
-                    <small>{{ telemetry['can.fuel.level'] }} lt</small>
+                    <small>{{ fuelValue }} lt</small>
                 </span>
                 <span v-tooltip.top="'Bateria: %'"
                     style="display:flex; flex-direction: column; justify-content:center; gap: 5px;">
                     <FA style="font-size: 2rem;" icon="car-battery" class="on" />
-                    <small>{{ telemetry['external.powersource.voltage'] }} %</small>
+                    <small>{{ vehiculeBatteryValue }} %</small>
                 </span>
                 <span v-tooltip.top="'Jirar a la izquierda'">
                     <FA style="font-size: 2rem;" icon="caret-left" class="desac" />
@@ -405,58 +538,64 @@ const setChartOptions = () => {
                 <span v-tooltip.top="'Aceleración'"
                     style="display:flex; flex-direction: column; justify-content:center; gap: 5px; align-items:center;">
                     <IconAcelerador :class="getClassAcelerador"></IconAcelerador>
-                    <small>{{ telemetry['can.throttle.pedal.level'] }} %</small>
+                    <small>{{ accelerateValue }} %</small>
                 </span>
             </div>
 
         </div>
 
         <cDivider></cDivider>
-        <div class="flex">
 
-            <cCard v-if="telemetry && 'device.temperature' in telemetry" class="min">
+        <div class="flex">
+            <cCard v-if="telemetry && 'can.wheel.speed' in telemetry" class="min">
                 <template #title>
                     <FA icon="gauge" />&nbsp;<small>Velocidad Máxima Alcanzada</small>
                 </template>
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="maxspeed" valueColor="#F2b53C" :strokeWidth="8" readonly />
+                        <cKnob v-model="maxspeed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8" readonly />
+                        KM/H
                     </div>
                 </template>
             </cCard>
 
-            <cCard v-if="telemetry && 'device.temperature' in telemetry" class="min">
+            <cCard v-if="telemetry && 'can.fuel.level' in telemetry" class="min">
                 <template #title>
                     <FA icon="gas-pump" />&nbsp;<small>Combustible Consumido</small>
                 </template>
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="fuelconsumed" valueColor="#F2b53C" :strokeWidth="8" readonly />
+                        <cKnob v-model="fuelconsumed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8"
+                            readonly />
+                        en Litros
                     </div>
                 </template>
             </cCard>
 
-            <cCard v-if="telemetry && 'device.temperature' in telemetry" class="min">
+            <cCard v-if="telemetry && 'vehicle.mileage' in telemetry" class="min">
                 <template #title>
                     <FA icon="gauge" />&nbsp;<small>Kilometros Recorridos</small>
                 </template>
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="distancecovered" valueColor="#F2b53C" :strokeWidth="8" readonly />
+                        <cKnob v-model="distancecovered" valueColor="#F2b53C" :min="0" :max="1500" :strokeWidth="8"
+                            readonly />
                     </div>
                 </template>
             </cCard>
-            <cCard v-if="telemetry && 'device.temperature' in telemetry" class="min">
+            <cCard v-if="telemetry && 'can.wheel.speed' in telemetry" class="min">
                 <template #title>
                     <FA icon="gauge" />&nbsp;<small>Velocidad Promedio</small>
                 </template>
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="averagespeed" valueColor="#F2b53C" :strokeWidth="8" readonly />
+                        <cKnob v-model="averagespeed" valueColor="#F2b53C" :min="0" :max="150" :strokeWidth="8"
+                            readonly />
+                        KM/H
                     </div>
                 </template>
             </cCard>
-            <cCard v-if="telemetry && 'device.temperature' in telemetry" class="min">
+            <cCard v-if="telemetry && 'can.engine.temperature' in telemetry" class="min">
                 <template #title>
                     <FA icon="temperature-quarter" />&nbsp;<small>Temperatura Anticongelante</small>
                 </template>
@@ -464,6 +603,7 @@ const setChartOptions = () => {
                     <div style="display:flex; justify-content:center; align-items:center;">
                         <cKnob v-model="telemetry['can.engine.temperature']" :min="0" :max="200" valueColor="#F2b53C"
                             :strokeWidth="8" readonly />
+                        °C
                     </div>
                 </template>
             </cCard>
@@ -476,46 +616,87 @@ const setChartOptions = () => {
                     <div style="display:flex; justify-content:center; align-items:center;">
                         <cKnob v-model="telemetry['device.temperature']" valueColor="#F2b53C" :strokeWidth="8"
                             readonly />
+                        °C
                     </div>
                 </template>
             </cCard>
         </div>
 
-        <div class="flex">
-
-            <cCard v-if="linear">
-                <template #title>Voltaje Bateria</template>
+        <div class="flex2">
+            <cCard class="custom-card" v-if="linear">
+                <template #title>Voltaje de Batería del Vehículo</template>
                 <template #content>
-                    <cChart type="line" :data="batteryChart" :options="chartOptions" class="h-30rem" />
+                    <div class="card-content">
+                        <cChart type="line" :data="batteryChart" :options="chartOptions" />
+                    </div>
                 </template>
             </cCard>
+        </div>
 
-            <cCard v-if="linear">
+        <div class="flex2">
+            <cCard class="custom-card" v-if="linear">
                 <template #title>Combustible Consumido</template>
                 <template #content>
-                    <cChart type="line" :data="fuelChart" :options="chartOptions" class="h-30rem" />
+                    <div class="card-content">
+                        <cChart type="line" :data="fuelChart" :options="chartOptions" class="h-30rem" />
+                    </div>
                 </template>
             </cCard>
+        </div>
 
-            <cCard v-if="linear">
+        <div class="flex2">
+            <cCard class="custom-card" v-if="linear">
                 <template #title>Kilometros Recorridos</template>
                 <template #content>
-                    <cChart type="line" :data="mileageChart" :options="chartOptions" class="h-30rem" />
+                    <div class="card-content">
+                        <cChart type="line" :data="mileageChart" :options="chartOptions" class="h-30rem" />
+                    </div>
                 </template>
             </cCard>
+        </div>
 
-            <cCard v-if="linear">
+        <div class="flex2">
+            <cCard class="custom-card" v-if="linear">
                 <template #title>Monitoreo de Velocidad</template>
                 <template #content>
-                    <cChart type="line" :data="speedChart" :options="chartOptions" class="h-30rem" />
+                    <div class="card-content">
+                        <cChart type="line" :data="speedChart" :options="chartOptions" class="h-30rem" />
+                    </div>
                 </template>
             </cCard>
-
         </div>
-        <div class="flex">
 
+        <div class="flex2">
+            <cCard class="custom-card" v-if="linear">
+                <template #title>Nivel de Combustible</template>
+                <template #content>
+                    <div class="card-content">
+                        <cChart type="line" :data="fuelLevelChart" :options="chartOptions" class="h-30rem" />
+                    </div>
+                </template>
+            </cCard>
+        </div>
 
+        <div class="flex2">
+            <cCard class="custom-card" v-if="linear">
+                <template #title>Monitoreo de Aceleración</template>
+                <template #content>
+                    <div class="card-content">
+                        <cChart type="line" :data="accelerateChart" :options="chartOptions" class="h-30rem" />
+                    </div>
+                </template>
+            </cCard>
+        </div>
 
+        <div class="flex2">
+            <cCard class="custom-card" v-if="linear">
+                <template #title>Monitoreo de RPM</template>
+                <template #content>
+                    <div class="card-content">
+                        <cChart type="line" :data="rpmChart" :options="chartOptions" class="h-30rem" />
+                    </div>
+                </template>
+            </cCard>
         </div>
     </div>
 </template>
@@ -550,6 +731,10 @@ h3 {
 
 }
 
+.knob {
+    justify-items: center;
+}
+
 .cont {
     width: 100%;
     display: flex;
@@ -562,7 +747,21 @@ h3 {
 
 .flex {
     display: flex;
+    justify-content: center;
     width: 100%;
+    gap: 10px;
+    padding: 15px;
+    flex-wrap: wrap;
+
+    @media screen and (max-width: 767px) {
+        flex-direction: column;
+    }
+}
+
+.flex2 {
+    display: flex;
+    width: 100%;
+    justify-content: center;
     gap: 10px;
     padding: 15px;
     flex-wrap: wrap;
@@ -588,6 +787,13 @@ h3 {
 
 .p-card {
     padding: 10px;
+}
+
+.custom-card {
+    padding: 20px;
+    width: 60%;
+    box-sizing: border-box;
+    height: 20%;
 }
 
 @media screen and (max-width: 767px) {
