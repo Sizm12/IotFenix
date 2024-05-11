@@ -87,14 +87,23 @@ const MQTTTest = async (id) => {
         mqttService.onMessage((topic, message) => {
             const data = message.toString('utf-8')
             messageValue.value = JSON.parse(data);
+            console.log(messageValue.value);
             const date = messageValue.value['timestamp']
             const fechaUTC = new Date(date * 1000);
             const horaCST = fechaUTC.toLocaleTimeString('en-US', { timeZone: 'America/Managua' });
-            toast.add({ severity: 'info', summary: 'Recibiendo Datos', detail: `Datos recibidos a las ${horaCST} ` });
+            toast.add({ severity: 'info', summary: 'Recibiendo Datos', detail: `Datos recibidos a las ${horaCST} `, life: 3000 });
             positionValue.value = messageValue.value['position.direction']
             vehiculeStateValue.value = messageValue.value['config.engine.ignition.status']
             deviceBatteryValue.value = messageValue.value['battery.voltage']
             accelerateValue.value = messageValue.value['can.throttle.pedal.level']
+            if (telemetry.value['can.wheel.speed'] > 0) {
+                speedValue.value = telemetry.value['can.wheel.speed']--
+                console.log("Velodidad Value: ", speedValue.value);
+            } else {
+                speedValue.value = telemetry.value['position.speed']
+                console.log("Velodidad Value: ", speedValue.value);
+            }
+
             signalValue.value = messageValue.value['position.satellites']
             fuelValue.value = messageValue.value['can.fuel.level']
             vehiculeBatteryValue.value = messageValue.value['external.powersource.voltage']--
@@ -428,7 +437,7 @@ onMounted(() => {
     chartOptions.value = setChartOptions();
 });
 
-onBeforeUnmount(()=>{
+onBeforeUnmount(() => {
     mqttService.disconnect();
 })
 

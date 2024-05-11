@@ -234,8 +234,11 @@ import { computed, ref, watch, defineProps, onMounted } from 'vue';
 
 const props = defineProps(['rpm', 'velocidad']);
 
+
 const rpmValue = ref(props.rpm);
 const velocidad1 = ref(props.velocidad)
+console.log(rpmValue);
+console.log(velocidad1);
 //const rpmValue = ref(2500);
 //const velocidad1 = ref(35);
 
