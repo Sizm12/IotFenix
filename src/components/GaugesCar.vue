@@ -230,42 +230,53 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, defineProps, onMounted } from 'vue';
+import { computed, ref, defineProps, watch } from 'vue';
 
 const props = defineProps(['rpm', 'velocidad']);
 
-
 const rpmValue = ref(props.rpm);
-const velocidad1 = ref(props.velocidad)
-console.log(rpmValue);
-console.log(velocidad1);
-//const rpmValue = ref(2500);
-//const velocidad1 = ref(35);
+const velocidad1 = ref(props.velocidad);
 
+watch(() => props.rpm, (newVal) => {
+  rpmValue.value = newVal;
+});
+
+watch(() => props.velocidad, (newVal) => {
+  velocidad1.value = newVal;
+});
 
 const className = computed(() => {
-    return 'gauge';
+  return 'gauge';
 });
 
 const dynamicStyles = computed(() => {
-    return {
-        '--rpm': `0px`,
-        '--limiter': '6700',
-        '--gauge-value': `var(0deg) / 1000`,
-    };
+  return {
+    '--rpm': `${rpmValue.value}px`,
+    '--limiter': '6700',
+    '--gauge-value': `${rpmValue.value / 1000}deg`,
+  };
 });
 
 const handStylesRpm = computed(() => {
-    const angule = rpmValue.value / 33;
-    return `transform: rotate(${angule}deg);`;
+  const angule = rpmValue.value / 33;
+  return `transform: rotate(${angule}deg);`;
 });
 
 const handStylesvl = computed(() => {
-    const angule = velocidad1.value;
-    //const angule = 50 ;
-    return `transform: rotate(${angule}deg);`;
+  const angule = velocidad1.value;
+  return `transform: rotate(${angule}deg);`;
 });
 
+const speedometerStyles = computed(() => {
+  return {
+    '--kmh': `${velocidad1.value}`,
+    '--start-angle': '0deg',
+    '--digits-angle': '30deg',
+    '--lines-count': '6',
+    '--digits-count': '10',
+    '--gauge-value': `${velocidad1.value / 30}`,
+  };
+});
 </script>
 
 <style scoped>

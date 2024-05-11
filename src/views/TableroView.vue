@@ -500,7 +500,7 @@ const setChartOptions = () => {
             </div>
             <div style="display:flex; justify-content:center; width:100%;font-weight:400;">
                 <!--aqui el carro-->
-                <CarAnimation :angulo="positionValue" :status="movementValue">
+                <CarAnimation :angulo="positionValue" :status="movementValue" :encendido="vehiculeStateValue" >
                 </CarAnimation>
             </div>
 

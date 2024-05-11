@@ -11,11 +11,11 @@
 import { computed, onMounted } from 'vue';
 import { defineProps } from 'vue';
 
-const props = defineProps(['angulo', 'status']);
+const props = defineProps(['angulo', 'status', 'encendido']);
 
 const moverLinea = computed(() => {
     //return 'activar-linea';
-    if (props.status === true) {
+    if (props.status && props.encendido  ) {
         return 'activar-linea';
     } else {
         return '';
@@ -24,7 +24,7 @@ const moverLinea = computed(() => {
 
 const moverAuto = computed(() => {
     // return 'activar-auto';
-    if (props.status === true) {
+    if (props.status && props.encendido ) {
         return 'activar-auto';
     } else {
         return '';
@@ -37,7 +37,7 @@ const AnguloVehiculo = computed(() => {
 });
 
 onMounted(() => {
-    console.log('Componente montado', ' ',props.angulo, props.status);
+    console.log('Componente montado', ' ',props.angulo, props.status, props.encendido);
 });
 </script>
 <style scoped>
@@ -50,7 +50,6 @@ onMounted(() => {
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    transition: 2s ease-in-out;
 }
 
 .carretera {
