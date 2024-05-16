@@ -110,7 +110,7 @@
 
                 <div class="limiter"></div>
 
-                <div class="pointer" :style="{ '--rpm-content': `'${rpmValue.toFixed(2)}'`}">
+                <div class="pointer" :style="{ '--rpm-content': `'${rpmValue.toFixed(2)}'` }">
                     <div class="hand" :style="handStylesRpm" style="transition: 1s ease-in-out;">
                     </div>
                 </div>
@@ -120,7 +120,7 @@
 
         </div>
 
-        <div id="speedmeter"  >
+        <div id="speedmeter">
             <div class="gauge"
                 style="--kmh: 0; --start-angle: 0deg; --digits-angle: 30deg; --lines-count: 6; --digits-count: 10; --gauge-value: var(--kmh) / 20;">
 
@@ -218,10 +218,38 @@
                     <div class="label">180</div>
                 </div>
 
+<<<<<<< HEAD
                 <div class="pointer" :style="{ '--vel-value': `'${velocidad1.toFixed(2)} /Kph'`}" >
+=======
+                <div class="digit">
+                    <span class="line"></span>
+                    <span class="separating line"></span>
+                    <span class="line"></span>
+                    <span class="separating line"></span>
+                    <span class="line"></span>
+
+                    <div class="label">210</div>
+                </div>
+
+                <div class="digit">
+                    <span class="line"></span>
+                    <span class="separating line"></span>
+                    <span class="line"></span>
+                    <span class="separating line"></span>
+                    <span class="line"></span>
+
+                    <div class="label">240</div>
+                </div>
+
+                <div class="digit">
+                    <div class="label">270</div>
+                </div>
+
+                <div class="pointer" :style="{ '--vel-value': `'${velocidad1.toFixed(2)} /Kph'` }">
+>>>>>>> e2910af735b1716d1d8d08a52b5c2401537b92a7
 
                     <div class="hand" :style="handStylesvl">
-                       
+
                     </div>
                 </div>
             </div>
@@ -240,44 +268,51 @@ const velocidad1 = ref(props.velocidad);
 
 
 watch(() => props.rpm, (newVal) => {
-  rpmValue.value = newVal;
+    console.log(newVal);
+    rpmValue.value = newVal;
 });
 
 watch(() => props.velocidad, (newVal) => {
-  velocidad1.value = newVal;
+    console.log(newVal);
+    velocidad1.value = newVal;
 });
 
 const className = computed(() => {
-  return 'gauge';
+    return 'gauge';
 });
 
 const dynamicStyles = computed(() => {
-  return {
-    '--rpm': `${rpmValue.value}px`,
-    '--limiter': '6700',
-    '--gauge-value': `${rpmValue.value / 1000}deg`,
-  };
+    return {
+        '--rpm': `${rpmValue.value}px`,
+        '--limiter': '6700',
+        '--gauge-value': `${rpmValue.value / 1000}deg`,
+    };
 });
 
 const handStylesRpm = computed(() => {
-  const angule = rpmValue.value / 33;
-  return `transform: rotate(${angule}deg);`;
+    const angule = rpmValue.value / 33;
+    return `transform: rotate(${angule}deg);`;
 });
 
 const handStylesvl = computed(() => {
+<<<<<<< HEAD
   const angule = velocidad1.value;
   return `transform: rotate(${angule * 1.5 }deg);`;
+=======
+    const angule = velocidad1.value;
+    return `transform: rotate(${angule}deg);`;
+>>>>>>> e2910af735b1716d1d8d08a52b5c2401537b92a7
 });
 
 const speedometerStyles = computed(() => {
-  return {
-    '--kmh': `${velocidad1.value}`,
-    '--start-angle': '0deg',
-    '--digits-angle': '30deg',
-    '--lines-count': '6',
-    '--digits-count': '10',
-    '--gauge-value': `${velocidad1.value / 30}`,
-  };
+    return {
+        '--kmh': `${velocidad1.value}`,
+        '--start-angle': '0deg',
+        '--digits-angle': '30deg',
+        '--lines-count': '6',
+        '--digits-count': '10',
+        '--gauge-value': `${velocidad1.value / 30}`,
+    };
 });
 </script>
 
@@ -633,7 +668,7 @@ body {
             display: block;
             position: absolute;
             font-size: 0.8rem;
-            font-weight:600;
+            font-weight: 600;
         }
     }
 }

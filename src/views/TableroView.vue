@@ -87,7 +87,6 @@ const MQTTTest = async (id) => {
         mqttService.onMessage((topic, message) => {
             const data = message.toString('utf-8')
             messageValue.value = JSON.parse(data);
-            console.log(messageValue.value);
             const date = messageValue.value['timestamp']
             const fechaUTC = new Date(date * 1000);
             const horaCST = fechaUTC.toLocaleTimeString('en-US', { timeZone: 'America/Managua' });
@@ -96,12 +95,10 @@ const MQTTTest = async (id) => {
             vehiculeStateValue.value = messageValue.value['config.engine.ignition.status']
             deviceBatteryValue.value = messageValue.value['battery.voltage']
             accelerateValue.value = messageValue.value['can.throttle.pedal.level']
-            if (telemetry.value['can.wheel.speed'] > 0) {
-                speedValue.value = telemetry.value['can.wheel.speed']--
-                console.log("Velodidad Value: ", speedValue.value);
+            if (messageValue.value['can.wheel.speed'] > 0) {
+                speedValue.value = messageValue.value['can.wheel.speed']--
             } else {
-                speedValue.value = telemetry.value['position.speed']
-                console.log("Velodidad Value: ", speedValue.value);
+                speedValue.value = messageValue.value['position.speed']
             }
 
             signalValue.value = messageValue.value['position.satellites']
@@ -109,6 +106,7 @@ const MQTTTest = async (id) => {
             vehiculeBatteryValue.value = messageValue.value['external.powersource.voltage']--
             gsmValue.value = messageValue.value['gsm.signal.dbm']
             movementValue.value = messageValue.value['movement.status']
+            rpmValue.value = messageValue.value['can.engine.rpm']
         })
     } catch (error) {
         console.error('Error al conectar al servidor MQTT de Flespi:', error);
@@ -508,7 +506,7 @@ const setChartOptions = () => {
             </div>
             <div style="display:flex; justify-content:center; width:100%;font-weight:400;">
                 <!--aqui el carro-->
-                <CarAnimation :angulo="positionValue" :status="movementValue" :encendido="vehiculeStateValue" >
+                <CarAnimation :angulo="positionValue" :status="movementValue" :encendido="vehiculeStateValue">
                 </CarAnimation>
             </div>
 
