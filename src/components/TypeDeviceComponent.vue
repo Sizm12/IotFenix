@@ -46,15 +46,21 @@
                     <div class="formcont" style="display:flex; flex-direction:column; gap:15px;" >
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="nombre" class="font-semibold w-6rem">Nombre</label>
-                            <InputText size="small" id="nombre" v-model="type.name" class="flex-auto" autocomplete="off" />
+                            <InputText size="small" id="nombre" v-model="type.name" class="flex-auto" autocomplete="off"
+                            :class="{ 'p-invalid': submitted && !type.name }" />
+                            <small v-if="submitted && !type.name" class="p-error">Nombre es requerido.</small>
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="tipo" class="font-semibold w-6rem">Proveedor</label>
-                            <InputText size="small" id="address" v-model="type.proveedor" class="flex-auto" autocomplete="off" />
+                            <InputText size="small" id="address" v-model="type.proveedor" class="flex-auto" autocomplete="off" 
+                            :class="{ 'p-invalid': submitted && !type.name }" />
+                            <small v-if="submitted && !type.proveedor" class="p-error">Proveedor es requerido.</small>
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="id" class="font-semibold w-6rem">Modelo</label>
-                            <InputText size="small" id="vat" v-model="type.modelo" class="flex-auto" autocomplete="off" />
+                            <InputText size="small" id="vat" v-model="type.modelo" class="flex-auto" autocomplete="off"
+                            :class="{ 'p-invalid': submitted && !type.modelo }"  />
+                            <small v-if="submitted && !type.modelo" class="p-error">Modelo es requerido.</small>
                         </div>
                     </div>
                 </TabPanel>
@@ -108,6 +114,11 @@ const hideDialog = () => {
 };
 const save = async () => {
     submitted.value = true;
+
+    if (!type.value.name || !type.value.proveedor || !type.value.modelo) {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Todos los campos son requeridos', life: 3000 });
+        return;
+    }
 
     const data = {
         'name': type.value.name,

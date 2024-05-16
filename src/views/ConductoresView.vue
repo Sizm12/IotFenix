@@ -12,8 +12,7 @@
                 </template>
             </cToolbar>
 
-            <DataTable ref="dt" :value="drivers" dataKey="id" :paginator="true"
-                :rows="10" :filters="filters"
+            <DataTable ref="dt" :value="drivers" dataKey="id" :paginator="true" :rows="10" :filters="filters"
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 :rowsPerPageOptions="[5, 10, 25]"
                 currentPageReportTemplate="Mostrando {first} para {last} de {totalRecords} Conductores">
@@ -30,16 +29,16 @@
                 </template>
 
                 <cColumn field="id" header="No. de Registro"></cColumn>
-                    <cColumn field="name" header="Nombre Conductor"></cColumn>
-                    <cColumn field="email" header="Correo Electrónico"></cColumn>
-                    <cColumn field="phone" header="Teléfono"></cColumn>
-                    <cColumn field="vat" header="Identificación Fiscal"></cColumn>
-                    <cColumn field="address" header="Dirección"></cColumn>
-                    <cColumn header="Estado">
-                        <template #body="slotProps">
-                            <cTag :value="getStateValue(slotProps.data)" :severity="getState(slotProps.data)"></cTag>
-                        </template>
-                    </cColumn>
+                <cColumn field="name" header="Nombre Conductor"></cColumn>
+                <cColumn field="email" header="Correo Electrónico"></cColumn>
+                <cColumn field="phone" header="Teléfono"></cColumn>
+                <cColumn field="vat" header="Identificación Fiscal"></cColumn>
+                <cColumn field="address" header="Dirección"></cColumn>
+                <cColumn header="Estado">
+                    <template #body="slotProps">
+                        <cTag :value="getStateValue(slotProps.data)" :severity="getState(slotProps.data)"></cTag>
+                    </template>
+                </cColumn>
             </DataTable>
         </div>
 
@@ -47,33 +46,48 @@
             :modal="true" class="p-fluid">
             <TabView>
                 <TabPanel header="Información del Conductor">
-                    <div class="formcont" style="display:flex; flex-direction:column; gap:15px;" >
+                    <div class="formcont" style="display:flex; flex-direction:column; gap:15px;">
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="nombre" class="font-semibold w-6rem">Nombre</label>
-                            <InputText size="small" id="nombre" v-model="driver.name" class="flex-auto" autocomplete="off" />
+                            <InputText size="small" id="nombre" v-model="driver.name" class="flex-auto"
+                                autocomplete="off" :class="{ 'p-invalid': submitted && !driver.name }" />
+                            <small v-if="submitted && !driver.name" class="p-error">Nombre es requerido.</small>
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="tipo" class="font-semibold w-6rem">Dirección</label>
-                            <InputText size="small" id="address" v-model="driver.address"  class="flex-auto" autocomplete="off" />
+                            <InputText size="small" id="address" v-model="driver.address" class="flex-auto"
+                                autocomplete="off" :class="{ 'p-invalid': submitted && !driver.address }" />
+                            <small v-if="submitted && !driver.address" class="p-error">Dirección es requerida.</small>
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="id" class="font-semibold w-6rem">Identificación Fiscal</label>
-                            <InputText size="small" id="vat" class="flex-auto" v-model="driver.vat"  autocomplete="off" />
+                            <InputText size="small" id="vat" class="flex-auto" v-model="driver.vat" autocomplete="off"
+                                :class="{ 'p-invalid': submitted && !driver.vat }" />
+                            <small v-if="submitted && !driver.vat" class="p-error">Identificación es requerida.</small>
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="nTelefono" class="font-semibold w-6rem">Número de teléfono</label>
-                            <InputText size="small" id="nTelefono" v-model="driver.phone"  class="flex-auto" autocomplete="off" />
+                            <InputText size="small" id="nTelefono" v-model="driver.phone" class="flex-auto"
+                                autocomplete="off" :class="{ 'p-invalid': submitted && !driver.phone }" />
+                            <small v-if="submitted && !driver.phone" class="p-error">Teléfono es requerido.</small>
                         </div>
 
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="creador" class="font-semibold w-6rem">Correo Electrónico</label>
-                            <InputText size="small" id="email" v-model="driver.email"  class="flex-auto" autocomplete="off" />
+                            <InputText type="email" size="small" id="email" v-model="driver.email" class="flex-auto"
+                                autocomplete="off" ref="emailInput"
+                                :class="{ 'p-invalid': submitted && !$refs.emailInput.$v.$dirty && !$refs.emailInput.$v.email }" />
+                            <small v-if="submitted && !$refs.emailInput.$v.email" class="p-error">Por favor, ingresa un
+                                correo
+                                electrónico válido.</small>
                         </div>
+
                     </div>
                 </TabPanel>
             </TabView>
-            <div class="btncont" style="display:flex; gap:10px; width:100%" >
-                <CustomButton size="small" severity="secondary" icon="pi pi-times" label="Cancelar" @click="hideDialog"></CustomButton>
+            <div class="btncont" style="display:flex; gap:10px; width:100%">
+                <CustomButton size="small" severity="secondary" icon="pi pi-times" label="Cancelar" @click="hideDialog">
+                </CustomButton>
                 <CustomButton size="small" icon="pi pi-check" label="Crear" @click="save"></CustomButton>
             </div>
         </DialogVue>
@@ -130,6 +144,12 @@ const hideDialog = () => {
 };
 const save = async () => {
     submitted.value = true;
+
+    if (!driver.value.name || !driver.value.email || !driver.value.phone || !driver.value.vat || !driver.value.address) {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Todos los campos son requeridos', life: 3000 });
+        return;
+    }
+
     const data = {
         'name': driver.value.name,
         'email': driver.value.email,
@@ -139,7 +159,7 @@ const save = async () => {
         'street2': '',
         'city': ''
     }
-    
+
     const response = await httpService.CreateDriver('createContact', data)
     console.log(response);
     toast.add({ severity: 'success', summary: 'Successful', detail: 'Registro Creado', life: 3000 });
@@ -149,7 +169,7 @@ const save = async () => {
 };
 
 const getState = (state) => {
-    
+
     switch (state.active) {
         case true:
             return 'success';
@@ -161,7 +181,7 @@ const getState = (state) => {
 }
 
 const getStateValue = (state) => {
-    
+
     switch (state.active) {
         case true:
             return 'Activo';

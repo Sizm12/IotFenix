@@ -122,7 +122,7 @@
 
         <div id="speedmeter"  >
             <div class="gauge"
-                style="--kmh: 0; --start-angle: 0deg; --digits-angle: 30deg; --lines-count: 6; --digits-count: 10; --gauge-value: var(--kmh) / 30;">
+                style="--kmh: 0; --start-angle: 0deg; --digits-angle: 30deg; --lines-count: 6; --digits-count: 10; --gauge-value: var(--kmh) / 20;">
 
                 <div class="digit">
                     <span class="line"></span>
@@ -141,7 +141,7 @@
                     <span class="highlighted separating line"></span>
                     <span class="line"></span>
 
-                    <div class="label">30</div>
+                    <div class="label">20</div>
                 </div>
 
                 <div class="digit">
@@ -151,7 +151,7 @@
                     <span class="separating line"></span>
                     <span class="line"></span>
 
-                    <div class="label">60</div>
+                    <div class="label">40</div>
                 </div>
 
                 <div class="highlighted digit">
@@ -161,12 +161,32 @@
                     <span class="separating line"></span>
                     <span class="line"></span>
 
-                    <div class="label">90</div>
+                    <div class="label">60</div>
                 </div>
 
                 <div class="digit">
                     <span class="line"></span>
                     <span class="highlighted separating line"></span>
+                    <span class="line"></span>
+                    <span class="separating line"></span>
+                    <span class="line"></span>
+
+                    <div class="label">80</div>
+                </div>
+
+                <div class="digit">
+                    <span class="line"></span>
+                    <span class="separating line"></span>
+                    <span class="line"></span>
+                    <span class="separating line"></span>
+                    <span class="line"></span>
+
+                    <div class="label">100</div>
+                </div>
+
+                <div class="digit">
+                    <span class="line"></span>
+                    <span class="separating line"></span>
                     <span class="line"></span>
                     <span class="separating line"></span>
                     <span class="line"></span>
@@ -181,7 +201,7 @@
                     <span class="separating line"></span>
                     <span class="line"></span>
 
-                    <div class="label">150</div>
+                    <div class="label">140</div>
                 </div>
 
                 <div class="digit">
@@ -191,31 +211,11 @@
                     <span class="separating line"></span>
                     <span class="line"></span>
 
+                    <div class="label">160</div>
+                </div>
+
+                <div class="digit">
                     <div class="label">180</div>
-                </div>
-
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-
-                    <div class="label">210</div>
-                </div>
-
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-
-                    <div class="label">240</div>
-                </div>
-
-                <div class="digit">
-                    <div class="label">270</div>
                 </div>
 
                 <div class="pointer" :style="{ '--vel-value': `'${velocidad1.toFixed(2)} /Kph'`}" >
@@ -236,6 +236,8 @@ const props = defineProps(['rpm', 'velocidad']);
 
 const rpmValue = ref(props.rpm);
 const velocidad1 = ref(props.velocidad);
+
+
 
 watch(() => props.rpm, (newVal) => {
   rpmValue.value = newVal;
@@ -264,7 +266,7 @@ const handStylesRpm = computed(() => {
 
 const handStylesvl = computed(() => {
   const angule = velocidad1.value;
-  return `transform: rotate(${angule}deg);`;
+  return `transform: rotate(${angule * 1.5 }deg);`;
 });
 
 const speedometerStyles = computed(() => {

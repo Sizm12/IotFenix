@@ -51,26 +51,33 @@
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="nombre" class="font-semibold w-6rem">Nombre</label>
                             <InputText size="small" id="nombre" v-model="device.name" class="flex-auto"
-                                autocomplete="off" />
+                                autocomplete="off" :class="{ 'p-invalid': submitted && !device.name }"  />
+                                <small v-if="submitted && !device.name" class="p-error">El nombre es requerido.</small>
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="tipo" class="font-semibold w-6rem">IMEI</label>
                             <InputText size="small" id="address" v-model="device.imei" class="flex-auto"
-                                autocomplete="off" />
+                                autocomplete="off" :class="{ 'p-invalid': submitted && !device.imei }" />
+                            <small v-if="submitted && !device.imei" class="p-error">IMEI es requerido.</small>
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="tipo" class="font-semibold w-6rem">Identificador</label>
                             <InputText size="small" id="address" v-model="device.flespi_id" class="flex-auto"
-                                autocomplete="off" />
+                                autocomplete="off" :class="{ 'p-invalid': submitted && !device.flespi_id }" />
+                            <small v-if="submitted && !device.flespi_id" class="p-error">Identificador es requerido.</small>
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="tipo" class="font-semibold w-6rem">Fabricante</label>
                             <DropDown size="small" id="tipo" v-model="device.device_type" :options="type"
-                                optionLabel="name" optionValue="value" placeholder="Marca" class="drop" />
+                                optionLabel="name" optionValue="value" placeholder="Marca" class="drop"
+                                :class="{ 'p-invalid': submitted && !device.device_type }" />
+                            <small v-if="submitted && !device.device_type" class="p-error">Fabricante es requerido.</small>
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label class="font-semibold w-6rem">Fecha de Compra</label>
-                            <Calendar v-model="device.fecha_obtencion" dateFormat="dd/mm/yy" />
+                            <Calendar v-model="device.fecha_obtencion" dateFormat="dd/mm/yy"
+                            :class="{ 'p-invalid': submitted && !device.fecha_obtencion }" />
+                            <small v-if="submitted && !device.fecha_obtencion" class="p-error">Fabricante es requerido.</small>
                         </div>
                     </div>
                 </TabPanel>
@@ -149,6 +156,11 @@ const formattedDate = (date) => {
 
 const save = async () => {
     submitted.value = true;
+
+    if (!device.value.name || !device.value.imei || !device.value.flespi_id || !device.value.fecha_obtencion || !device.value.device_type) {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Todos los campos son requeridos', life: 3000 });
+        return;
+    }
 
     const date_format = formattedDate(device.value.fecha_obtencion)
 

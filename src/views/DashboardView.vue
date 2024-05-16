@@ -93,6 +93,11 @@ const toggle = (event) => {
                             <i class="pi pi-map" style="color: #34d399;"></i><label>Seguimiento</label>
                         </li>
                     </RouterLink>
+                    <RouterLink to="/Dashboard/Reporte"  style="text-decoration: none;" >
+                        <li @click="selectItem('Reporte')">
+                            <i class="pi pi-chart-line" style="color: #34d399;"></i><label>Reporte</label>
+                        </li>
+                    </RouterLink>
                     <RouterLink to="/Dashboard/Vehiculos" style="text-decoration: none;">
                         <li @click="selectItem('Vehiculos')">
                             <i class="pi pi-car" style="color: #34d399;"></i><label>Vehiculos</label>
@@ -120,12 +125,7 @@ const toggle = (event) => {
                             <i class="pi pi-users" style="color: #34d399;"></i><label>Usuarios</label>
                         </li>
                     </RouterLink>
-                    <RouterLink to="/Dashboard/Reporte">
-                        <li @click="selectItem('Reporte')">
-                            <i class="pi pi-chart-line" style="color: #34d399;"></i><label>Reporte</label>
-                        </li>
-                    </RouterLink>
-
+        
                     <li @click="confirmAction()" style="cursor: pointer;">
                         <i class="pi pi-sign-out" style="color: #34d399;"></i><label>Cerrar Sesión</label>
                     </li>
@@ -354,7 +354,7 @@ header img {
 
 
 ::-webkit-scrollbar {
-    width: 5px;
+    width: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -362,7 +362,7 @@ header img {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #232A3A;
+    background: #173F50;
 }
 
 RouterLink {

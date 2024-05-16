@@ -7,11 +7,10 @@ import SignalsComponent from "@/components/SignalsComponent.vue";
 import BatteryComponent from "@/components/BatteryComponent.vue";
 import CarAnimation from "@/components/CarAnimation.vue";
 import IconAcelerador from "@/components/icons/IconAcelerador.vue";
-import BarChart from "@/components/BarChart.vue";
+import IconParking from "@/components/icons/IconParking.vue"
 import { useToast } from 'primevue/usetoast';
-
-import type { color } from "highcharts";
 import mqttService from "@/services/mqtt.services"
+
 const toast = useToast();
 
 const selectedVehicle = ref<Device | null>(null);
@@ -53,6 +52,7 @@ const fuelValue = ref();
 const vehiculeBatteryValue = ref();
 const gsmValue = ref();
 const movementValue = ref();
+const parkingValue = ref();
 
 interface Device {
     id: number;
@@ -402,7 +402,8 @@ const ObtenerDatosDispositivo = async (id: number) => {
         fuelValue.value = telemetry.value['can.fuel.level']--
         vehiculeBatteryValue.value = telemetry.value['external.powersource.voltage']--
         gsmValue.value = telemetry.value['gsm.signal.dbm']--
-        movementValue.value = telemetry.value['movement.status']
+        movementValue.value = telemetry.value['movement.status']--
+        parkingValue.value = telemetry.value['can.handbrake.status']
 
         const selectParams = ['can.fuel.volume', 'can.fuel.level', 'can.fuel.consumed', 'can.fuel.consumed.high.resolution', 'can.engine.fuel.rate', 'position.direction', 'gsm.signal.dbm', 'can.vehicle.speed'];
         filtertelemetry.value = Object.fromEntries(
@@ -431,6 +432,14 @@ const getClassAcelerador = computed(() => {
     }
 });
 
+const getParking = computed(()=> {
+    if(parkingValue.value){
+        return 'parking';
+    }else{
+        return 'aceleradorOff';
+    }
+});
+
 
 onMounted(() => {
     //chartData.value = setChartData();
@@ -441,7 +450,6 @@ onBeforeUnmount(() => {
     mqttService.disconnect();
 })
 
-const chartData = ref();
 const chartOptions = ref();
 
 const setChartOptions = () => {
@@ -549,6 +557,10 @@ const setChartOptions = () => {
                     <IconAcelerador :class="getClassAcelerador"></IconAcelerador>
                     <small>{{ accelerateValue }} %</small>
                 </span>
+                <span v-tooltip.top="'Freno de emergencia'"
+                    style="display:flex; flex-direction: column; justify-content:center; gap: 5px; align-items:center;">
+                    <IconParking :class="getParking"></IconParking>
+                </span>
             </div>
 
         </div>
@@ -562,8 +574,7 @@ const setChartOptions = () => {
                 </template>
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="maxspeed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8" readonly />
-                        KM/H
+                        <cKnob v-model="maxspeed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8" readonly valueTemplate="{value} km/h" />
                     </div>
                 </template>
             </cCard>
@@ -575,8 +586,7 @@ const setChartOptions = () => {
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
                         <cKnob v-model="fuelconsumed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8"
-                            readonly />
-                        en Litros
+                            readonly valueTemplate="{value} /lt" />
                     </div>
                 </template>
             </cCard>
@@ -588,7 +598,7 @@ const setChartOptions = () => {
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
                         <cKnob v-model="distancecovered" valueColor="#F2b53C" :min="0" :max="1500" :strokeWidth="8"
-                            readonly />
+                            readonly valueTemplate="{value} /km"/>
                     </div>
                 </template>
             </cCard>
@@ -599,8 +609,7 @@ const setChartOptions = () => {
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
                         <cKnob v-model="averagespeed" valueColor="#F2b53C" :min="0" :max="150" :strokeWidth="8"
-                            readonly />
-                        KM/H
+                            readonly valueTemplate="{value} km/h" />
                     </div>
                 </template>
             </cCard>
@@ -611,8 +620,8 @@ const setChartOptions = () => {
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
                         <cKnob v-model="telemetry['can.engine.temperature']" :min="0" :max="200" valueColor="#F2b53C"
-                            :strokeWidth="8" readonly />
-                        °C
+                            :strokeWidth="8" readonly valueTemplate="{value} °C" />
+                        
                     </div>
                 </template>
             </cCard>
@@ -624,8 +633,8 @@ const setChartOptions = () => {
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
                         <cKnob v-model="telemetry['device.temperature']" valueColor="#F2b53C" :strokeWidth="8"
-                            readonly />
-                        °C
+                            readonly valueTemplate="{value} °C" />
+                 
                     </div>
                 </template>
             </cCard>
@@ -792,6 +801,11 @@ h3 {
 .aceleradorOn {
     color: #00ff00;
     filter: drop-shadow(0 0 0.5rem #00ff00);
+}
+
+.parking{
+ color: #ffa500;
+ filter: drop-shadow(0 0 0.5rem #ffa500);
 }
 
 .p-card {

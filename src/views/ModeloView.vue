@@ -5,56 +5,19 @@ import { useToast } from 'primevue/usetoast';
 import { ProductService } from '../services/ProductService';
 import { httpService } from '@/services/https.services';
 
-const models = ref()
-const brands = ref()
-const categories = ref()
-
-onMounted(() => {
-    ProductService.getProducts().then((data) => (products.value = data));
-    GetModels();
-    GetBrands();
-    GetCategories()
-});
-
-const GetModels = async () => {
-    try {
-        const response = await httpService.GetModels();
-        models.value = response
-    } catch (error) {
-        console.log("Error: ", error)
-    }
-}
-
-const GetBrands = async () => {
-    try {
-        const response = await httpService.GetBrandss();
-        brands.value = response
-    } catch (error) {
-        console.log("Error: ", error)
-    }
-}
-
-const GetCategories = async () => {
-    try {
-        const response = await httpService.GetCategories();
-        categories.value = response
-    } catch (error) {
-        console.log("Error: ", error)
-    }
-}
-
+const models = ref([]);
+const brands = ref([]);
+const categories = ref([]);
 const transmission = ref([
     { name: 'Manual', value: 'manual' },
     { name: 'Automático', value: 'automatic' }
-])
-
+]);
 const fuel_type = ref([
     { name: 'Diesel', value: 'diesel' },
     { name: 'Gasolina', value: 'gasoline' },
     { name: 'Eléctrico', value: 'electric' },
     { name: 'Híbrido', value: 'full_hybrid' },
-])
-
+]);
 const columns = ref([
     { field: 'doors', header: 'No. de Puertas' },
     { field: 'seats', header: 'No. de Asientos' },
@@ -63,29 +26,61 @@ const columns = ref([
     { field: 'color', header: 'Color' },
 ]);
 const selectedColumns = ref();
-const onToggle = (val) => {
-    selectedColumns.value = columns.value.filter(col => val.includes(col));
-};
-
-const toast = useToast();
+const filters = ref({
+    'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
 const dt = ref();
-const products = ref();
+const products = ref([]);
 const productDialog = ref(false);
 const deleteProductDialog = ref(false);
 const deleteProductsDialog = ref(false);
 const product = ref({});
-const model = ref({})
+const model = ref({});
 const selectedProducts = ref();
-const filters = ref({
-    'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
-});
 const submitted = ref(false);
+const toast = useToast();
+
+onMounted(() => {
+    ProductService.getProducts().then((data) => (products.value = data));
+    GetModels();
+    GetBrands();
+    GetCategories();
+});
+
+const GetModels = async () => {
+    try {
+        const response = await httpService.GetModels();
+        models.value = response;
+    } catch (error) {
+        console.log("Error al obtener los modelos: ", error);
+    }
+};
+
+const GetBrands = async () => {
+    try {
+        const response = await httpService.GetBrandss();
+        console.log("Marcas obtenidas: ", response); // Log para verificar los datos
+        brands.value = response;
+    } catch (error) {
+        console.log("Error al obtener las marcas: ", error);
+    }
+};
+
+const GetCategories = async () => {
+    try {
+        const response = await httpService.GetCategories();
+        categories.value = response;
+    } catch (error) {
+        console.log("Error al obtener las categorías: ", error);
+    }
+};
 
 const openNew = () => {
-    product.value = {};
+    model.value = {};
     submitted.value = false;
     productDialog.value = true;
 };
+
 const hideDialog = () => {
     productDialog.value = false;
     submitted.value = false;
@@ -93,6 +88,11 @@ const hideDialog = () => {
 
 const Save = async () => {
     submitted.value = true;
+
+    if (!model.value.name || !model.value.brand_id || !model.value.category_id || !model.value.default_fuel_type || !model.value.model_year || !model.value.transmission || !model.value.power || !model.value.color || !model.value.horsepower || !model.value.seats || !model.value.doors) {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Todos los campos son requeridos', life: 3000 });
+        return;
+    }
 
     const data = {
         'name': model.value.name,
@@ -106,17 +106,34 @@ const Save = async () => {
         'horsepower': model.value.horsepower,
         'seats': model.value.seats,
         'doors': model.value.doors
-    }
+    };
     console.log(data);
 
-    const response = await httpService.CreateModels('createModels', data)
-    toast.add({ severity: 'success', summary: 'Successful', detail: 'Registro Creado', life: 3000 });
-    productDialog.value = false;
-    model.value = {};
-    GetModels();
+    try {
+        await httpService.CreateModels('createModels', data);
+        toast.add({ severity: 'success', summary: 'Successful', detail: 'Registro Creado', life: 3000 });
+        productDialog.value = false;
+        model.value = {};
+        GetModels();
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Error al crear el registro', life: 3000 });
+    }
 };
 
+const deleteProduct = async () => {
+    try {
+        await httpService.DeleteModel('deleteModel', product.value.id);
+        toast.add({ severity: 'success', summary: 'Successful', detail: 'Modelo Borrado', life: 3000 });
+        deleteProductDialog.value = false;
+        GetModels();
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Error al borrar el registro', life: 3000 });
+    }
+};
 
+const onToggle = (val) => {
+    selectedColumns.value = columns.value.filter(col => val.includes(col));
+};
 </script>
 
 <template>
@@ -137,7 +154,6 @@ const Save = async () => {
                 <template #header>
                     <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
                         <h3 class="m-0">Administrar Modelos de Vehículos</h3>
-
                         <div class="col" style="display: flex; gap: 10px; width:100%;">
                             <InputGroup iconPosition="left">
                                 <InputGroupAddon>
@@ -148,10 +164,8 @@ const Save = async () => {
                             <MultiSelect :modelValue="selectedColumns" :options="columns" optionLabel="header"
                                 @update:modelValue="onToggle" display="chip" placeholder="Seleccionar Columnas" />
                         </div>
-
                     </div>
                 </template>
-
                 <cColumn field="name" header="Nombre del Modelo" sortable style="min-width:10rem"></cColumn>
                 <cColumn field="brand_name" header="Fabricante" sortable style="min-width:12rem"></cColumn>
                 <cColumn field="category_name" header="Tipo de Vehículo" sortable style="min-width:16rem"></cColumn>
@@ -169,40 +183,47 @@ const Save = async () => {
             <TabView>
                 <TabPanel header="Información General">
                     <h3>Información General</h3>
-                    <div class="formcont" style="display:flex; flex-direction:column; gap:15px;" >
+                    <div class="formcont" style="display:flex; flex-direction:column; gap:15px;">
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="tipo" class="font-semibold w-6rem">Fabricante</label>
                             <DropDown size="small" id="tipo" v-model="model.brand_id" :options="brands"
-                                optionLabel="name" optionValue="id" placeholder="Fabricantes" class="drop" />
+                                optionLabel="name" optionValue="id" placeholder="Fabricantes" class="drop"
+                                :class="{ 'p-invalid': submitted && !model.brand_id }" />
+                            <small v-if="submitted && !model.brand_id" class="p-error">Fabricante es requerido.</small>
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
-                            <label for="nombre" class="font-semibold w-6rem">Nombre Modelo</label>
+                            <label for="nombre" class="font-semibold w-6rem">Nombre</label>
                             <InputText size="small" id="nombre" v-model="model.name" class="flex-auto"
-                                autocomplete="off" />
+                                autocomplete="off" :class="{ 'p-invalid': submitted && !model.name }" />
+                            <small v-if="submitted && !model.name" class="p-error">Nombre es requerido.</small>
                         </div>
-                       
                         <div class="flex align-items-center gap-3 mb-3">
-                            <label for="tipo" class="font-semibold w-6rem">Tipo de Vehiculo</label>
+                            <label for="tipo" class="font-semibold w-6rem">Tipo de Vehículo</label>
                             <DropDown size="small" id="tipo" v-model="model.category_id" :options="categories"
-                                optionLabel="name" optionValue="id" placeholder="Tipos de Vehiculos" class="drop" />
+                                optionLabel="name" optionValue="id" placeholder="Tipos de Vehículos" class="drop"
+                                :class="{ 'p-invalid': submitted && !model.category_id }" />
+                            <small v-if="submitted && !model.category_id" class="p-error">Tipo de Vehículo es
+                                requerido.</small>
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="nombre" class="font-semibold w-6rem">No. Asientos</label>
                             <InputText size="small" id="nombre" v-model="model.seats" class="flex-auto"
-                                autocomplete="off" />
+                                autocomplete="off" :class="{ 'p-invalid': submitted && !model.seats }" />
+                            <small v-if="submitted && !model.seats" class="p-error">No. Asientos es requerido.</small>
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="id" class="font-semibold w-6rem">No. Puertas</label>
-                            <InputText size="small" id="id" v-model="model.doors" class="flex-auto"
-                                autocomplete="off" />
+                            <InputText size="small" id="id" v-model="model.doors" class="flex-auto" autocomplete="off"
+                                :class="{ 'p-invalid': submitted && !model.doors }" />
+                            <small v-if="submitted && !model.doors" class="p-error">No. Puertas es requerido.</small>
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="id" class="font-semibold w-6rem">Color</label>
-                            <InputText size="small" id="id" v-model="model.color" class="flex-auto"
-                                autocomplete="off" />
+                            <InputText size="small" id="id" v-model="model.color" class="flex-auto" autocomplete="off"
+                                :class="{ 'p-invalid': submitted && !model.color }" />
+                            <small v-if="submitted && !model.color" class="p-error">Color es requerido.</small>
                         </div>
                     </div>
-
                 </TabPanel>
                 <TabPanel header="Información del vehiculo">
                     <h3>Avanzado</h3>
@@ -210,38 +231,46 @@ const Save = async () => {
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="id" class="font-semibold w-6rem">Año del Modelo</label>
                             <InputText size="small" id="id" v-model="model.model_year" class="flex-auto"
-                                autocomplete="off" />
+                                autocomplete="off" :class="{ 'p-invalid': submitted && !model.model_year }" />
+                            <small v-if="submitted && !model.model_year" class="p-error">Año del Modelo es
+                                requerido.</small>
                         </div>
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="tipo" class="font-semibold w-6rem">Tipo de Combustible</label>
                             <DropDown size="small" id="tipo" v-model="model.default_fuel_type" :options="fuel_type"
-                                optionLabel="name" optionValue="value" placeholder="Tipo de Combustible" class="drop" />
+                                optionLabel="name" optionValue="value" placeholder="Tipo de Combustible" class="drop"
+                                :class="{ 'p-invalid': submitted && !model.default_fuel_type }" />
+                            <small v-if="submitted && !model.default_fuel_type" class="p-error">Tipo de Combustible es
+                                requerido.</small>
                         </div>
-
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="tipo" class="font-semibold w-6rem">Transmisión</label>
                             <DropDown size="small" id="tipo" v-model="model.transmission" :options="transmission"
-                                optionLabel="name" optionValue="value" placeholder="Tipo de Transmisión" class="drop" />
+                                optionLabel="name" optionValue="value" placeholder="Tipo de Transmisión" class="drop"
+                                :class="{ 'p-invalid': submitted && !model.transmission }" />
+                            <small v-if="submitted && !model.transmission" class="p-error">Transmisión es
+                                requerido.</small>
                         </div>
-
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="id" class="font-semibold w-6rem">Potencia</label>
-                            <InputText size="small" id="id" v-model="model.power" class="flex-auto"
-                                autocomplete="off" />
+                            <InputText size="small" id="id" v-model="model.power" class="flex-auto" autocomplete="off"
+                                :class="{ 'p-invalid': submitted && !model.power }" />
+                            <small v-if="submitted && !model.power" class="p-error">Potencia es requerido.</small>
                         </div>
-
                         <div class="flex align-items-center gap-3 mb-3">
                             <label for="id" class="font-semibold w-6rem">Caballos de Fuerza</label>
                             <InputText size="small" id="id" v-model="model.horsepower" class="flex-auto"
-                                autocomplete="off" />
+                                autocomplete="off" :class="{ 'p-invalid': submitted && !model.horsepower }" />
+                            <small v-if="submitted && !model.horsepower" class="p-error">Caballos de Fuerza es
+                                requerido.</small>
                         </div>
                     </div>
                 </TabPanel>
             </TabView>
             <div class="btncont" style="display:flex; gap:10px; width:100%">
-                <CustomButton size="small" severity="secondary" icon="pi pi-times" label="Cancelar" @click="hideDialog">
-                </CustomButton>
-                <CustomButton size="small" icon="pi pi-check" label="Crear" @click="Save"></CustomButton>
+                <CustomButton size="small" severity="secondary" icon="pi pi-times" label="Cancelar"
+                    @click="hideDialog" />
+                <CustomButton size="small" icon="pi pi-check" label="Crear" @click="Save" />
             </div>
         </DialogVue>
 

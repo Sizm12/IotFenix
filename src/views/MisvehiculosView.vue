@@ -15,10 +15,6 @@
 </template>
   
 <script setup lang="ts">
-import { ref } from "vue";
-
-const visible = ref(false);
-import CardVehiculo from '../components/CardVehiculo.vue'
 import VehiculeTable from "../components/VehiculeTable.vue";
 
 
