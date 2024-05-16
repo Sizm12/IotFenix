@@ -218,35 +218,7 @@
                     <div class="label">180</div>
                 </div>
 
-<<<<<<< HEAD
                 <div class="pointer" :style="{ '--vel-value': `'${velocidad1.toFixed(2)} /Kph'`}" >
-=======
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-
-                    <div class="label">210</div>
-                </div>
-
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-
-                    <div class="label">240</div>
-                </div>
-
-                <div class="digit">
-                    <div class="label">270</div>
-                </div>
-
-                <div class="pointer" :style="{ '--vel-value': `'${velocidad1.toFixed(2)} /Kph'` }">
->>>>>>> e2910af735b1716d1d8d08a52b5c2401537b92a7
 
                     <div class="hand" :style="handStylesvl">
 
@@ -295,13 +267,8 @@ const handStylesRpm = computed(() => {
 });
 
 const handStylesvl = computed(() => {
-<<<<<<< HEAD
   const angule = velocidad1.value;
   return `transform: rotate(${angule * 1.5 }deg);`;
-=======
-    const angule = velocidad1.value;
-    return `transform: rotate(${angule}deg);`;
->>>>>>> e2910af735b1716d1d8d08a52b5c2401537b92a7
 });
 
 const speedometerStyles = computed(() => {
