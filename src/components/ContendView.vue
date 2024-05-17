@@ -6,18 +6,98 @@ import CharBars from "@/components/CharBars.vue";
 const value = ref(70);
 
 onMounted(() => {
-    chartData.value = setChartData();
+    //chartData.value = setChartData();
     chartOptions.value = setChartOptions();
     GetDeviceList();
     GetDriversList();
     GetVehicules();
+    ObtenerCalculadora();
 });
 
+const ObtenerCalculadora = async () => {
+    try {
+        var fechainicio = new Date();
+        fechainicio.setHours(0);
+        fechainicio.setMinutes(0);
+        fechainicio.setSeconds(0);
+
+        var fechainiciotimestamp = Math.floor(fechainicio.getTime() / 1000);
+
+        var fechafinal = new Date();
+        fechafinal.setHours(23);
+        fechafinal.setMinutes(59);
+        fechafinal.setSeconds(0);
+        var fechafinaltimestamp = Math.floor(fechafinal.getTime() / 1000);
+
+        const datatoSend = {
+            //"from": fechainiciotimestamp,
+            "from": 1715580000,
+            //"to": fechafinaltimestamp,
+            "to": 1716011940,
+            "calc_id": 1685511
+        }
+        const response = await httpService.post(`/devices/all/calculate`, datatoSend);
+        console.log(response);
+        const groupedData = {};
+
+        // Iteramos sobre cada objeto en el arreglo 'data'
+        response.forEach(item => {
+            if (!groupedData.hasOwnProperty(item.device)) {
+                //groupedData[item.device] = { labels: [], datasets: [] };
+                groupedData[item.device] = { labels: [], datasets: { distance: [], fuel: [] } };
+            }
+
+            const deviceData = groupedData[item.device];
+
+            const deviceTimestamps = deviceData.labels;
+            const deviceValues = deviceData.datasets;
+
+            if (!deviceTimestamps.includes(item.begin)) {
+                const FechaUTC = new Date(item.begin * 1000)
+                const horaCST = FechaUTC.toLocaleDateString('en-US', { timeZone: 'America/Managua' })
+                deviceTimestamps.push(horaCST);
+            }
+
+            deviceValues.distance.push(item.distance_covered)
+            deviceValues.fuel.push(item.fuel_consumed)
+
+            /* let dataset = deviceValues.find(dataset => dataset.label === item.device);
+            if (!dataset) {
+                dataset = {
+                    label: item.device,
+                    data: [],
+                    fill: false,
+                    tension: 0.4,
+                    borderColor: '#007bff'
+                };
+                deviceValues.push(dataset);
+            }
+            dataset.data.push(item.distance_covered); */
+
+
+
+        });
+
+        console.log(groupedData);
+
+
+        chartDistance.value = setChartDistance(groupedData)
+        chartFuel.value = setChartFuel(groupedData)
+
+        //calc.value = response[0]
+
+    } catch (error) {
+        console.error('Error recuperando valores: ', error)
+    }
+}
+
+const chartDistance = ref();
 const chartData = ref();
+const chartFuel = ref();
 const chartOptions = ref();
 
 const getState = (state) => {
-    
+
     switch (state.active) {
         case true:
             return 'success';
@@ -29,7 +109,7 @@ const getState = (state) => {
 }
 
 const getStateValue = (state) => {
-    
+
     switch (state.active) {
         case true:
             return 'Activo';
@@ -45,9 +125,9 @@ const device = ref()
 const vehicules = ref();
 const deviceqty = ref();
 const driverqty = ref();
-const vehiculeqty = ref(); 
+const vehiculeqty = ref();
 
-const GetVehicules = async () =>{
+const GetVehicules = async () => {
     try {
         const response = await httpService.GetVehicule('getVehicule');
         vehicules.value = response
@@ -57,9 +137,9 @@ const GetVehicules = async () =>{
     }
 }
 
-const GetDriversList = async () =>{
+const GetDriversList = async () => {
     try {
-        const response = await httpService.GetDrivers();    
+        const response = await httpService.GetDrivers();
         driver.value = response
         driverqty.value = driver.value.length
     } catch (error) {
@@ -67,7 +147,7 @@ const GetDriversList = async () =>{
     }
 }
 
-const GetDeviceList = async () =>{
+const GetDeviceList = async () => {
     try {
         const response = await httpService.GetDevices();
         device.value = response
@@ -111,37 +191,60 @@ const vehicles = [
 
 ];
 
-const setChartData = () => {
-    const documentStyle = getComputedStyle(document.documentElement);
+const setChartDistance = (data) => {
 
-    return {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [
-            {
-                label: 'First Dataset',
-                data: [65, 59, 80, 81, 56, 55, 40],
+    const documentStyle = getComputedStyle(document.documentElement);
+    const chartData = {
+        labels: [],
+        datasets: []
+    }
+
+    for (const device in data) {
+        if (data.hasOwnProperty(device)) {
+            const deviceData = data[device]
+            const distanceData = deviceData.datasets.distance
+
+            chartData.labels = deviceData.labels
+
+            const dataset = {
+                label: device,
+                data: distanceData,
                 fill: false,
                 tension: 0.4,
-                borderColor: documentStyle.getPropertyValue('--blue-500')
-            },
-            {
-                label: 'Second Dataset',
-                data: [28, 48, 40, 19, 86, 27, 90],
-                fill: false,
-                borderDash: [5, 5],
-                tension: 0.4,
-                borderColor: documentStyle.getPropertyValue('--teal-500')
-            },
-            {
-                label: 'Third Dataset',
-                data: [12, 51, 62, 33, 21, 62, 45],
-                fill: true,
-                borderColor: documentStyle.getPropertyValue('--orange-500'),
-                tension: 0.4,
-                backgroundColor: 'rgba(255,167,38,0.2)'
+                borderColor: '#007bff'
             }
-        ]
-    };
+            chartData.datasets.push(dataset)
+        }
+    }
+    return chartData
+};
+
+const setChartFuel = (data) => {
+
+    const documentStyle = getComputedStyle(document.documentElement);
+    const chartData = {
+        labels: [],
+        datasets: []
+    }
+
+    for (const device in data) {
+        if (data.hasOwnProperty(device)) {
+            const deviceData = data[device]
+            const fuelData = deviceData.datasets.fuel
+
+            chartData.labels = deviceData.labels
+
+            const dataset = {
+                label: device,
+                data: fuelData,
+                fill: false,
+                tension: 0.4,
+                borderColor: '#007bff'
+            }
+            chartData.datasets.push(dataset)
+        }
+    }
+    return chartData
 };
 const setChartOptions = () => {
     const documentStyle = getComputedStyle(document.documentElement);
@@ -184,6 +287,7 @@ const setChartOptions = () => {
 <template>
     <h2>Dashboard</h2>
     <cDivider></cDivider>
+
     <div class="flex">
         <cCard>
             <template #title>Dispositivos</template>
@@ -211,6 +315,18 @@ const setChartOptions = () => {
         </cCard>
     </div>
 
+    <div class="flex2">
+        <cCard class="custom-card">
+            <template #title>Combustible Consumido</template>
+            <template #content>
+                <div class="card-content">
+                    <cChart type="line" :data="chartFuel" :options="chartOptions" class="h-30rem" />
+                </div>
+            </template>
+        </cCard>
+    </div>
+
+
     <div class="flex">
         <cCard>
             <template #title>Conductores</template>
@@ -228,6 +344,16 @@ const setChartOptions = () => {
                         </template>
                     </cColumn>
                 </DataTable>
+            </template>
+        </cCard>
+    </div>
+    <div class="flex2">
+        <cCard class="custom-card">
+            <template #title>Distancia Recorrida</template>
+            <template #content>
+                <div class="card-content">
+                    <cChart type="line" :data="chartDistance" :options="chartOptions" class="h-30rem" />
+                </div>
             </template>
         </cCard>
     </div>
