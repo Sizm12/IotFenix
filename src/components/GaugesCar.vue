@@ -15,6 +15,7 @@
                         <span class="line"></span>
                         <div class="label">0</div>
                     </div>
+
                     <div class="digit">
                         <span class="line"></span>
                         <span class="line"></span>
@@ -111,7 +112,7 @@
 
                     <div class="limiter"></div>
 
-                    <div class="pointer" :style="{ '--rpm-content': `'${rpmValue.toFixed(2)}'` }">
+                    <div class="pointer" :style="{ '--rpm-content': `'${ encendido ?  rpmValue.toFixed(2) : 0.00.toFixed(2) }'` }">
                         <div class="hand" :style="handStylesRpm" style="transition: 1s ease-in-out;">
                         </div>
                     </div>
@@ -302,6 +303,7 @@ const handStylesvl = computed(() => {
     color: #33c0f0;
     padding: 0;
     margin: 0;
+    letter-spacing: 0.25em;
 }
 
 @media screen and (max-width: 767px) {
@@ -390,7 +392,7 @@ body {
             right: 0;
             bottom: 0;
             transform-origin: center center;
-            transition: transform ease 0.2s;
+            transition: transform ease 0.4s;
 
             &::after {
                 content: '';

@@ -681,8 +681,8 @@ const setChartOptions = () => {
             </cCard>
         </div>
 
-        <div class="flex2">
-            <cCard class="custom-card" v-if="linear">
+        <div class="flex2" >
+            <cCard class="custom-card" v-if="linear" style="width:max-width" >
                 <template #title>Voltaje de Batería del Vehículo</template>
                 <template #content>
                     <div class="card-content">

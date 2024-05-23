@@ -5,6 +5,8 @@ import { httpService } from "@/services/https.services";
 import CharBars from "@/components/CharBars.vue";
 const value = ref(70);
 
+var hiden = false;
+
 onMounted(() => {
     //chartData.value = setChartData();
     chartOptions.value = setChartOptions();
@@ -282,11 +284,38 @@ const setChartOptions = () => {
         }
     };
 }
+
+const setHident = () =>{
+    hiden = !hiden;
+    console.log(hiden);
+}
 </script>
 
 <template>
-    <h2>Dashboard</h2>
+    <div style="display: flex; justify-content: space-between; ">
+        <h2>Dashboard</h2>
+        <CustomButton icon="pi pi-filter" label="Filtrar" @click="setHident" size="small"></CustomButton>
+    </div>
+    
     <cDivider></cDivider>
+    <div class="flex flex-wrap gap-3 ali" v-if="hiden" >
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+            <label class="ml-2">Fecha de Inicio</label>
+            <Calendar/>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+            <label class="ml-2">Fecha Final</label>
+            <Calendar />
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+            <label class="ml-2">Criterio a Evaluar</label>
+            <DropDown  optionLabel="name"
+                placeholder="Seleccione el vehículo" class="w-full md:w-14rem" />
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px; align-content:flex-end" class="wid">
+            <CustomButton icon="pi pi-filter" label="Filtrar"></CustomButton>
+        </div>
+    </div>
 
     <div class="flex">
         <cCard>
@@ -407,5 +436,9 @@ const setChartOptions = () => {
 
 h2 {
     margin: 15px;
+}
+
+.ali{
+    align-items:flex-end;
 }
 </style>
