@@ -514,11 +514,53 @@ const setChartOptions = () => {
             </SignalsComponent>
         </div>
         <div class="cont">
-            <div>
+            <div class="mt">
                 <!--aqui el velocimetro-->
-                <GaugesCar :rpm="rpmValue" :velocidad="speedValue" :encendido="vehiculeStateValue" />
-                
+                <GaugesCar :rpm="rpmValue" :velocidad="speedValue" :encendido="vehiculeStateValue"
+                    :odometro="odometerValue" />
+                <div
+                    style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0px 20px; margin-top:10px;">
+
+                    <div class="icons">
+                        <span v-tooltip.top="vehiculoOn ? 'Encendido' : 'Apagado'">
+                            <FA style="font-size: 2rem;" icon="car-rear" :class="vehiculoOn ? 'on' : 'off'" />
+                        </span>
+                        <span v-tooltip.top="'Nivel de combustible:'"
+                            style="display:flex; flex-direction: column; justify-content:center; gap: 5px;">
+                            <FA style="font-size: 2rem;" icon="gas-pump" class="on" />
+                            <small style="width:max-content;" >{{ fuelValue.toFixed(2) }} lt</small>
+                        </span>
+                        <span v-tooltip.top="'Bateria: %'"
+                            style="display:flex; flex-direction: column; justify-content:center; gap: 5px;">
+                            <FA style="font-size: 2rem;" icon="car-battery" class="on" />
+                            <small style="width:max-content;" >{{ vehiculeBatteryValue.toFixed(2) }} %</small>
+                        </span>
+                        <span v-tooltip.top="'Jirar a la izquierda'">
+                            <FA style="font-size: 2rem;" icon="caret-left" class="desac" />
+                        </span>
+                        <span v-tooltip.top="'Jirar a la derecha'">
+                            <FA style="font-size: 2rem;" icon="caret-right" class="desac" />
+                        </span>
+                        <span v-tooltip.top="'Aceleración'"
+                            style="display:flex; flex-direction: column; justify-content:center; gap: 5px; align-items:center;">
+                            <IconAcelerador :class="getClassAcelerador"></IconAcelerador>
+                            <small style="width:max-content;">{{ accelerateValue.toFixed(2) }} %</small>
+                        </span>
+                        <span v-tooltip.top="'Freno'"
+                            style="display:flex; flex-direction: column; justify-content:center; gap: 5px; align-items:center;">
+                            <IconParking :class="getParking"></IconParking>
+                        </span>
+                        <span v-tooltip.top="'Freno de emergencia'"
+                            style="display:flex; flex-direction: column; justify-content:center; gap: 5px; align-items:center;">
+                            <IconParking :class="getBrake"></IconParking>
+                        </span>
+                    </div>
+
+                </div>
             </div>
+
+
+
             <div style="display:flex; justify-content:center; width:100%;font-weight:400;">
                 <!--aqui el carro-->
                 <CarAnimation :angulo="positionValue" :status="movementValue" :encendido="vehiculeStateValue">
@@ -542,54 +584,9 @@ const setChartOptions = () => {
             }" class="h-30rem" />
         </div>
 
-        <div
-            style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0px 20px;">
-
-            <div class="icons">
-                <span v-tooltip.top="'Odometro Virtual:'"
-                    style="display:flex; flex-direction: column; justify-content:center; gap: 5px;">
-                    <FA style="font-size: 2rem;" icon="gauge" class="on" />
-                    <small>{{ odometerValue }} km</small>
-                </span>
-                <span v-tooltip.top="vehiculoOn ? 'Encendido' : 'Apagado'">
-                    <FA style="font-size: 2rem;" icon="car-rear" :class="vehiculoOn ? 'on' : 'off'" />
-                </span>
-                <span v-tooltip.top="'Nivel de combustible:'"
-                    style="display:flex; flex-direction: column; justify-content:center; gap: 5px;">
-                    <FA style="font-size: 2rem;" icon="gas-pump" class="on" />
-                    <small>{{ fuelValue }} lt</small>
-                </span>
-                <span v-tooltip.top="'Bateria: %'"
-                    style="display:flex; flex-direction: column; justify-content:center; gap: 5px;">
-                    <FA style="font-size: 2rem;" icon="car-battery" class="on" />
-                    <small>{{ vehiculeBatteryValue }} %</small>
-                </span>
-                <span v-tooltip.top="'Jirar a la izquierda'">
-                    <FA style="font-size: 2rem;" icon="caret-left" class="desac" />
-                </span>
-                <span v-tooltip.top="'Jirar a la derecha'">
-                    <FA style="font-size: 2rem;" icon="caret-right" class="desac" />
-                </span>
-                <span v-tooltip.top="'Aceleración'"
-                    style="display:flex; flex-direction: column; justify-content:center; gap: 5px; align-items:center;">
-                    <IconAcelerador :class="getClassAcelerador"></IconAcelerador>
-                    <small>{{ accelerateValue }} %</small>
-                </span>
-                <span v-tooltip.top="'Freno'"
-                    style="display:flex; flex-direction: column; justify-content:center; gap: 5px; align-items:center;">
-                    <IconParking :class="getParking"></IconParking>
-                </span>
-                <span v-tooltip.top="'Freno de emergencia'"
-                    style="display:flex; flex-direction: column; justify-content:center; gap: 5px; align-items:center;">
-                    <IconParking :class="getBrake"></IconParking>
-                </span>
-            </div>
-
-        </div>
-
         <cDivider></cDivider>
 
-        <div class="flex">
+        <div class="flex" style="align-items:stretch;" >
             <cCard v-if="telemetry && 'can.wheel.speed' in telemetry" class="min">
                 <template #title>
                     <FA icon="gauge" />&nbsp;<small>Velocidad Máxima Alcanzada</small>
@@ -599,7 +596,10 @@ const setChartOptions = () => {
                         <cKnob v-model="maxspeed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8" readonly
                             valueTemplate="{value} km/h" />
                     </div>
-                    Datos del ECU del Vehículo
+                    
+                </template>
+                <template #footer>
+                    <small>Datos del ECU del Vehículo</small>
                 </template>
             </cCard>
 
@@ -612,19 +612,25 @@ const setChartOptions = () => {
                         <cKnob v-model="fuelconsumed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8" readonly
                             valueTemplate="{value} /lt" />
                     </div>
-                    Datos del ECU del Vehículo
+               
+                </template>
+                <template #footer>
+                    <small>Datos del ECU del Vehículo</small>
                 </template>
             </cCard>
 
             <cCard v-if="telemetry && 'vehicle.mileage' in telemetry" class="min">
                 <template #title>
-                    <FA icon="gauge" />&nbsp;<small>Kilometros Recorridos</small>
+                    <FA icon="gauge" />&nbsp;<small>Kilómetros Recorridos</small>
                 </template>
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
                         <cKnob v-model="distancecovered" valueColor="#F2b53C" :min="0" :max="1500" :strokeWidth="8"
                             readonly valueTemplate="{value} /km" />
                     </div>
+                </template>
+                <template #footer>
+                    <small> </small>
                 </template>
             </cCard>
             <cCard v-if="telemetry && 'can.wheel.speed' in telemetry" class="min">
@@ -637,6 +643,9 @@ const setChartOptions = () => {
                             valueTemplate="{value} km/h" />
                     </div>
                 </template>
+                <template #footer>
+                    <small> </small>
+                </template>
             </cCard>
             <cCard v-if="telemetry && 'can.engine.temperature' in telemetry" class="min">
                 <template #title>
@@ -648,7 +657,10 @@ const setChartOptions = () => {
                             :strokeWidth="8" readonly valueTemplate="{value} °C" />
 
                     </div>
-                    Datos del ECU del Vehículo
+                    
+                </template>
+                <template #footer>
+                    <small>Datos del ECU del Vehículo</small>
                 </template>
             </cCard>
 
@@ -663,6 +675,9 @@ const setChartOptions = () => {
 
                     </div>
                 </template>
+                <template #footer>
+                    <small> </small>
+                </template>
             </cCard>
         </div>
 
@@ -673,6 +688,9 @@ const setChartOptions = () => {
                     <div class="card-content">
                         <cChart type="line" :data="batteryChart" :options="chartOptions" />
                     </div>
+                </template>
+                <template #footer>
+                    <small> </small>
                 </template>
             </cCard>
         </div>
@@ -685,16 +703,22 @@ const setChartOptions = () => {
                         <cChart type="line" :data="fuelChart" :options="chartOptions" class="h-30rem" />
                     </div>
                 </template>
+                <template #footer>
+                    <small> </small>
+                </template>
             </cCard>
         </div>
 
         <div class="flex2">
             <cCard class="custom-card" v-if="linear">
-                <template #title>Kilometros Recorridos</template>
+                <template #title>Kilómetros Recorridos</template>
                 <template #content>
                     <div class="card-content">
                         <cChart type="line" :data="mileageChart" :options="chartOptions" class="h-30rem" />
                     </div>
+                </template>
+                <template #footer>
+                    <small> </small>
                 </template>
             </cCard>
         </div>
@@ -707,6 +731,9 @@ const setChartOptions = () => {
                         <cChart type="line" :data="speedChart" :options="chartOptions" class="h-30rem" />
                     </div>
                 </template>
+                <template #footer>
+                    <small> </small>
+                </template>
             </cCard>
         </div>
 
@@ -717,6 +744,9 @@ const setChartOptions = () => {
                     <div class="card-content">
                         <cChart type="line" :data="fuelLevelChart" :options="chartOptions" class="h-30rem" />
                     </div>
+                </template>
+                <template #footer>
+                    <small> </small>
                 </template>
             </cCard>
         </div>
@@ -729,7 +759,11 @@ const setChartOptions = () => {
                         <cChart type="line" :data="accelerateChart" :options="chartOptions" class="h-30rem" />
                     </div>
                 </template>
+                <template #footer>
+                    <small> </small>
+                </template>
             </cCard>
+            
         </div>
 
         <div class="flex2">
@@ -739,6 +773,9 @@ const setChartOptions = () => {
                     <div class="card-content">
                         <cChart type="line" :data="rpmChart" :options="chartOptions" class="h-30rem" />
                     </div>
+                </template>
+                <template #footer>
+                    <small> </small>
                 </template>
             </cCard>
         </div>
@@ -786,9 +823,22 @@ h3 {
     gap: 10px;
     padding: 15px 0px;
     justify-content: center;
-
+    margin-top: -40px;
 }
 
+.mt{
+    margin-top: -20px;
+}
+
+@media screen and (max-width: 767px) {
+    .mt{
+        margin-top: 0;  
+    }
+
+    .cont{
+        margin-top: -10px;
+    }
+}
 .flex {
     display: flex;
     justify-content: center;

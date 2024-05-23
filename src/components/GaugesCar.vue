@@ -1,230 +1,239 @@
 <template>
-    <div id="dashboard">
-        <div id="revmeter">
-            <div :class="className" :style="dynamicStyles">
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <div class="label">0</div>
-                </div>
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <div class="label">1</div>
-                </div>
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-
-                    <div class="label">2</div>
-                </div>
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-
-                    <div class="label">3</div>
-                </div>
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-
-                    <div class="label">4</div>
-                </div>
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-
-                    <div class="label">5</div>
-                </div>
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="highlighted line"></span>
-                    <span class="highlighted line"></span>
-                    <span class="highlighted line"></span>
-
-                    <div class="label">6</div>
-                </div>
-                <div class="digit">
-                    <span class="highlighted line"></span>
-                    <span class="highlighted line"></span>
-                    <span class="highlighted line"></span>
-                    <span class="highlighted line"></span>
-                    <span class="separating line"></span>
-                    <span class="highlighted line"></span>
-                    <span class="highlighted line"></span>
-                    <span class="highlighted line"></span>
-                    <span class="highlighted line"></span>
-
-                    <div class="label">7</div>
-                </div>
-                <div class="digit">
-                    <div class="label">8</div>
-                </div>
-
-                <div class="limiter"></div>
-
-                <div class="pointer" :style="{ '--rpm-content': `'${rpmValue.toFixed(2)}'` }">
-                    <div class="hand" :style="handStylesRpm" style="transition: 1s ease-in-out;">
+    <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; ">
+        <div id="dashboard">
+            <div id="revmeter">
+                <div :class="className" :style="dynamicStyles">
+                    <div class="digit">
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <div class="label">0</div>
                     </div>
+                    <div class="digit">
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <div class="label">1</div>
+                    </div>
+                    <div class="digit">
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+
+                        <div class="label">2</div>
+                    </div>
+                    <div class="digit">
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+
+                        <div class="label">3</div>
+                    </div>
+                    <div class="digit">
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+
+                        <div class="label">4</div>
+                    </div>
+                    <div class="digit">
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+
+                        <div class="label">5</div>
+                    </div>
+                    <div class="digit">
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+                        <span class="highlighted line"></span>
+                        <span class="highlighted line"></span>
+                        <span class="highlighted line"></span>
+
+                        <div class="label">6</div>
+                    </div>
+                    <div class="digit">
+                        <span class="highlighted line"></span>
+                        <span class="highlighted line"></span>
+                        <span class="highlighted line"></span>
+                        <span class="highlighted line"></span>
+                        <span class="separating line"></span>
+                        <span class="highlighted line"></span>
+                        <span class="highlighted line"></span>
+                        <span class="highlighted line"></span>
+                        <span class="highlighted line"></span>
+
+                        <div class="label">7</div>
+                    </div>
+                    <div class="digit">
+                        <div class="label">8</div>
+                    </div>
+
+                    <div class="limiter"></div>
+
+                    <div class="pointer" :style="{ '--rpm-content': `'${rpmValue.toFixed(2)}'` }">
+                        <div class="hand" :style="handStylesRpm" style="transition: 1s ease-in-out;">
+                        </div>
+                    </div>
+
+                    <div class="gear"></div>
                 </div>
 
-                <div class="gear"></div>
             </div>
 
+            <div id="speedmeter">
+                <div class="gauge"
+                    style="--kmh: 0; --start-angle: 0deg; --digits-angle: 30deg; --lines-count: 6; --digits-count: 10; --gauge-value: var(--kmh) / 20;">
+
+                    <div class="digit">
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+
+                        <div class="label">0</div>
+                    </div>
+
+                    <div class="digit">
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+                        <span class="highlighted separating line"></span>
+                        <span class="line"></span>
+
+                        <div class="label">20</div>
+                    </div>
+
+                    <div class="digit">
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+
+                        <div class="label">40</div>
+                    </div>
+
+                    <div class="highlighted digit">
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+
+                        <div class="label">60</div>
+                    </div>
+
+                    <div class="digit">
+                        <span class="line"></span>
+                        <span class="highlighted separating line"></span>
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+
+                        <div class="label">80</div>
+                    </div>
+
+                    <div class="digit">
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+
+                        <div class="label">100</div>
+                    </div>
+
+                    <div class="digit">
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+
+                        <div class="label">120</div>
+                    </div>
+
+                    <div class="digit">
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+
+                        <div class="label">140</div>
+                    </div>
+
+                    <div class="digit">
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+                        <span class="separating line"></span>
+                        <span class="line"></span>
+
+                        <div class="label">160</div>
+                    </div>
+
+                    <div class="digit">
+                        <div class="label">180</div>
+                    </div>
+
+                    <div class="pointer" :style="{ '--vel-value': `'${velocidad1.toFixed(2)} /Kph'` }">
+
+                        <div class="hand" :style="handStylesvl">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div id="speedmeter">
-            <div class="gauge"
-                style="--kmh: 0; --start-angle: 0deg; --digits-angle: 30deg; --lines-count: 6; --digits-count: 10; --gauge-value: var(--kmh) / 20;">
-
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-
-                    <div class="label">0</div>
-                </div>
-
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="highlighted separating line"></span>
-                    <span class="line"></span>
-
-                    <div class="label">20</div>
-                </div>
-
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-
-                    <div class="label">40</div>
-                </div>
-
-                <div class="highlighted digit">
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-
-                    <div class="label">60</div>
-                </div>
-
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="highlighted separating line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-
-                    <div class="label">80</div>
-                </div>
-
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-
-                    <div class="label">100</div>
-                </div>
-
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-
-                    <div class="label">120</div>
-                </div>
-
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-
-                    <div class="label">140</div>
-                </div>
-
-                <div class="digit">
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-                    <span class="separating line"></span>
-                    <span class="line"></span>
-
-                    <div class="label">160</div>
-                </div>
-
-                <div class="digit">
-                    <div class="label">180</div>
-                </div>
-
-                <div class="pointer" :style="{ '--vel-value': `'${velocidad1.toFixed(2)} /Kph'`}" >
-
-                    <div class="hand" :style="handStylesvl">
-
-                    </div>
-                </div>
-            </div>
+        <div
+            style="padding: 10px; border-radius: 10px; border: 1px solid #33c0f0; 
+            width:fit-content; display: flex; gap: 5px; align-items:flex-end; 
+            margin-top: -30px;" class="mtm">
+            <h3 class="dsdigital">{{ odometro.toFixed(2) }}</h3>
+            <p class="dsdigital">Km</p>
         </div>
     </div>
 </template>
@@ -232,7 +241,7 @@
 <script setup lang="ts">
 import { computed, ref, defineProps, watch } from 'vue';
 
-const props = defineProps(['rpm', 'velocidad', 'encendido']);
+const props = defineProps(['rpm', 'velocidad', 'encendido', 'odometro']);
 
 const rpmValue = ref(props.rpm);
 const velocidad1 = ref(props.velocidad);
@@ -264,32 +273,43 @@ const dynamicStyles = computed(() => {
 const handStylesRpm = computed(() => {
     const angule = rpmValue.value / 33;
 
-    if(props.rpm && props.encendido){
+    if (props.rpm && props.encendido) {
         return `transform: rotate(${angule}deg);`;
-    }else{
+    } else {
         return ``;
     }
 });
 
 const handStylesvl = computed(() => {
-  const angule = velocidad1.value;
-  return `transform: rotate(${angule * 1.5 }deg);`;
+    const angule = velocidad1.value;
+    return `transform: rotate(${angule * 1.5}deg);`;
 });
 
-const speedometerStyles = computed(() => {
-    return {
-        '--kmh': `${velocidad1.value}`,
-        '--start-angle': '0deg',
-        '--digits-angle': '30deg',
-        '--lines-count': '6',
-        '--digits-count': '10',
-        '--gauge-value': `${velocidad1.value / 30}`,
-    };
-});
+
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css?family=Changa+One:400,400i');
+
+@font-face {
+    font-family: 'MiFuentePersonalizada';
+    src: url('../assets/Fonts/DS-DIGI.TTF') format('truetype');
+}
+
+.dsdigital {
+    font-family: 'MiFuentePersonalizada';
+    text-shadow: 0 0 0.5rem #33c0f0;
+    color: #33c0f0;
+    padding: 0;
+    margin: 0;
+}
+
+@media screen and (max-width: 767px) {
+ .mtm{
+    margin-top: -5px !important;
+ }
+}
+
 
 :root {
     --customgearvalue: '23';
