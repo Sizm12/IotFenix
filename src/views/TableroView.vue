@@ -53,6 +53,8 @@ const vehiculeBatteryValue = ref();
 const gsmValue = ref();
 const movementValue = ref();
 const parkingValue = ref();
+const brakeValue = ref();
+const odometerValue = ref();
 
 interface Device {
     id: number;
@@ -107,6 +109,9 @@ const MQTTTest = async (id) => {
             gsmValue.value = messageValue.value['gsm.signal.dbm']
             movementValue.value = messageValue.value['movement.status']
             rpmValue.value = messageValue.value['can.engine.rpm']
+            parkingValue.value = messageValue.value['can.handbrake.status']
+            brakeValue.value = messageValue.value['can.pedal.brake.status']
+            odometerValue.value = messageValue.value['vehicle.mileage']
         })
     } catch (error) {
         console.error('Error al conectar al servidor MQTT de Flespi:', error);
@@ -402,7 +407,8 @@ const ObtenerDatosDispositivo = async (id: number) => {
         gsmValue.value = telemetry.value['gsm.signal.dbm']--
         movementValue.value = telemetry.value['movement.status']--
         parkingValue.value = telemetry.value['can.handbrake.status']
-
+        brakeValue.value = telemetry.value['can.pedal.brake.status']
+        odometerValue.value = telemetry.value['vehicle.mileage']
         const selectParams = ['can.fuel.volume', 'can.fuel.level', 'can.fuel.consumed', 'can.fuel.consumed.high.resolution', 'can.engine.fuel.rate', 'position.direction', 'gsm.signal.dbm', 'can.vehicle.speed'];
         filtertelemetry.value = Object.fromEntries(
             Object.entries(telemetry.value).filter(([key]) => selectParams.includes(key))
@@ -430,10 +436,18 @@ const getClassAcelerador = computed(() => {
     }
 });
 
-const getParking = computed(()=> {
-    if(parkingValue.value){
+const getParking = computed(() => {
+    if (parkingValue.value) {
         return 'parking';
-    }else{
+    } else {
+        return 'aceleradorOff';
+    }
+});
+
+const getBrake = computed(() => {
+    if (brakeValue.value) {
+        return 'parking';
+    } else {
         return 'aceleradorOff';
     }
 });
@@ -532,6 +546,11 @@ const setChartOptions = () => {
             style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0px 20px;">
 
             <div class="icons">
+                <span v-tooltip.top="'Odometro Virtual:'"
+                    style="display:flex; flex-direction: column; justify-content:center; gap: 5px;">
+                    <FA style="font-size: 2rem;" icon="gauge" class="on" />
+                    <small>{{ odometerValue }} km</small>
+                </span>
                 <span v-tooltip.top="vehiculoOn ? 'Encendido' : 'Apagado'">
                     <FA style="font-size: 2rem;" icon="car-rear" :class="vehiculoOn ? 'on' : 'off'" />
                 </span>
@@ -556,9 +575,13 @@ const setChartOptions = () => {
                     <IconAcelerador :class="getClassAcelerador"></IconAcelerador>
                     <small>{{ accelerateValue }} %</small>
                 </span>
-                <span v-tooltip.top="'Freno de emergencia'"
+                <span v-tooltip.top="'Freno'"
                     style="display:flex; flex-direction: column; justify-content:center; gap: 5px; align-items:center;">
                     <IconParking :class="getParking"></IconParking>
+                </span>
+                <span v-tooltip.top="'Freno de emergencia'"
+                    style="display:flex; flex-direction: column; justify-content:center; gap: 5px; align-items:center;">
+                    <IconParking :class="getBrake"></IconParking>
                 </span>
             </div>
 
@@ -573,8 +596,10 @@ const setChartOptions = () => {
                 </template>
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="maxspeed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8" readonly valueTemplate="{value} km/h" />
+                        <cKnob v-model="maxspeed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8" readonly
+                            valueTemplate="{value} km/h" />
                     </div>
+                    Datos del ECU del Vehículo
                 </template>
             </cCard>
 
@@ -584,9 +609,10 @@ const setChartOptions = () => {
                 </template>
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="fuelconsumed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8"
-                            readonly valueTemplate="{value} /lt" />
+                        <cKnob v-model="fuelconsumed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8" readonly
+                            valueTemplate="{value} /lt" />
                     </div>
+                    Datos del ECU del Vehículo
                 </template>
             </cCard>
 
@@ -597,7 +623,7 @@ const setChartOptions = () => {
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
                         <cKnob v-model="distancecovered" valueColor="#F2b53C" :min="0" :max="1500" :strokeWidth="8"
-                            readonly valueTemplate="{value} /km"/>
+                            readonly valueTemplate="{value} /km" />
                     </div>
                 </template>
             </cCard>
@@ -607,8 +633,8 @@ const setChartOptions = () => {
                 </template>
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="averagespeed" valueColor="#F2b53C" :min="0" :max="150" :strokeWidth="8"
-                            readonly valueTemplate="{value} km/h" />
+                        <cKnob v-model="averagespeed" valueColor="#F2b53C" :min="0" :max="150" :strokeWidth="8" readonly
+                            valueTemplate="{value} km/h" />
                     </div>
                 </template>
             </cCard>
@@ -620,8 +646,9 @@ const setChartOptions = () => {
                     <div style="display:flex; justify-content:center; align-items:center;">
                         <cKnob v-model="telemetry['can.engine.temperature']" :min="0" :max="200" valueColor="#F2b53C"
                             :strokeWidth="8" readonly valueTemplate="{value} °C" />
-                        
+
                     </div>
+                    Datos del ECU del Vehículo
                 </template>
             </cCard>
 
@@ -631,9 +658,9 @@ const setChartOptions = () => {
                 </template>
                 <template #content>
                     <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="telemetry['device.temperature']" valueColor="#F2b53C" :strokeWidth="8"
-                            readonly valueTemplate="{value} °C" />
-                 
+                        <cKnob v-model="telemetry['device.temperature']" valueColor="#F2b53C" :strokeWidth="8" readonly
+                            valueTemplate="{value} °C" />
+
                     </div>
                 </template>
             </cCard>
@@ -802,9 +829,9 @@ h3 {
     filter: drop-shadow(0 0 0.5rem #00ff00);
 }
 
-.parking{
- color: #ffa500;
- filter: drop-shadow(0 0 0.5rem #ffa500);
+.parking {
+    color: #ffa500;
+    filter: drop-shadow(0 0 0.5rem #ffa500);
 }
 
 .p-card {
