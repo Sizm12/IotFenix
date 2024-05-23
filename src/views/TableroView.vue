@@ -502,7 +502,8 @@ const setChartOptions = () => {
         <div class="cont">
             <div>
                 <!--aqui el velocimetro-->
-                <GaugesCar :rpm="rpmValue" :velocidad="speedValue" />
+                <GaugesCar :rpm="rpmValue" :velocidad="speedValue" :encendido="vehiculeStateValue" />
+                
             </div>
             <div style="display:flex; justify-content:center; width:100%;font-weight:400;">
                 <!--aqui el carro-->

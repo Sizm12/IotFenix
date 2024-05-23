@@ -232,7 +232,7 @@
 <script setup lang="ts">
 import { computed, ref, defineProps, watch } from 'vue';
 
-const props = defineProps(['rpm', 'velocidad']);
+const props = defineProps(['rpm', 'velocidad', 'encendido']);
 
 const rpmValue = ref(props.rpm);
 const velocidad1 = ref(props.velocidad);
@@ -263,7 +263,12 @@ const dynamicStyles = computed(() => {
 
 const handStylesRpm = computed(() => {
     const angule = rpmValue.value / 33;
-    return `transform: rotate(${angule}deg);`;
+
+    if(props.rpm && props.encendido){
+        return `transform: rotate(${angule}deg);`;
+    }else{
+        return ``;
+    }
 });
 
 const handStylesvl = computed(() => {
