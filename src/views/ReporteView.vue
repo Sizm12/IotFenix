@@ -92,14 +92,14 @@ const setChartData = () => {
 const GetVehicules = async () => {
     try {
         const response = await httpService.get('/devices/all')
-        device.value = response 
+        device.value = response
 
     } catch (error) {
         console.log("Error: ", error)
     }
 }
 
-const ObtenerCalculadora = async (id: number, inicio:number, final:number) => {
+const ObtenerCalculadora = async (id: number, inicio: number, final: number) => {
     try {
         const datatoSend = {
             "from": inicio,
@@ -108,7 +108,7 @@ const ObtenerCalculadora = async (id: number, inicio:number, final:number) => {
         }
         const response = await httpService.post(`/devices/${id}/calculate`, datatoSend);
         calc.value = response[0]
-        
+
     } catch (error) {
         console.error('Error recuperando valores: ', error)
     }
@@ -124,7 +124,7 @@ const GenerarReporte = () => {
     }
 }
 
-const ObtenerTelemetriaDispositivo = async (id: number, inicio:number, final:number) => {
+const ObtenerTelemetriaDispositivo = async (id: number, inicio: number, final: number) => {
     try {
 
         const parameters = "can.vehicle.mileage.high.resolution,vehicle.mileage,can.engine.temperature,external.powersource.voltage,can.fuel.level,can.fuel.consumed,can.wheel.speed,can.engine.rpm,can.throttle.pedal.level,timestamp";
@@ -466,75 +466,74 @@ const setChartOptionsHorizontal = () => {
 
 <template>
     <h2>Resumen</h2>
-    <div class="flex flex-wrap gap-3">
-        <div class="flex align-items-center">
+    <div class="flex flex-wrap gap-3 ali">
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
             <label class="ml-2">Fecha de Inicio</label>
             <Calendar v-model="fechaInicio" />
         </div>
-        <div class="flex align-items-center">
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
             <label class="ml-2">Fecha Final</label>
             <Calendar v-model="fechaFinal" />
         </div>
-        <div class="flex align-items-center">
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
             <label class="ml-2">Criterio a Evaluar</label>
             <DropDown v-model="selectedCalculate" :options="device" optionLabel="name"
-            placeholder="Seleccione el vehículo" class="w-full md:w-14rem" />
+                placeholder="Seleccione el vehículo" class="w-full md:w-14rem" />
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px; align-content:flex-end" class="wid">
+            <CustomButton icon="pi pi-filter" label="Filtrar" @click="GenerarReporte"></CustomButton>
         </div>
     </div>
-    <div class="flex flex-wrap gap-3">
-        <CustomButton label="Filtrar" @click="GenerarReporte"></CustomButton>
-    </div>
+
     <cDivider></cDivider>
     <div class="flex">
         <cCard v-if="maxspeed" class="min">
-                <template #title>
-                    <FA icon="gauge" />&nbsp;<small>Velocidad Máxima Alcanzada</small>
-                </template>
-                <template #content>
-                    <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="maxspeed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8" readonly />
-                        KM/H
-                    </div>
-                </template>
-            </cCard>
+            <template #title>
+                <FA icon="gauge" />&nbsp;<small>Velocidad Máxima Alcanzada</small>
+            </template>
+            <template #content>
+                <div style="display:flex; justify-content:center; align-items:center;">
+                    <cKnob v-model="maxspeed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8" readonly />
+                    KM/H
+                </div>
+            </template>
+        </cCard>
 
-            <cCard v-if="fuelconsumed" class="min">
-                <template #title>
-                    <FA icon="gas-pump" />&nbsp;<small>Combustible Consumido</small>
-                </template>
-                <template #content>
-                    <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="fuelconsumed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8"
-                            readonly />
-                        en Litros
-                    </div>
-                </template>
-            </cCard>
+        <cCard v-if="fuelconsumed" class="min">
+            <template #title>
+                <FA icon="gas-pump" />&nbsp;<small>Combustible Consumido</small>
+            </template>
+            <template #content>
+                <div style="display:flex; justify-content:center; align-items:center;">
+                    <cKnob v-model="fuelconsumed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8" readonly />
+                    en Litros
+                </div>
+            </template>
+        </cCard>
 
-            <cCard v-if="distancecovered" class="min">
-                <template #title>
-                    <FA icon="gauge" />&nbsp;<small>Kilometros Recorridos</small>
-                </template>
-                <template #content>
-                    <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="distancecovered" valueColor="#F2b53C" :min="0" :max="1500" :strokeWidth="8"
-                            readonly />
-                    </div>
-                </template>
-            </cCard>
-            <cCard v-if="averagespeed" class="min">
-                <template #title>
-                    <FA icon="gauge" />&nbsp;<small>Velocidad Promedio</small>
-                </template>
-                <template #content>
-                    <div style="display:flex; justify-content:center; align-items:center;">
-                        <cKnob v-model="averagespeed" valueColor="#F2b53C" :min="0" :max="150" :strokeWidth="8"
-                            readonly />
-                        KM/H
-                    </div>
-                </template>
-            </cCard>
-            <!-- <cCard v-if="telemetry && 'can.engine.temperature' in telemetry" class="min">
+        <cCard v-if="distancecovered" class="min">
+            <template #title>
+                <FA icon="gauge" />&nbsp;<small>Kilometros Recorridos</small>
+            </template>
+            <template #content>
+                <div style="display:flex; justify-content:center; align-items:center;">
+                    <cKnob v-model="distancecovered" valueColor="#F2b53C" :min="0" :max="1500" :strokeWidth="8"
+                        readonly />
+                </div>
+            </template>
+        </cCard>
+        <cCard v-if="averagespeed" class="min">
+            <template #title>
+                <FA icon="gauge" />&nbsp;<small>Velocidad Promedio</small>
+            </template>
+            <template #content>
+                <div style="display:flex; justify-content:center; align-items:center;">
+                    <cKnob v-model="averagespeed" valueColor="#F2b53C" :min="0" :max="150" :strokeWidth="8" readonly />
+                    KM/H
+                </div>
+            </template>
+        </cCard>
+        <!-- <cCard v-if="telemetry && 'can.engine.temperature' in telemetry" class="min">
                 <template #title>
                     <FA icon="temperature-quarter" />&nbsp;<small>Temperatura Anticongelante</small>
                 </template>
@@ -547,7 +546,7 @@ const setChartOptionsHorizontal = () => {
                 </template>
             </cCard> -->
 
-            <!-- <cCard v-if="telemetry && 'device.temperature' in telemetry" class="min">
+        <!-- <cCard v-if="telemetry && 'device.temperature' in telemetry" class="min">
                 <template #title>
                     <FA icon="temperature-quarter" />&nbsp;<small>Temperatura del Dispositivo</small>
                 </template>
@@ -621,81 +620,81 @@ const setChartOptionsHorizontal = () => {
     </div> -->
 
     <div class="flex2">
-            <cCard class="custom-card" v-if="linear">
-                <template #title>Voltaje de Batería del Vehículo</template>
-                <template #content>
-                    <div class="card-content">
-                        <cChart type="line" :data="batteryChart" :options="chartOptions" />
-                    </div>
-                </template>
-            </cCard>
-        </div>
+        <cCard class="custom-card" v-if="linear">
+            <template #title>Voltaje de Batería del Vehículo</template>
+            <template #content>
+                <div class="card-content">
+                    <cChart type="line" :data="batteryChart" :options="chartOptions" />
+                </div>
+            </template>
+        </cCard>
+    </div>
 
-        <div class="flex2">
-            <cCard class="custom-card" v-if="linear">
-                <template #title>Combustible Consumido</template>
-                <template #content>
-                    <div class="card-content">
-                        <cChart type="line" :data="fuelChart" :options="chartOptions" class="h-30rem" />
-                    </div>
-                </template>
-            </cCard>
-        </div>
+    <div class="flex2">
+        <cCard class="custom-card" v-if="linear">
+            <template #title>Combustible Consumido</template>
+            <template #content>
+                <div class="card-content">
+                    <cChart type="line" :data="fuelChart" :options="chartOptions" class="h-30rem" />
+                </div>
+            </template>
+        </cCard>
+    </div>
 
-        <div class="flex2">
-            <cCard class="custom-card" v-if="linear">
-                <template #title>Kilometros Recorridos</template>
-                <template #content>
-                    <div class="card-content">
-                        <cChart type="line" :data="mileageChart" :options="chartOptions" class="h-30rem" />
-                    </div>
-                </template>
-            </cCard>
-        </div>
+    <div class="flex2">
+        <cCard class="custom-card" v-if="linear">
+            <template #title>Kilometros Recorridos</template>
+            <template #content>
+                <div class="card-content">
+                    <cChart type="line" :data="mileageChart" :options="chartOptions" class="h-30rem" />
+                </div>
+            </template>
+        </cCard>
+    </div>
 
-        <div class="flex2">
-            <cCard class="custom-card" v-if="linear">
-                <template #title>Monitoreo de Velocidad</template>
-                <template #content>
-                    <div class="card-content">
-                        <cChart type="line" :data="speedChart" :options="chartOptions" class="h-30rem" />
-                    </div>
-                </template>
-            </cCard>
-        </div>
+    <div class="flex2">
+        <cCard class="custom-card" v-if="linear">
+            <template #title>Monitoreo de Velocidad</template>
+            <template #content>
+                <div class="card-content">
+                    <cChart type="line" :data="speedChart" :options="chartOptions" class="h-30rem" />
+                </div>
+            </template>
+        </cCard>
+    </div>
 
-        <div class="flex2">
-            <cCard class="custom-card" v-if="linear">
-                <template #title>Nivel de Combustible</template>
-                <template #content>
-                    <div class="card-content">
-                        <cChart type="line" :data="fuelLevelChart" :options="chartOptions" class="h-30rem" />
-                    </div>
-                </template>
-            </cCard>
-        </div>
+    <div class="flex2">
+        <cCard class="custom-card" v-if="linear">
+            <template #title>Nivel de Combustible</template>
+            <template #content>
+                <div class="card-content">
+                    <cChart type="line" :data="fuelLevelChart" :options="chartOptions" class="h-30rem" />
+                </div>
+            </template>
+        </cCard>
+    </div>
 
-        <div class="flex2">
-            <cCard class="custom-card" v-if="linear">
-                <template #title>Monitoreo de Aceleración</template>
-                <template #content>
-                    <div class="card-content">
-                        <cChart type="line" :data="accelerateChart" :options="chartOptions" class="h-30rem" />
-                    </div>
-                </template>
-            </cCard>
-        </div>
+    <div class="flex2">
+        <cCard class="custom-card" v-if="linear">
+            <template #title>Monitoreo de Aceleración</template>
+            <template #content>
+                <div class="card-content">
+                    <cChart type="line" :data="accelerateChart" :options="chartOptions" class="h-30rem" />
+                </div>
+            </template>
+        </cCard>
+    </div>
 
-        <div class="flex2">
-            <cCard class="custom-card" v-if="linear">
-                <template #title>Monitoreo de RPM</template>
-                <template #content>
-                    <div class="card-content">
-                        <cChart type="line" :data="rpmChart" :options="chartOptions" class="h-30rem" />
-                    </div>
-                </template>
-            </cCard>
-        </div>
+    <div class="flex2">
+        <cCard class="custom-card" v-if="linear">
+            <template #title>Monitoreo de RPM</template>
+            <template #content>
+                <div class="card-content">
+                    <cChart type="line" :data="rpmChart" :options="chartOptions" class="h-30rem" />
+                </div>
+            </template>
+        </cCard>
+    </div>
 
 </template>
 
@@ -706,9 +705,20 @@ const setChartOptionsHorizontal = () => {
     gap: 10px;
     padding: 15px;
 
+
     @media screen and (max-width: 767px) {
         flex-direction: column;
     }
+}
+
+@media screen and (max-width: 767px){
+    .wid{
+        width: 100%;
+    }
+}
+
+.ali{
+    align-items:flex-end;
 }
 
 .p-card {
