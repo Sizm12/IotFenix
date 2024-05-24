@@ -115,8 +115,13 @@ const ObtenerCalculadora = async (id: number, inicio: number, final: number) => 
 }
 
 const GenerarReporte = () => {
-    var fechaInicioTimestamp = Math.floor(fechaInicio.value.getTime() / 1000);
-    var fechaFinalTimestamp = Math.floor(fechaFinal.value.getTime() / 1000);
+    const begin = new Date(fechaInicio.value)
+    begin.setHours(0,0,0)
+    var fechaInicioTimestamp = Math.floor(begin.getTime() / 1000);
+    const end = new Date(fechaFinal.value)
+    end.setHours(23,59,59)
+    var fechaFinalTimestamp = Math.floor(end.getTime() / 1000);
+
     const selected = selectedCalculate.value ? selectedCalculate.value.id : null;
     if (selected !== null) {
         ObtenerCalculadora(selected, fechaInicioTimestamp, fechaFinalTimestamp)
@@ -126,7 +131,6 @@ const GenerarReporte = () => {
 
 const ObtenerTelemetriaDispositivo = async (id: number, inicio: number, final: number) => {
     try {
-
         const parameters = "can.vehicle.mileage.high.resolution,vehicle.mileage,can.engine.temperature,external.powersource.voltage,can.fuel.level,can.fuel.consumed,can.wheel.speed,can.engine.rpm,can.throttle.pedal.level,timestamp";
         const datatoSend = {
             "from": inicio,

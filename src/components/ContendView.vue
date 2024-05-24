@@ -5,7 +5,10 @@ import { httpService } from "@/services/https.services";
 import CharBars from "@/components/CharBars.vue";
 const value = ref(70);
 
-var hiden = false;
+var hiden = ref(false);
+
+const fechaInicio = ref();
+const fechaFinal = ref();
 
 onMounted(() => {
     //chartData.value = setChartData();
@@ -13,29 +16,14 @@ onMounted(() => {
     GetDeviceList();
     GetDriversList();
     GetVehicules();
-    ObtenerCalculadora();
+    FiltrarSemana();
 });
 
-const ObtenerCalculadora = async () => {
+const ObtenerCalculadora = async (begin, end) => {
     try {
-        var fechainicio = new Date();
-        fechainicio.setHours(0);
-        fechainicio.setMinutes(0);
-        fechainicio.setSeconds(0);
-
-        var fechainiciotimestamp = Math.floor(fechainicio.getTime() / 1000);
-
-        var fechafinal = new Date();
-        fechafinal.setHours(23);
-        fechafinal.setMinutes(59);
-        fechafinal.setSeconds(0);
-        var fechafinaltimestamp = Math.floor(fechafinal.getTime() / 1000);
-
         const datatoSend = {
-            //"from": fechainiciotimestamp,
-            "from": 1715580000,
-            //"to": fechafinaltimestamp,
-            "to": 1716011940,
+            "from": begin,
+            "to": end,
             "calc_id": 1685511
         }
         const response = await httpService.post(`/devices/all/calculate`, datatoSend);
@@ -159,40 +147,6 @@ const GetDeviceList = async () => {
     }
 }
 
-
-const vehicles = [
-    {
-        id: 1,
-        title: 'Vehiculo 1',
-        identification: '123456',
-        device: 'Demo3',
-        icon: 'car',
-        iconColor: '#34d399',
-        state: 'Activo'
-
-    },
-
-    {
-        id: 2,
-        title: 'Vehiculo 2',
-        identification: '123456',
-        device: 'Demo1',
-        icon: 'truck',
-        iconColor: '#34d399',
-        state: 'Inactivo'
-    },
-    {
-        id: 3,
-        title: 'Vehiculo 3',
-        identification: '123456',
-        device: 'Demo2',
-        icon: 'bus',
-        iconColor: '#34d399',
-        state: 'Activo'
-    },
-
-];
-
 const setChartDistance = (data) => {
 
     const documentStyle = getComputedStyle(document.documentElement);
@@ -285,35 +239,91 @@ const setChartOptions = () => {
     };
 }
 
-const setHident = () =>{
-    hiden = !hiden;
-    console.log(hiden);
+const FiltrarHoy = () => {
+    var fechainicio = new Date();
+    fechainicio.setHours(0);
+    fechainicio.setMinutes(0);
+    fechainicio.setSeconds(0);
+
+    var fechainiciotimestamp = Math.floor(fechainicio.getTime() / 1000);
+
+    var fechafinal = new Date();
+    fechafinal.setHours(23);
+    fechafinal.setMinutes(59);
+    fechafinal.setSeconds(0);
+    var fechafinaltimestamp = Math.floor(fechafinal.getTime() / 1000);
+    ObtenerCalculadora(fechainiciotimestamp, fechafinaltimestamp);
+
+}
+
+const FiltrarAyer = () => {
+    var fechainicio = new Date();
+    fechainicio.setDate(fechainicio.getDate() - 1); // Un día atrás
+    fechainicio.setHours(0, 0, 0);
+
+    var fechainiciotimestamp = Math.floor(fechainicio.getTime() / 1000);
+
+    var fechafinal = new Date();
+    fechafinal.setDate(fechafinal.getDate() - 1); // Un día atrás
+    fechafinal.setHours(23, 59, 59);
+
+    var fechafinaltimestamp = Math.floor(fechafinal.getTime() / 1000);
+
+    ObtenerCalculadora(fechainiciotimestamp, fechafinaltimestamp);
+}
+
+const FiltrarSemana = () => {
+
+    var fechainicio = new Date();
+    fechainicio.setDate(fechainicio.getDate() - 6); // Seis días atrás
+    fechainicio.setHours(0, 0, 0);
+
+    var fechainiciotimestamp = Math.floor(fechainicio.getTime() / 1000);
+
+    var fechafinal = new Date();
+    fechafinal.setHours(23, 59, 59);
+
+    var fechafinaltimestamp = Math.floor(fechafinal.getTime() / 1000);
+
+    ObtenerCalculadora(fechainiciotimestamp, fechafinaltimestamp);
+}
+
+const FiltrarCalculadora = () => {
+    const begin =  new Date(fechaInicio.value)
+    begin.setHours(0,0,0)
+    const fechainiciotimestamp = Math.floor(begin.getTime()/1000)
+    const end = new Date(fechaFinal.value)
+    end.setHours(23,59,59)
+    const fechafinaltimestamp = Math.floor(end.getTime()/1000)
+    ObtenerCalculadora(fechainiciotimestamp, fechafinaltimestamp);
+}
+
+const setHident = () => {
+    hiden.value = !hiden.value;
 }
 </script>
 
 <template>
     <div style="display: flex; justify-content: space-between; ">
         <h2>Dashboard</h2>
+        <CustomButton icon="pi pi-filter" label="Hoy" @click="FiltrarHoy" size="small"></CustomButton>
+        <CustomButton icon="pi pi-filter" label="Ayer" @click="FiltrarAyer" size="small"></CustomButton>
+        <CustomButton icon="pi pi-filter" label="Esta Semana" @click="FiltrarSemana" size="small"></CustomButton>
         <CustomButton icon="pi pi-filter" label="Filtrar" @click="setHident" size="small"></CustomButton>
     </div>
-    
+
     <cDivider></cDivider>
-    <div class="flex flex-wrap gap-3 ali" v-if="hiden" >
+    <div class="flex flex-wrap gap-3 ali" v-if="hiden">
         <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
             <label class="ml-2">Fecha de Inicio</label>
-            <Calendar/>
+            <Calendar v-model="fechaInicio" />
         </div>
         <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
             <label class="ml-2">Fecha Final</label>
-            <Calendar />
-        </div>
-        <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
-            <label class="ml-2">Criterio a Evaluar</label>
-            <DropDown  optionLabel="name"
-                placeholder="Seleccione el vehículo" class="w-full md:w-14rem" />
+            <Calendar v-model="fechaFinal" />
         </div>
         <div style="display: flex; flex-direction: column; gap: 10px; align-content:flex-end" class="wid">
-            <CustomButton icon="pi pi-filter" label="Filtrar"></CustomButton>
+            <CustomButton icon="pi pi-filter" @click="FiltrarCalculadora" label="Filtrar"></CustomButton>
         </div>
     </div>
 
@@ -438,7 +448,7 @@ h2 {
     margin: 15px;
 }
 
-.ali{
-    align-items:flex-end;
+.ali {
+    align-items: flex-end;
 }
 </style>
