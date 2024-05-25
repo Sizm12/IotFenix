@@ -26,6 +26,7 @@ const speed = ref();
 const rpm = ref();
 const fuellevel = ref();
 const accelerate = ref();
+const temperature = ref();
 
 
 const maxspeed = ref();
@@ -40,6 +41,7 @@ const speedChart = ref();
 const accelerateChart = ref();
 const fuelLevelChart = ref();
 const rpmChart = ref();
+const temperatureChart = ref();
 
 const rpmValue = ref();
 const speedValue = ref();
@@ -214,6 +216,22 @@ const setSpeed = () => {
     };
 };
 
+const setTemperature = () => {
+    const documentStyle = getComputedStyle(document.documentElement)
+    return {
+        labels: Object.values(timestamp.value),
+        datasets: [
+            {
+                label: 'Temperatura Anticongelante',
+                data: Object.values(temperature.value),
+                fill: false,
+                tension: 0.4,
+                borderColor: documentStyle.getPropertyValue('--blue-500')
+            }
+        ]
+    };
+}
+
 const setRPM = () => {
     const documentStyle = getComputedStyle(document.documentElement);
     return {
@@ -309,6 +327,15 @@ const ObtenerTelemetriaDispositivo = async (id: number) => {
             })
             .filter(timestamp => timestamp != null);
 
+        temperature.value = Object.values(linear.value)
+            .map(item => {
+                if (typeof item === 'object' && 'can.engine.temperature' in item) {
+                    return item['can.engine.temperature'];
+                }
+                return null;
+            })
+            .filter(timestamp => timestamp != null);
+
         fuel.value = Object.values(linear.value)
             .map(item => {
                 if (typeof item === 'object' && 'can.fuel.consumed' in item) {
@@ -380,6 +407,7 @@ const ObtenerTelemetriaDispositivo = async (id: number) => {
             accelerateChart.value = setAccelerate();
             rpmChart.value = setRPM();
             fuelLevelChart.value = setFuelLevel();
+            temperatureChart.value = setTemperature();
         }
     } catch (error) {
         console.error('Error recuperando valores: ', error)
@@ -529,10 +557,12 @@ const setChartOptions = () => {
                             style="display:flex; flex-direction: column; justify-content:center; gap: 5px;">
                             <FA style="font-size: 2rem;" icon="gas-pump" class="on" />
                             <small style="width:max-content;">{{ fuelValue.toFixed(2) }} lt</small>
+                            <small style="width:max-content;">{{ fuelValue.toFixed(2) }} lt</small>
                         </span>
                         <span v-tooltip.top="'Bateria: %'"
                             style="display:flex; flex-direction: column; justify-content:center; gap: 5px;">
                             <FA style="font-size: 2rem;" icon="car-battery" class="on" />
+                            <small style="width:max-content;">{{ vehiculeBatteryValue.toFixed(2) }} %</small>
                             <small style="width:max-content;">{{ vehiculeBatteryValue.toFixed(2) }} %</small>
                         </span>
                         <span v-tooltip.top="'Jirar a la izquierda'">
@@ -579,6 +609,7 @@ const setChartOptions = () => {
         <cDivider></cDivider>
 
         <div class="flex" style="align-items:stretch;">
+        <div class="flex" style="align-items:stretch;">
             <cCard v-if="telemetry && 'can.wheel.speed' in telemetry" class="min">
                 <template #title>
                     <FA icon="gauge" />&nbsp;<small>Velocidad Máxima Alcanzada</small>
@@ -588,6 +619,7 @@ const setChartOptions = () => {
                         <cKnob v-model="maxspeed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8" readonly
                             valueTemplate="{value} km/h" />
                     </div>
+
 
                 </template>
                 <template #footer>
@@ -604,6 +636,7 @@ const setChartOptions = () => {
                         <cKnob v-model="fuelconsumed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8" readonly
                             valueTemplate="{value} /lt" />
                     </div>
+
 
                 </template>
                 <template #footer>
@@ -650,6 +683,7 @@ const setChartOptions = () => {
 
                     </div>
 
+
                 </template>
                 <template #footer>
                     <small>Datos del ECU del Vehículo</small>
@@ -673,6 +707,8 @@ const setChartOptions = () => {
             </cCard>
         </div>
 
+        <div class="flex2">
+            <cCard class="custom-card" v-if="linear" style="width:max-width">
         <div class="flex2">
             <cCard class="custom-card" v-if="linear" style="width:max-width">
                 <template #title>Voltaje de Batería del Vehículo</template>
@@ -745,6 +781,20 @@ const setChartOptions = () => {
 
         <div class="flex2">
             <cCard class="custom-card" v-if="linear">
+                <template #title>Temperatura Anticongelante</template>
+                <template #content>
+                    <div class="card-content">
+                        <cChart type="line" :data="temperatureChart" :options="chartOptions" class="h-30rem" />
+                    </div>
+                </template>
+                <template #footer>
+                    <small> </small>
+                </template>
+            </cCard>
+        </div>
+
+        <div class="flex2">
+            <cCard class="custom-card" v-if="linear">
                 <template #title>Monitoreo de Aceleración</template>
                 <template #content>
                     <div class="card-content">
@@ -755,6 +805,7 @@ const setChartOptions = () => {
                     <small> </small>
                 </template>
             </cCard>
+
 
         </div>
 
@@ -818,7 +869,7 @@ h3 {
     margin-top: -40px;
 }
 
-.mt {
+.mt  {
     margin-top: -20px;
 }
 
@@ -829,8 +880,11 @@ h3 {
 @media screen and (max-width: 767px) {
     .mt {
         margin-top: 0;
+    .mt {
+        margin-top: 0;
     }
 
+    .cont {
     .cont {
         margin-top: -10px;
     }
