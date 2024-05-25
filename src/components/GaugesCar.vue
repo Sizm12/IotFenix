@@ -1,5 +1,9 @@
 <template>
     <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; ">
+        <!--aqui el carro-->
+        <CarAnimation class="ocul1"
+         :encendido="props.encendido" :angulo="props.angulo" :status="props.status"  >
+                </CarAnimation>
         <div id="dashboard">
             <div id="revmeter">
                 <div :class="className" :style="dynamicStyles">
@@ -112,7 +116,8 @@
 
                     <div class="limiter"></div>
 
-                    <div class="pointer" :style="{ '--rpm-content': `'${ encendido ?  rpmValue.toFixed(2) : 0.00.toFixed(2) }'` }">
+                    <div class="pointer"
+                        :style="{ '--rpm-content': `'${encendido ? rpmValue.toFixed(2) : 0.00.toFixed(2)}'` }">
                         <div class="hand" :style="handStylesRpm" style="transition: 1s ease-in-out;">
                         </div>
                     </div>
@@ -121,6 +126,12 @@
                 </div>
 
             </div>
+
+            <!--aqui el carro-->
+            <CarAnimation class="ocul2"
+            :encendido="props.encendido" :angulo="props.angulo" :status="props.status" >
+                </CarAnimation>
+           
 
             <div id="speedmeter">
                 <div class="gauge"
@@ -229,8 +240,7 @@
                 </div>
             </div>
         </div>
-        <div
-            style="padding: 10px; border-radius: 10px; border: 1px solid #33c0f0; 
+        <div style="padding: 10px; border-radius: 10px; border: 1px solid #33c0f0; 
             width:fit-content; display: flex; gap: 5px; align-items:flex-end; 
             margin-top: -30px;" class="mtm">
             <h3 class="dsdigital">{{ odometro.toFixed(2) }}</h3>
@@ -241,8 +251,11 @@
 
 <script setup lang="ts">
 import { computed, ref, defineProps, watch } from 'vue';
+import CarAnimation from './CarAnimation.vue';
 
-const props = defineProps(['rpm', 'velocidad', 'encendido', 'odometro']);
+const props = defineProps(
+    ['rpm', 'velocidad', 'encendido', 'odometro', 'angulo', 'status']
+);
 
 const rpmValue = ref(props.rpm);
 const velocidad1 = ref(props.velocidad);
@@ -306,10 +319,22 @@ const handStylesvl = computed(() => {
     letter-spacing: 0.25em;
 }
 
+.ocul1{
+    display: none;
+}
+
 @media screen and (max-width: 767px) {
- .mtm{
-    margin-top: -5px !important;
- }
+    .mtm {
+        margin-top: -5px !important;
+    }
+
+    .ocul1{
+        display: flex;
+    }
+
+    .ocul2{
+        display: none;
+    }
 }
 
 

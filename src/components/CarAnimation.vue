@@ -42,8 +42,8 @@ onMounted(() => {
 </script>
 <style scoped>
 .circulo {
-    width: 270px;
-    height: 270px;
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
     background-color: #1f2937;
     display: flex;
@@ -53,7 +53,7 @@ onMounted(() => {
 }
 
 .carretera {
-    width: 150px;
+    width: 100px;
     height: 100%;
     position: relative;
     background-color: black;
