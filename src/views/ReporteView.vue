@@ -478,7 +478,7 @@ const setChartOptionsHorizontal = () => {
 </script>
 
 <template>
-    <LoaderCar v-if="loading" ></LoaderCar>>
+    <LoaderCar v-if="loading" ></LoaderCar>
     <h2>Resumen</h2>
     <div class="flex flex-wrap gap-3 ali">
         <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
