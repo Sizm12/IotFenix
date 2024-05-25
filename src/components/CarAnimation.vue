@@ -5,7 +5,6 @@
             <img src="../../src/assets/car.png" class="car" :class="moverAuto">
         </div>
     </div>
-
 </template>
 <script setup lang="ts">
 import { computed, onMounted } from 'vue';
@@ -50,6 +49,7 @@ onMounted(() => {
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    transition: ease-in-out;
 }
 
 .carretera {
@@ -60,6 +60,7 @@ onMounted(() => {
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: ease-in-out;
 }
 
 .linea {
@@ -69,6 +70,7 @@ onMounted(() => {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+    transition: ease-in-out;
 }
 
 .activar-linea {

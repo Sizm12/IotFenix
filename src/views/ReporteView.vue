@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { httpService } from "@/services/https.services";
+import LoaderCar from "@/components/LoaderCar.vue";
 
 const value = ref(70);
 const fechaInicio = ref();
@@ -52,6 +53,8 @@ const chartData = ref();
 const chartOptions = ref();
 const chartOptionsHorizontal = ref();
 const ChartDataHorizontal = ref();
+
+const loading = ref(false);
 
 const setChartData = () => {
     const documentStyle = getComputedStyle(document.documentElement);
@@ -114,19 +117,25 @@ const ObtenerCalculadora = async (id: number, inicio: number, final: number) => 
     }
 }
 
-const GenerarReporte = () => {
-    const begin = new Date(fechaInicio.value)
-    begin.setHours(0,0,0)
-    var fechaInicioTimestamp = Math.floor(begin.getTime() / 1000);
-    const end = new Date(fechaFinal.value)
-    end.setHours(23,59,59)
-    var fechaFinalTimestamp = Math.floor(end.getTime() / 1000);
+const GenerarReporte = async () => {
+    loading.value = true;
+    try {
+        const begin = new Date(fechaInicio.value)
+        begin.setHours(0, 0, 0)
+        var fechaInicioTimestamp = Math.floor(begin.getTime() / 1000);
+        const end = new Date(fechaFinal.value)
+        end.setHours(23, 59, 59)
+        var fechaFinalTimestamp = Math.floor(end.getTime() / 1000);
 
-    const selected = selectedCalculate.value ? selectedCalculate.value.id : null;
-    if (selected !== null) {
-        ObtenerCalculadora(selected, fechaInicioTimestamp, fechaFinalTimestamp)
-        ObtenerTelemetriaDispositivo(selected, fechaInicioTimestamp, fechaFinalTimestamp)
+        const selected = selectedCalculate.value ? selectedCalculate.value.id : null;
+        if (selected !== null) {
+            await ObtenerCalculadora(selected, fechaInicioTimestamp, fechaFinalTimestamp)
+            await ObtenerTelemetriaDispositivo(selected, fechaInicioTimestamp, fechaFinalTimestamp)
+        }
+    }catch(error){ 
+        console.log('error al generar reporte' + error) 
     }
+    finally{ loading.value = false }
 }
 
 const ObtenerTelemetriaDispositivo = async (id: number, inicio: number, final: number) => {
@@ -469,6 +478,7 @@ const setChartOptionsHorizontal = () => {
 </script>
 
 <template>
+    <LoaderCar v-if="loading" ></LoaderCar>>
     <h2>Resumen</h2>
     <div class="flex flex-wrap gap-3 ali">
         <div style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
@@ -715,14 +725,14 @@ const setChartOptionsHorizontal = () => {
     }
 }
 
-@media screen and (max-width: 767px){
-    .wid{
+@media screen and (max-width: 767px) {
+    .wid {
         width: 100%;
     }
 }
 
-.ali{
-    align-items:flex-end;
+.ali {
+    align-items: flex-end;
 }
 
 .p-card {

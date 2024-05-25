@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { httpService } from "@/services/https.services";
-
+import LoaderCar from "../components/LoaderCar.vue";
 import CharBars from "@/components/CharBars.vue";
+import { errorMonitor } from "events";
 const value = ref(70);
 
 var hiden = ref(false);
 
 const fechaInicio = ref();
 const fechaFinal = ref();
+const loading = ref(false);
 
 onMounted(() => {
     //chartData.value = setChartData();
@@ -20,6 +22,7 @@ onMounted(() => {
 });
 
 const ObtenerCalculadora = async (begin, end) => {
+    loading.value = true;
     try {
         const datatoSend = {
             "from": begin,
@@ -51,21 +54,7 @@ const ObtenerCalculadora = async (begin, end) => {
             deviceValues.distance.push(item.distance_covered)
             deviceValues.fuel.push(item.fuel_consumed)
 
-            /* let dataset = deviceValues.find(dataset => dataset.label === item.device);
-            if (!dataset) {
-                dataset = {
-                    label: item.device,
-                    data: [],
-                    fill: false,
-                    tension: 0.4,
-                    borderColor: '#007bff'
-                };
-                deviceValues.push(dataset);
-            }
-            dataset.data.push(item.distance_covered); */
-
-
-
+            
         });
 
         console.log(groupedData);
@@ -79,6 +68,7 @@ const ObtenerCalculadora = async (begin, end) => {
     } catch (error) {
         console.error('Error recuperando valores: ', error)
     }
+    finally{ loading.value= false }
 }
 
 const chartDistance = ref();
@@ -239,62 +229,97 @@ const setChartOptions = () => {
     };
 }
 
-const FiltrarHoy = () => {
-    var fechainicio = new Date();
-    fechainicio.setHours(0);
-    fechainicio.setMinutes(0);
-    fechainicio.setSeconds(0);
+const FiltrarHoy = async () => {
+    loading.value = true;
+    try {
+        var fechainicio = new Date();
+        fechainicio.setHours(0);
+        fechainicio.setMinutes(0);
+        fechainicio.setSeconds(0);
 
-    var fechainiciotimestamp = Math.floor(fechainicio.getTime() / 1000);
+        var fechainiciotimestamp = Math.floor(fechainicio.getTime() / 1000);
 
-    var fechafinal = new Date();
-    fechafinal.setHours(23);
-    fechafinal.setMinutes(59);
-    fechafinal.setSeconds(0);
-    var fechafinaltimestamp = Math.floor(fechafinal.getTime() / 1000);
-    ObtenerCalculadora(fechainiciotimestamp, fechafinaltimestamp);
+        var fechafinal = new Date();
+        fechafinal.setHours(23);
+        fechafinal.setMinutes(59);
+        fechafinal.setSeconds(0);
+        var fechafinaltimestamp = Math.floor(fechafinal.getTime() / 1000);
+        await ObtenerCalculadora(fechainiciotimestamp, fechafinaltimestamp);
+    } catch (error){ 
+        console.log('error al obtener los datos' + error)
+    } 
+    finally { loading.value=false; }
+
 
 }
 
-const FiltrarAyer = () => {
-    var fechainicio = new Date();
-    fechainicio.setDate(fechainicio.getDate() - 1); // Un día atrás
-    fechainicio.setHours(0, 0, 0);
+const FiltrarAyer = async () => {
+    loading.value = true;
+    try {
+        var fechainicio = new Date();
+        fechainicio.setDate(fechainicio.getDate() - 1); // Un día atrás
+        fechainicio.setHours(0, 0, 0);
 
-    var fechainiciotimestamp = Math.floor(fechainicio.getTime() / 1000);
+        var fechainiciotimestamp = Math.floor(fechainicio.getTime() / 1000);
 
-    var fechafinal = new Date();
-    fechafinal.setDate(fechafinal.getDate() - 1); // Un día atrás
-    fechafinal.setHours(23, 59, 59);
+        var fechafinal = new Date();
+        fechafinal.setDate(fechafinal.getDate() - 1); // Un día atrás
+        fechafinal.setHours(23, 59, 59);
 
-    var fechafinaltimestamp = Math.floor(fechafinal.getTime() / 1000);
+        var fechafinaltimestamp = Math.floor(fechafinal.getTime() / 1000);
 
-    ObtenerCalculadora(fechainiciotimestamp, fechafinaltimestamp);
+        await ObtenerCalculadora(fechainiciotimestamp, fechafinaltimestamp);
+    } catch (error) {
+        console.error("Error al obtener los datos:", error);
+    }
+    finally { loading.value = false; }
 }
 
-const FiltrarSemana = () => {
+// const FiltrarSemana = () => {
 
-    var fechainicio = new Date();
-    fechainicio.setDate(fechainicio.getDate() - 6); // Seis días atrás
-    fechainicio.setHours(0, 0, 0);
+//     var fechainicio = new Date();
+//     fechainicio.setDate(fechainicio.getDate() - 6); // Seis días atrás
+//     fechainicio.setHours(0, 0, 0);
 
-    var fechainiciotimestamp = Math.floor(fechainicio.getTime() / 1000);
+//     var fechainiciotimestamp = Math.floor(fechainicio.getTime() / 1000);
 
-    var fechafinal = new Date();
-    fechafinal.setHours(23, 59, 59);
+//     var fechafinal = new Date();
+//     fechafinal.setHours(23, 59, 59);
 
-    var fechafinaltimestamp = Math.floor(fechafinal.getTime() / 1000);
+//     var fechafinaltimestamp = Math.floor(fechafinal.getTime() / 1000);
 
-    ObtenerCalculadora(fechainiciotimestamp, fechafinaltimestamp);
-}
+//     ObtenerCalculadora(fechainiciotimestamp, fechafinaltimestamp);
+// }
+
+const FiltrarSemana = async () => {
+    loading.value = true;
+    try {
+        const fechainicio = new Date();
+        fechainicio.setDate(fechainicio.getDate() - 6); // Seis días atrás
+        fechainicio.setHours(0, 0, 0);
+
+        const fechainiciotimestamp = Math.floor(fechainicio.getTime() / 1000);
+
+        const fechafinal = new Date();
+        fechafinal.setHours(23, 59, 59);
+
+        const fechafinaltimestamp = Math.floor(fechafinal.getTime() / 1000);
+
+        await ObtenerCalculadora(fechainiciotimestamp, fechafinaltimestamp);
+    } catch (error) {
+        console.error("Error al obtener los datos:", error);
+    } finally {
+        loading.value = false;
+    }
+};
 
 const FiltrarCalculadora = () => {
-    const begin =  new Date(fechaInicio.value)
-    begin.setHours(0,0,0)
-    const fechainiciotimestamp = Math.floor(begin.getTime()/1000)
+    const begin = new Date(fechaInicio.value)
+    begin.setHours(0, 0, 0)
+    const fechainiciotimestamp = Math.floor(begin.getTime() / 1000)
     const end = new Date(fechaFinal.value)
-    end.setHours(23,59,59)
-    const fechafinaltimestamp = Math.floor(end.getTime()/1000)
+    end.setHours(23, 59, 59)
+    const fechafinaltimestamp = Math.floor(end.getTime() / 1000)
     ObtenerCalculadora(fechainiciotimestamp, fechafinaltimestamp);
 }
 
@@ -304,12 +329,17 @@ const setHident = () => {
 </script>
 
 <template>
-    <div style="display: flex; justify-content: space-between; ">
+    <LoaderCar v-if="loading"></LoaderCar>
+    <div class="headerNav">
         <h2>Dashboard</h2>
-        <CustomButton icon="pi pi-filter" label="Hoy" @click="FiltrarHoy" size="small"></CustomButton>
-        <CustomButton icon="pi pi-filter" label="Ayer" @click="FiltrarAyer" size="small"></CustomButton>
-        <CustomButton icon="pi pi-filter" label="Esta Semana" @click="FiltrarSemana" size="small"></CustomButton>
-        <CustomButton icon="pi pi-filter" label="Filtrar" @click="setHident" size="small"></CustomButton>
+
+        <span class="p-buttonset">
+            <CustomButton size="small" icon="pi pi-filter" label="Hoy" @click="FiltrarHoy"></CustomButton>
+            <CustomButton size="small" label="Ayer" @click="FiltrarAyer"></CustomButton>
+            <CustomButton size="small" label="Esta Semana" @click="FiltrarSemana">
+            </CustomButton>
+            <CustomButton size="small" label="Filtrar" @click="setHident"></CustomButton>
+        </span>
     </div>
 
     <cDivider></cDivider>
@@ -450,5 +480,18 @@ h2 {
 
 .ali {
     align-items: flex-end;
+}
+
+.headerNav {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding-top: 15px;
+}
+
+@media screen and (max-width: 767px) {
+    .headerNav {
+        flex-direction: column;
+    }
 }
 </style>

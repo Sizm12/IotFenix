@@ -7,7 +7,7 @@ import store from './store/auth'
 import { routes } from './routes';
 import 'primevue/resources/themes/lara-dark-green/theme.css';
 import 'primevue/resources/primevue.min.css';
-import 'primeicons/primeicons.css'
+import 'primeicons/primeicons.css' 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 //icons
@@ -44,9 +44,7 @@ import InputGroup from 'primevue/inputgroup';
 import InputGroupAddon from 'primevue/inputgroupaddon';
 import ConfirmDialog from 'primevue/confirmdialog';
 import ConfirmationService from 'primevue/confirmationservice';
-
 import OverlayPanel from 'primevue/overlaypanel';
-
 
 const app = createApp(App);
 

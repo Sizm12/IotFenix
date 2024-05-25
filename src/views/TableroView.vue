@@ -545,7 +545,7 @@ const setChartOptions = () => {
             <div class="mt">
                 <!--aqui el velocimetro-->
                 <GaugesCar :rpm="rpmValue" :velocidad="speedValue" :encendido="vehiculeStateValue"
-                    :odometro="odometerValue" :angulo="positionValue" :status="movementValue" ></GaugesCar>
+                    :odometro="odometerValue" :angulo="positionValue" :status="movementValue"  />
                 <div
                     style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0px 20px; margin-top:10px;">
 
@@ -557,12 +557,10 @@ const setChartOptions = () => {
                             style="display:flex; flex-direction: column; justify-content:center; gap: 5px;">
                             <FA style="font-size: 2rem;" icon="gas-pump" class="on" />
                             <small style="width:max-content;">{{ fuelValue.toFixed(2) }} lt</small>
-                            <small style="width:max-content;">{{ fuelValue.toFixed(2) }} lt</small>
                         </span>
                         <span v-tooltip.top="'Bateria: %'"
                             style="display:flex; flex-direction: column; justify-content:center; gap: 5px;">
                             <FA style="font-size: 2rem;" icon="car-battery" class="on" />
-                            <small style="width:max-content;">{{ vehiculeBatteryValue.toFixed(2) }} %</small>
                             <small style="width:max-content;">{{ vehiculeBatteryValue.toFixed(2) }} %</small>
                         </span>
                         <span v-tooltip.top="'Jirar a la izquierda'">
@@ -603,12 +601,11 @@ const setChartOptions = () => {
                         color: '#fff',
                     }
                 ]
-            }" class="h-30rem oct" />
+            }" class="h-30rem" />
         </div>
 
         <cDivider></cDivider>
 
-        <div class="flex" style="align-items:stretch;">
         <div class="flex" style="align-items:stretch;">
             <cCard v-if="telemetry && 'can.wheel.speed' in telemetry" class="min">
                 <template #title>
@@ -619,7 +616,6 @@ const setChartOptions = () => {
                         <cKnob v-model="maxspeed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8" readonly
                             valueTemplate="{value} km/h" />
                     </div>
-
 
                 </template>
                 <template #footer>
@@ -636,7 +632,6 @@ const setChartOptions = () => {
                         <cKnob v-model="fuelconsumed" valueColor="#F2b53C" :min="0" :max="200" :strokeWidth="8" readonly
                             valueTemplate="{value} /lt" />
                     </div>
-
 
                 </template>
                 <template #footer>
@@ -683,7 +678,6 @@ const setChartOptions = () => {
 
                     </div>
 
-
                 </template>
                 <template #footer>
                     <small>Datos del ECU del Vehículo</small>
@@ -707,8 +701,6 @@ const setChartOptions = () => {
             </cCard>
         </div>
 
-        <div class="flex2">
-            <cCard class="custom-card" v-if="linear" style="width:max-width">
         <div class="flex2">
             <cCard class="custom-card" v-if="linear" style="width:max-width">
                 <template #title>Voltaje de Batería del Vehículo</template>
@@ -806,7 +798,6 @@ const setChartOptions = () => {
                 </template>
             </cCard>
 
-
         </div>
 
         <div class="flex2">
@@ -869,38 +860,17 @@ h3 {
     margin-top: -40px;
 }
 
-.mt  {
+.mt {
     margin-top: -20px;
-}
-
-.oc {
-    display: none;
 }
 
 @media screen and (max-width: 767px) {
     .mt {
         margin-top: 0;
-    .mt {
-        margin-top: 0;
     }
 
-    .cont {
     .cont {
         margin-top: -10px;
-    }
-
-    .oc {
-        display: block;
-    }
-}
-
-
-@media (min-width: 768px) and (max-width: 1024px) {
-    .oct {
-    display: none;
-}
-.cont {
-        margin-top:0px;
     }
 }
 
