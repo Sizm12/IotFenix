@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { httpService } from "@/services/https.services";
-import { ref, onMounted, onBeforeUnmount, computed } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed, watch, nextTick } from "vue";
 import GaugesCar from "@/components/GaugesCar.vue";
 import AnimationSvg from "@/components/AnimationSvg.vue";
 import SignalsComponent from "@/components/SignalsComponent.vue";
@@ -10,7 +10,6 @@ import IconAcelerador from "@/components/icons/IconAcelerador.vue";
 import IconParking from "@/components/icons/IconParking.vue"
 import { useToast } from 'primevue/usetoast';
 import mqttService from "@/services/mqtt.services"
-
 const toast = useToast();
 
 const selectedVehicle = ref<Device | null>(null);
@@ -27,6 +26,7 @@ const rpm = ref();
 const fuellevel = ref();
 const accelerate = ref();
 const temperature = ref();
+const selected = ref();
 
 
 const maxspeed = ref();
@@ -57,6 +57,8 @@ const movementValue = ref();
 const parkingValue = ref();
 const brakeValue = ref();
 const odometerValue = ref();
+
+const UrlFrame = ref<string>("");
 
 interface Device {
     id: number;
@@ -104,13 +106,15 @@ const MQTTTest = async (id) => {
             } else {
                 speedValue.value = messageValue.value['position.speed']
             }
-
+            
+            
             signalValue.value = messageValue.value['position.satellites']
             fuelValue.value = messageValue.value['can.fuel.level']
             vehiculeBatteryValue.value = messageValue.value['external.powersource.voltage']--
             gsmValue.value = messageValue.value['gsm.signal.dbm']
             movementValue.value = messageValue.value['movement.status']
             rpmValue.value = messageValue.value['can.engine.rpm']
+            console.log(rpmValue.value);
             parkingValue.value = messageValue.value['can.handbrake.status']
             brakeValue.value = messageValue.value['can.pedal.brake.status']
             odometerValue.value = messageValue.value['vehicle.mileage']
@@ -123,13 +127,29 @@ const MQTTTest = async (id) => {
 
 
 const OnChange = () => {
-    const selected = selectedVehicle.value ? selectedVehicle.value.id : null;
-    if (selected !== null) {
-        ObtenerDatosDispositivo(selected);
-        ObtenerTelemetriaDispositivo(selected);
-        MQTTTest(selected)
+    selected.value = selectedVehicle.value ? selectedVehicle.value.id : null;
+    if (selected.value !== null) {
+        console.log(selected.value);
+
+        ObtenerDatosDispositivo(selected.value);
+        ObtenerTelemetriaDispositivo(selected.value);
+        MQTTTest(selected.value)
+        UrlFrame.value = `http://62.72.24.91:7006/#/devices/${selected.value}`
+        console.log(UrlFrame.value);
+
+        //Iframe(selected.value)
     }
 }
+
+watch(UrlFrame, (newSrc) => {
+    const iframe = document.getElementById('TrackitMap') as HTMLIFrameElement | null;
+    if (iframe && newSrc) {
+        console.log('Actualizando iframe manualmente con URL:', newSrc);
+        iframe.src = newSrc;
+    }
+})
+
+
 
 const setBattery = () => {
     const documentStyle = getComputedStyle(document.documentElement);
@@ -545,7 +565,7 @@ const setChartOptions = () => {
             <div class="mt">
                 <!--aqui el velocimetro-->
                 <GaugesCar :rpm="rpmValue" :velocidad="speedValue" :encendido="vehiculeStateValue"
-                    :odometro="odometerValue" :angulo="positionValue" :status="movementValue"  />
+                    :odometro="odometerValue" :angulo="positionValue" :status="movementValue" />
                 <div
                     style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 0px 20px; margin-top:10px;">
 
@@ -603,6 +623,10 @@ const setChartOptions = () => {
                 ]
             }" class="h-30rem" />
         </div>
+
+        <cDivider></cDivider>
+
+        <iframe id="TrackitMap" width="100%" height="500" :src="UrlFrame"></iframe>
 
         <cDivider></cDivider>
 
