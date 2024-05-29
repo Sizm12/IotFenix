@@ -9,6 +9,7 @@ import DispositivosView from './views/DispositivosView.vue'
 import ReporteView from './views/ReporteView.vue'
 import UsuariosView from './views/UsuariosView.vue'
 import ModeloViewVue from './views/ModeloView.vue'
+import MantenimientoView from './views/MantenimientoView.vue'
 
 export const routes = [
     {
@@ -39,6 +40,14 @@ export const routes = [
             {
                 path: 'Modelos',
                 component: ModeloViewVue,
+                meta: {
+                    requiresAuth: true,
+                    roles:['Administrador', 'Supervisor', 'Operativo']
+                }
+            },
+            {
+                path: 'Mantenimiento',
+                component: MantenimientoView,
                 meta: {
                     requiresAuth: true,
                     roles:['Administrador', 'Supervisor', 'Operativo']

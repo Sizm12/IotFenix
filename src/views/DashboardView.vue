@@ -103,6 +103,12 @@ const toggle = (event) => {
                             <i class="pi pi-car" style="color: #34d399;"></i><label>Vehiculos</label>
                         </li>
                     </RouterLink>
+                    <RouterLink to="/Dashboard/Mantenimiento" style="text-decoration: none;">
+                        <li @click="selectItem('Mantenimiento')">
+                            <i class="pi pi-wrench" style=" color: #34d399;"></i>
+                            <label>Mantenimiento</label>
+                        </li>
+                    </RouterLink>
                     <RouterLink to="/Dashboard/Modelos" style="text-decoration: none;">
                         <li @click="selectItem('Modelos')">
                             <i class="far fa-bookmark" style=" color: #34d399;"></i>
