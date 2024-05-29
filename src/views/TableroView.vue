@@ -114,7 +114,6 @@ const MQTTTest = async (id) => {
             gsmValue.value = messageValue.value['gsm.signal.dbm']
             movementValue.value = messageValue.value['movement.status']
             rpmValue.value = messageValue.value['can.engine.rpm']
-            console.log(rpmValue.value);
             parkingValue.value = messageValue.value['can.handbrake.status']
             brakeValue.value = messageValue.value['can.pedal.brake.status']
             odometerValue.value = messageValue.value['vehicle.mileage']
